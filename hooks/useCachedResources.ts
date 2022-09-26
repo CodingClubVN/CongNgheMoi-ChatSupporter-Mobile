@@ -16,6 +16,9 @@ export default function useCachedResources() {
         await Font.loadAsync({
           ...FontAwesome.font,
           'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
+          'sf-pro-reg': require('../assets/fonts/SF-Pro-Display-Regular.otf'),
+          'sf-pro-med': require('../assets/fonts/SF-Pro-Display-Medium.otf'),
+          'sf-pro-bold': require('../assets/fonts/SF-Pro-Display-Bold.otf'),
         });
       } catch (e) {
         // We might want to provide this error information to an error reporting service

@@ -1,6 +1,5 @@
-import { LinearGradient } from 'expo-linear-gradient'
-import React from 'react'
-import { View, Text, SafeAreaView, StyleSheet, Image, Button, BackHandler, Pressable } from 'react-native'
+import React, { useState } from 'react'
+import { View, Text, StyleSheet, Image, Button, Pressable, Alert } from 'react-native'
 import CButton from '../../../components/CButton'
 import CInput from '../../../components/CInput'
 import EButton from '../../../components/EButton'
@@ -8,8 +7,27 @@ import GradientView from '../../../components/GradientView'
 import HideKeyboard from '../../../components/HideKeyboard'
 import StyleVariables from '../../../StyleVariables'
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }: { navigation: any }) => {
   const logo = require('../../../assets/images/icon.png')
+  const [username, setUsername] = useState('admin')
+  const [password, setPassword] = useState('admin')
+  const [isLoading, setIsLoading] = useState(false)
+  const handleLogin = () => {
+    setIsLoading(true)
+    console.log(username, password)
+    if (username === 'admin' && password === 'admin') {
+      setTimeout(() => {
+        Alert.alert('Success', 'Login success!')
+        navigation.navigate('Root')
+        setIsLoading(false)
+      }, 1000)
+    } else {
+      setTimeout(() => {
+        Alert.alert('Error', 'Invalid username or password')
+        setIsLoading(false)
+      }, 1000)
+    }
+  }
   const thirdParty = [
     {
       name: 'Google',
@@ -27,8 +45,12 @@ const LoginScreen = () => {
       icon: 'twitter'
     }
   ]
+
+  const handleRegister = () => {
+    navigation.navigate('Register')
+  }
   return (
-    <GradientView>
+    <GradientView isLoading={isLoading}>
       <HideKeyboard>
         <View style={styles.loginWrapper}>
           <View style={styles.imageContainer}>
@@ -36,22 +58,31 @@ const LoginScreen = () => {
             <Text style={styles.logoText}>Coding Club</Text>
           </View>
           <View style={styles.formContainer}>
+            <View style={{ marginVertical: 10, width: '100%', paddingLeft: '7.5%' }}>
+              <Text style={{
+                fontFamily: 'sf-pro-bold',
+                fontSize: 30,
+                color: StyleVariables.colors.gradientStart
+              }}>Login</Text>
+            </View>
             <View style={styles.inputContainer}>
-              <CInput placeholder="Username" placeholderTextColor={StyleVariables.colors.gray200} />
-              <CInput secureTextEntry clearTextOnFocus placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} />
+              <CInput placeholder="Username" placeholderTextColor={StyleVariables.colors.gray200} value={username} onChangeText={setUsername} />
+              <CInput secureTextEntry clearTextOnFocus placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} value={password} onChangeText={setPassword} />
               <Pressable style={{ width: '100%', marginLeft: '15%' }}>
                 <Text style={styles.forgotPassword}>Forgot Password?</Text>
               </Pressable>
             </View>
             <View style={styles.buttonContainer}>
-              <CButton title='Login' btnProps={undefined} />
-              <Button title='Register' color={StyleVariables.colors.black} />
+              <CButton title='Login' btnProps={{
+                onPress: handleLogin
+              }} />
+              <Button title='Register' onPress={handleRegister} color={StyleVariables.colors.black} />
               <View style={styles.divider} />
               <View style={styles.thirdParty}>
                 {
                   thirdParty.map((item: { name: string, color: string, icon: string }) =>
                   (
-                    <View style={{ width: 80 }}>
+                    <View key={item.name} style={{ width: 80 }}>
                       <EButton title={item.name} btnProps={{ icon: item.icon, color: item.color }} />
                     </View>
                   )

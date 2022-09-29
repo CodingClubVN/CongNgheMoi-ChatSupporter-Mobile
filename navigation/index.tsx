@@ -8,7 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { ColorSchemeName, Pressable } from 'react-native';
+import { ColorSchemeName, Pressable, TouchableOpacity } from 'react-native';
 
 import Colors from '../constants/Colors';
 import LoginScreen from '../screens/Auth/Login/Login';
@@ -41,8 +41,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Auth" component={AuthNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="Auth" component={AuthNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
@@ -106,11 +106,11 @@ function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <TabBarIcon name="chatbubble-outline" color={color} />,
           headerTitle: 'Chats',
           headerRight: () => (
-            <Pressable
+            <TouchableOpacity
               style={{ height: 80, paddingRight: 20 }}
             >
               <Ionicons name="person-add" size={30} color={StyleVariables.colors.gradientStart} />
-            </Pressable>
+            </TouchableOpacity>
           )
         }}
       />

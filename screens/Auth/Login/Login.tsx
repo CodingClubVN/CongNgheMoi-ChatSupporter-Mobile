@@ -1,21 +1,24 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, Image, Button, Pressable, Alert } from 'react-native'
+import { View, Text, StyleSheet, Image, Button, Pressable, Alert, TouchableOpacity } from 'react-native'
 import CButton from '../../../components/CButton'
 import CInput from '../../../components/CInput'
 import EButton from '../../../components/EButton'
 import GradientView from '../../../components/GradientView'
 import HideKeyboard from '../../../components/HideKeyboard'
+import { Account } from '../../../models/Account'
 import StyleVariables from '../../../StyleVariables'
 
 const LoginScreen = ({ navigation }: { navigation: any }) => {
   const logo = require('../../../assets/images/icon.png')
-  const [username, setUsername] = useState('admin')
-  const [password, setPassword] = useState('admin')
+  const [account, setAccount] = useState<Account>({
+    username: 'admin',
+    password: 'admin'
+  })
   const [isLoading, setIsLoading] = useState(false)
   const handleLogin = () => {
     setIsLoading(true)
-    console.log(username, password)
-    if (username === 'admin' && password === 'admin') {
+    console.log(account.username, account.password)
+    if (account.username === 'admin' && account.password === 'admin') {
       setTimeout(() => {
         Alert.alert('Success', 'Login success!')
         navigation.navigate('Root')
@@ -49,6 +52,21 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
   const handleRegister = () => {
     navigation.navigate('Register')
   }
+
+  const handleUsernameChange = (username: string) => {
+    setAccount((state: Account) => ({
+      username,
+      password: state.password
+    }))
+  }
+
+  const handlePasswordChange = (password: string) => {
+    setAccount((state: Account) => ({
+      username: state.username,
+      password
+    }))
+  }
+
   return (
     <GradientView isLoading={isLoading}>
       <HideKeyboard>
@@ -66,11 +84,11 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
               }}>Login</Text>
             </View>
             <View style={styles.inputContainer}>
-              <CInput placeholder="Username" placeholderTextColor={StyleVariables.colors.gray200} value={username} onChangeText={setUsername} />
-              <CInput secureTextEntry clearTextOnFocus placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} value={password} onChangeText={setPassword} />
-              <Pressable style={{ width: '100%', marginLeft: '15%' }}>
+              <CInput placeholder="Username" placeholderTextColor={StyleVariables.colors.gray200} value={account.username} onChangeText={handleUsernameChange} />
+              <CInput secureTextEntry clearTextOnFocus placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} value={account.password} onChangeText={handlePasswordChange} />
+              <TouchableOpacity style={{ width: '100%', marginLeft: '15%' }}>
                 <Text style={styles.forgotPassword}>Forgot Password?</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
               <CButton title='Login' btnProps={{

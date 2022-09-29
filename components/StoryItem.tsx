@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons"
 import { LinearGradient } from "expo-linear-gradient"
 import React from "react"
-import { View, Text, Pressable, Image } from 'react-native'
+import { View, Text, Pressable, Image, TouchableOpacity } from 'react-native'
 import StyleVariables from "../StyleVariables"
 
 const StoryItem = ({ isCreate, user, isViewed, callback }: { isCreate?: boolean, user: any, isViewed?: boolean, callback: Function }) => {
@@ -25,7 +25,7 @@ const StoryItem = ({ isCreate, user, isViewed, callback }: { isCreate?: boolean,
           borderRadius: 50
         }}
       >
-        <Pressable style={{
+        <TouchableOpacity style={{
           borderRadius: 50,
           borderWidth: isCreate ? 0 : 2,
           borderColor: 'white',
@@ -68,7 +68,7 @@ const StoryItem = ({ isCreate, user, isViewed, callback }: { isCreate?: boolean,
               </LinearGradient>
             )
           }
-        </Pressable>
+        </TouchableOpacity>
       </LinearGradient>
       <Text style={{
         fontSize: 12,

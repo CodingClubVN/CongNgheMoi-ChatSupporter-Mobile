@@ -5,13 +5,16 @@ import CInput from '../../../components/CInput'
 import EButton from '../../../components/EButton'
 import GradientView from '../../../components/GradientView'
 import HideKeyboard from '../../../components/HideKeyboard'
+import { Account } from '../../../models/Account'
 import StyleVariables from '../../../StyleVariables'
 
 const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const logo = require('../../../assets/images/icon.png')
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const [account, setAccount] = useState<Account>({
+    username: '',
+    password: '',
+    confirmPassword: ''
+  })
   const [isLoading, setIsLoading] = useState(false)
   const thirdParty = [
     {
@@ -31,8 +34,33 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     }
   ]
 
+  const handleUsernameChange = (username: string) => {
+    setAccount((state: Account) => ({
+      username,
+      password: state.password,
+      confirmPassword: state.confirmPassword
+    }))
+  }
+
+  const handlePasswordChange = (password: string) => {
+    setAccount((state: Account) => ({
+      username: state.username,
+      password,
+      confirmPassword: state.confirmPassword
+    }))
+  }
+
+  const handleConfirmPasswordChange = (confirmPassword: string) => {
+    setAccount((state: Account) => ({
+      username: state.username,
+      password: state.password,
+      confirmPassword
+    }))
+  }
+
   const handleRegister = () => {
     setIsLoading(true)
+    console.log(account.username, account.password, account.confirmPassword)
     setTimeout(() => {
       setIsLoading(false)
       navigation.navigate('Login')
@@ -61,9 +89,9 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
               }}>Register</Text>
             </View>
             <View style={styles.inputContainer}>
-              <CInput placeholder="Username" placeholderTextColor={StyleVariables.colors.gray200} />
-              <CInput secureTextEntry clearTextOnFocus placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} />
-              <CInput secureTextEntry clearTextOnFocus placeholder="Confirm Password" placeholderTextColor={StyleVariables.colors.gray200} />
+              <CInput placeholder="Username" placeholderTextColor={StyleVariables.colors.gray200} value={account.username} onChangeText={handleUsernameChange} />
+              <CInput secureTextEntry clearTextOnFocus placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} value={account.password} onChangeText={handlePasswordChange} />
+              <CInput secureTextEntry clearTextOnFocus placeholder="Confirm Password" placeholderTextColor={StyleVariables.colors.gray200} value={account.confirmPassword} onChangeText={handleConfirmPasswordChange} />
             </View>
             <View style={styles.buttonContainer}>
               <CButton title='Register' btnProps={{

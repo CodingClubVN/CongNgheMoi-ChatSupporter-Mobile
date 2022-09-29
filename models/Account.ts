@@ -1,4 +1,5 @@
 export interface Account {
   username: string,
-  password: string
+  password: string,
+  confirmPassword?: string
 }

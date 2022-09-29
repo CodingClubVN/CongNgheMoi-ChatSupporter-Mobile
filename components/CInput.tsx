@@ -1,6 +1,6 @@
 import { useFonts } from 'expo-font'
 import React from "react"
-import { StyleSheet, TextInput } from "react-native"
+import { StyleSheet, TextInput, TouchableOpacity } from "react-native"
 import StyleVariables from '../StyleVariables'
 
 const CInput = (props: any) => {

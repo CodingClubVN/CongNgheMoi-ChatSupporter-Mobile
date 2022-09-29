@@ -1,17 +1,17 @@
 import { FontAwesome } from "@expo/vector-icons"
 import React from "react"
-import { Text, View, StyleSheet, Pressable } from "react-native"
+import { Text, View, StyleSheet, Pressable, TouchableOpacity } from "react-native"
 import StyleVariables from "../StyleVariables"
 
 
 const EButton = ({ btnProps, title }: { btnProps: any, title: any }) => {
   return (
-    <Pressable {...btnProps} style={styles.pressableWrapper}>
+    <TouchableOpacity {...btnProps} style={styles.pressableWrapper}>
       <View
         style={styles.btnWrapper}>
         <FontAwesome name={btnProps.icon} size={25} color={btnProps.color} />
       </View>
-    </Pressable>
+    </TouchableOpacity>
   )
 }
 

@@ -1,11 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient'
 import React from 'react'
-import { Text, View, Pressable, StyleSheet } from 'react-native'
+import { Text, StyleSheet, TouchableOpacity } from 'react-native'
 import StyleVariables from '../StyleVariables'
 
 const CButton = ({ btnProps, title, textStyles = {} }: { btnProps: any, title: string, textStyles?: any }) => {
   return (
-    <Pressable {...btnProps} style={styles.pressableWrapper}>
+    <TouchableOpacity {...btnProps} style={styles.pressableWrapper}>
       <LinearGradient
         colors={[StyleVariables.colors.gradientEnd, StyleVariables.colors.gradientStart]}
         start={[0, 0.1]}
@@ -15,7 +15,7 @@ const CButton = ({ btnProps, title, textStyles = {} }: { btnProps: any, title: s
           {title}
         </Text>
       </LinearGradient>
-    </Pressable>
+    </TouchableOpacity>
   )
 }
 

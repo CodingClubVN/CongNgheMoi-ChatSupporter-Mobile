@@ -2,13 +2,16 @@ import React from "react"
 import { StyleSheet, View, Text, ScrollView } from "react-native"
 import ConversationItem from "../../../../components/ConversationItem"
 
-const Chats = () => {
+const Chats = ({ navigation }: { navigation: any }) => {
   return (
     <View style={{ width: '100%' }}>
-      <ConversationItem type="direct" user={[{
-        name: 'Jordan Moran',
-        avatar: 'https://toigingiuvedep.vn/wp-content/uploads/2022/01/anh-meo-cute.jpg'
-      }]}
+      <ConversationItem
+        navigation={navigation}
+        type="direct"
+        user={[{
+          name: 'Jordan Moran',
+          avatar: 'https://toigingiuvedep.vn/wp-content/uploads/2022/01/anh-meo-cute.jpg'
+        }]}
         conversation={{
           lastMessage: 'Hello',
           lastMessageTime: '12:00',
@@ -21,14 +24,16 @@ const Chats = () => {
         }}
       />
 
-      <ConversationItem type="group" user={[{
-        name: 'Van A',
-        avatar: 'https://toigingiuvedep.vn/wp-content/uploads/2022/01/anh-meo-cute.jpg'
-      },
-      {
-        name: 'Van B',
-        avatar: 'https://toigingiuvedep.vn/wp-content/uploads/2022/01/anh-meo-cute.jpg'
-      }]}
+      <ConversationItem
+        navigation={navigation}
+        type="group" user={[{
+          name: 'Van A',
+          avatar: 'https://toigingiuvedep.vn/wp-content/uploads/2022/01/anh-meo-cute.jpg'
+        },
+        {
+          name: 'Van B',
+          avatar: 'https://toigingiuvedep.vn/wp-content/uploads/2022/01/anh-meo-cute.jpg'
+        }]}
         conversation={{
           lastMessage: 'Hello',
           lastMessageTime: '12:00',

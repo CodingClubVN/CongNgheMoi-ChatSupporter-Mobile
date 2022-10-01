@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from 'react-native'
 import Chats from "./Chats"
 import Story from "./Story"
 
-const ChatTab = () => {
+const ChatTab = ({ navigation }: { navigation: any }) => {
   return (
     <View style={{
       justifyContent: 'flex-start',
@@ -15,19 +15,7 @@ const ChatTab = () => {
       <ScrollView alwaysBounceVertical={false} style={{
         flexGrow: 1,
       }}>
-        <Chats />
-        <Chats />
-        <Chats />
-        <Chats />
-        <Chats />
-        <Chats />
-        <Chats />
-        <Chats />
-        <Chats />
-        <Chats />
-        <Chats />
-        <Chats />
-        <Chats />
+        <Chats navigation={navigation} />
       </ScrollView>
     </View>
   )

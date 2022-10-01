@@ -2,10 +2,20 @@ import { LinearGradient } from "expo-linear-gradient"
 import React from "react"
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import StyleVariables from "../StyleVariables"
+import ConversationAvatar from "./ConversationAvatar"
 
-const ConversationItem = ({ type, user, conversation }: { type: 'direct' | 'group', user: any[], conversation: any }) => {
+const ConversationItem = ({ navigation, type, user, conversation }: { navigation: any, type: 'direct' | 'group', user: any[], conversation: any }) => {
+  const handleConversationSelect = () => {
+    console.log('hello')
+    navigation.navigate('Conversation', {
+      user,
+      type,
+      conversation,
+    })
+  }
+
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={handleConversationSelect}>
 
       <View style={{
         display: 'flex',
@@ -20,28 +30,7 @@ const ConversationItem = ({ type, user, conversation }: { type: 'direct' | 'grou
         {
           type === 'direct' ? (
             <>
-              <View style={{
-                height: 60,
-                width: 60,
-                position: 'relative',
-              }}>
-                <Image source={{ uri: user[0].avatar }} style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 60
-                }} />
-                <View style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  width: 15,
-                  height: 15,
-                  borderRadius: 15,
-                  backgroundColor: 'green',
-                  borderWidth: 2,
-                  borderColor: 'white'
-                }} />
-              </View>
+              <ConversationAvatar type={type} urls={[user[0].avatar]} />
               <View style={{
                 height: 60,
                 marginLeft: 20,
@@ -94,44 +83,7 @@ const ConversationItem = ({ type, user, conversation }: { type: 'direct' | 'grou
             </>
           ) : (
             <>
-              <View style={{
-                height: 60,
-                width: 60,
-                position: 'relative',
-              }}>
-                <Image source={{ uri: user[0].avatar }} style={{
-                  width: 45,
-                  height: 45,
-                  borderRadius: 45,
-                  borderWidth: 2,
-                  borderColor: 'white',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: 10000
-                }} />
-                <Image source={{ uri: user[1].avatar }} style={{
-                  width: 45,
-                  height: 45,
-                  borderRadius: 45,
-                  borderWidth: 2,
-                  borderColor: 'white',
-                  bottom: 0,
-                  right: 0,
-                  position: 'absolute'
-                }} />
-                <View style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  width: 15,
-                  height: 15,
-                  borderRadius: 15,
-                  backgroundColor: 'green',
-                  borderWidth: 2,
-                  borderColor: 'white'
-                }} />
-              </View>
+              <ConversationAvatar type={type} urls={user.map(u => u.avatar)} />
               <View style={{
                 height: 60,
                 marginLeft: 20,

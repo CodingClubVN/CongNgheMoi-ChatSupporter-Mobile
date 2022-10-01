@@ -7,14 +7,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Text } from 'native-base';
 import * as React from 'react';
-import { ColorSchemeName, Pressable, TouchableOpacity } from 'react-native';
+import { ColorSchemeName, TouchableOpacity, View } from 'react-native';
 
-import Colors from '../constants/Colors';
 import LoginScreen from '../screens/Auth/Login/Login';
 import RegisterScreen from '../screens/Auth/Register/Register';
 import CallTab from '../screens/Home/CallTab';
 import ChatTab from '../screens/Home/ChatTab';
+import Conversation from '../screens/Home/ChatTab/Conversation';
 import SettingTab from '../screens/Home/SettingTab';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
@@ -47,6 +48,9 @@ function RootNavigator() {
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>
+      <Stack.Screen name="Conversation" component={Conversation} options={{
+        headerShown: false
+      }} />
     </Stack.Navigator>
   );
 }
@@ -70,8 +74,6 @@ function AuthNavigator() {
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
-  const colorScheme = 'light';
-
   return (
     <BottomTab.Navigator
       initialRouteName="ChatTab"
@@ -111,7 +113,7 @@ function BottomTabNavigator() {
             >
               <Ionicons name="person-add" size={30} color={StyleVariables.colors.gradientStart} />
             </TouchableOpacity>
-          )
+          ),
         }}
       />
       <BottomTab.Screen

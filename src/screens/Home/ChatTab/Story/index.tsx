@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ScrollView } from 'react-native'
+import StyleVariables from '../../../../../StyleVariables'
 import StoryItem from '../../../../components/StoryItem'
-import StyleVariables from '../../../../StyleVariables'
 const Story = () => {
   const users = [
     {

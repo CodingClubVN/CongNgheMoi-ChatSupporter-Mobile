@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, Image, Button, Pressable, Alert, TouchableOpacity } from 'react-native'
+import StyleVariables from '../../../../StyleVariables'
 import CButton from '../../../components/CButton'
 import CInput from '../../../components/CInput'
 import EButton from '../../../components/EButton'
 import GradientView from '../../../components/GradientView'
 import HideKeyboard from '../../../components/HideKeyboard'
 import { Account } from '../../../models/Account'
-import StyleVariables from '../../../StyleVariables'
 
 const LoginScreen = ({ navigation }: { navigation: any }) => {
-  const logo = require('../../../assets/images/icon.png')
+  const logo = require('../../../../assets/images/icon.png')
   const [account, setAccount] = useState<Account>({
     username: 'admin',
     password: 'admin'

@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient'
 import React from 'react'
 import { Text, StyleSheet, TouchableOpacity } from 'react-native'
-import StyleVariables from '../StyleVariables'
+import StyleVariables from '../../StyleVariables'
 
 const CButton = ({ btnProps, title, textStyles = {} }: { btnProps: any, title: string, textStyles?: any }) => {
   return (

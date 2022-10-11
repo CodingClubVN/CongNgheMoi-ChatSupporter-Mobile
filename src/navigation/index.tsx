@@ -10,6 +10,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Text } from 'native-base';
 import * as React from 'react';
 import { ColorSchemeName, TouchableOpacity, View } from 'react-native';
+import StyleVariables from '../../StyleVariables';
+import { RootStackParamList, AuthStackParamList, RootTabParamList, RootTabScreenProps } from '../../types';
 
 import LoginScreen from '../screens/Auth/Login/Login';
 import RegisterScreen from '../screens/Auth/Register/Register';
@@ -19,8 +21,6 @@ import Conversation from '../screens/Home/ChatTab/Conversation';
 import SettingTab from '../screens/Home/SettingTab';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
-import StyleVariables from '../StyleVariables';
-import { AuthStackParamList, RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
 export default function Navigation({ colorScheme = 'light' }: { colorScheme: ColorSchemeName }) {

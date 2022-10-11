@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { LinearGradient } from "expo-linear-gradient"
 import React from "react"
 import { View, Text, Pressable, Image, TouchableOpacity } from 'react-native'
-import StyleVariables from "../StyleVariables"
+import StyleVariables from "../../StyleVariables"
 
 const StoryItem = ({ isCreate, user, isViewed, callback }: { isCreate?: boolean, user: any, isViewed?: boolean, callback: Function }) => {
   return (

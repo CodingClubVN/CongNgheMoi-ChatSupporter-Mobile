@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient"
 import React from "react"
 import { View, Text, Image, TouchableOpacity } from 'react-native'
-import StyleVariables from "../StyleVariables"
+import StyleVariables from "../../StyleVariables"
 import ConversationAvatar from "./ConversationAvatar"
 
 const ConversationItem = ({ navigation, type, user, conversation }: { navigation: any, type: 'direct' | 'group', user: any[], conversation: any }) => {

@@ -2,8 +2,8 @@ import { Ionicons } from '@expo/vector-icons'
 import React, { useEffect } from 'react'
 import { SafeAreaView, TextInput, Image, Text, View, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform } from 'react-native'
 import Animated from 'react-native-reanimated'
+import StyleVariables from '../../../../../StyleVariables'
 import ConversationAvatar from '../../../../components/ConversationAvatar'
-import StyleVariables from '../../../../StyleVariables'
 
 const Conversation = ({ route, navigation }: { route: any, navigation: any }) => {
   const { type, conversation, user } = route.params

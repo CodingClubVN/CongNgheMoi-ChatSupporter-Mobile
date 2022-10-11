@@ -1,8 +1,8 @@
 import React from 'react'
 import { SafeAreaView } from 'react-native'
-import StyleVariables from '../StyleVariables'
 import { StyleSheet, View, ActivityIndicator } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
+import StyleVariables from '../../StyleVariables'
 
 const GradientView = ({ isLoading, children }: { isLoading: boolean, children: JSX.Element }) => {
   return (

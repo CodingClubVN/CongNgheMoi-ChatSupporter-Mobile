@@ -76,7 +76,7 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
-      initialRouteName="ChatTab"
+      initialRouteName="SettingTab"
       screenOptions={{
         tabBarActiveTintColor: StyleVariables.colors.gradientStart,
         tabBarShowLabel: false,

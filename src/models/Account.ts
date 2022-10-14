@@ -1,5 +1,16 @@
-export interface Account {
-  username: string,
-  password: string,
-  confirmPassword?: string
+export interface IAccount {
+  username: string
+  password: string
+}
+
+export interface IRegisterAccount extends IAccount {
+  confirmPassword: string
+}
+
+export interface IAuthResponse {
+  token: string
+}
+
+export interface IAccountResponse {
+  username: string
 }

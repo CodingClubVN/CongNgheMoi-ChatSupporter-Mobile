@@ -1,10 +1,9 @@
-import { User } from "./User";
+import { IUser } from "./User";
 
-export interface Message {
-  id: string,
-  conversationId: string,
-  type: string,
-  content: string,
-  from: User,
-  createdAt: number
+export interface IMessage {
+  conversationId: string
+  createdAt: string
+  content: string
+  type: string
+  fromUserId: string
 }

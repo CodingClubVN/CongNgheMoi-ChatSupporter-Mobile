@@ -6,29 +6,30 @@ import CInput from '../../../components/CInput'
 import EButton from '../../../components/EButton'
 import GradientView from '../../../components/GradientView'
 import HideKeyboard from '../../../components/HideKeyboard'
-import { Account } from '../../../models/Account'
+import { IAccount, IAccountA, IAuthResponse } from '../../../models/Account'
+import { IInternalServerError } from '../../../models/ResponseStatus'
+import authService from '../../../services/authService'
+import storageService from '../../../services/storageService'
 
 const LoginScreen = ({ navigation }: { navigation: any }) => {
   const logo = require('../../../../assets/images/icon.png')
-  const [account, setAccount] = useState<Account>({
-    username: 'admin',
-    password: 'admin'
-  })
-  const [isLoading, setIsLoading] = useState(false)
+  const [account, setAccount] = useState<IAccount | any>()
+  const [isLoading, setIsLoading] = useState<boolean | any>(false)
   const handleLogin = () => {
     setIsLoading(true)
-    console.log(account.username, account.password)
-    if (account.username === 'admin' && account.password === 'admin') {
-      setTimeout(() => {
-        Alert.alert('Success', 'Login success!')
-        navigation.navigate('Root')
-        setIsLoading(false)
-      }, 1000)
-    } else {
-      setTimeout(() => {
-        Alert.alert('Error', 'Invalid username or password')
-        setIsLoading(false)
-      }, 1000)
+    if (account) {
+      authService.login(account as IAccount).then((res: IAuthResponse | IInternalServerError) => {
+        if ((res as IInternalServerError).status) {
+          Alert.alert('Error', (res as IInternalServerError).message?.toString() || 'Something went wrong')
+          setIsLoading(false)
+        } else {
+          storageService.set('accessToken', (res as IAuthResponse).token)
+          // TODO: dispatch user to redux
+          Alert.alert('Success', 'Login success!')
+          navigation.navigate('Root')
+          setIsLoading(false)
+        }
+      })
     }
   }
   const thirdParty = [
@@ -54,14 +55,14 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
   }
 
   const handleUsernameChange = (username: string) => {
-    setAccount((state: Account) => ({
+    setAccount((state: IAccount) => ({
       username,
-      password: state.password
+      password: state?.password
     }))
   }
 
   const handlePasswordChange = (password: string) => {
-    setAccount((state: Account) => ({
+    setAccount((state: IAccount) => ({
       username: state.username,
       password
     }))
@@ -84,14 +85,19 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
               }}>Login</Text>
             </View>
             <View style={styles.inputContainer}>
-              <CInput placeholder="Username" placeholderTextColor={StyleVariables.colors.gray200} value={account.username} onChangeText={handleUsernameChange} />
-              <CInput secureTextEntry clearTextOnFocus placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} value={account.password} onChangeText={handlePasswordChange} />
+              <CInput placeholder="Username" placeholderTextColor={StyleVariables.colors.gray200} value={account?.username} onChangeText={handleUsernameChange} />
+              <CInput secureTextEntry clearTextOnFocus placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} value={account?.password} onChangeText={handlePasswordChange} />
               <TouchableOpacity style={{ width: '100%', marginLeft: '15%' }}>
                 <Text style={styles.forgotPassword}>Forgot Password?</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
-              <CButton title='Login' btnProps={{
+              <CButton disabled={() => {
+                if (account?.username && account?.password) {
+                  return false
+                }
+                return true
+              }} title='Login' btnProps={{
                 onPress: handleLogin
               }} />
               <Button title='Register' onPress={handleRegister} color={StyleVariables.colors.black} />

@@ -3,11 +3,11 @@ import React from 'react'
 import { Text, StyleSheet, TouchableOpacity } from 'react-native'
 import StyleVariables from '../../StyleVariables'
 
-const CButton = ({ btnProps, title, textStyles = {} }: { btnProps: any, title: string, textStyles?: any }) => {
+const CButton = ({ btnProps, title, disabled, textStyles = {} }: { btnProps: any, title: string, disabled?: boolean | any, textStyles?: any }) => {
   return (
-    <TouchableOpacity {...btnProps} style={styles.pressableWrapper}>
+    <TouchableOpacity disabled={disabled} {...btnProps} style={styles.pressableWrapper}>
       <LinearGradient
-        colors={[StyleVariables.colors.gradientEnd, StyleVariables.colors.gradientStart]}
+        colors={[!disabled ? StyleVariables.colors.gradientEnd : StyleVariables.colors.gray300, !disabled ? StyleVariables.colors.gradientStart : StyleVariables.colors.gray100]}
         start={[0, 0.1]}
         end={[1, 0.9]}
         style={styles.btnWrapper}>

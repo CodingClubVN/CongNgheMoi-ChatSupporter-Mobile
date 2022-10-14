@@ -1,4 +1,4 @@
-import localStorageService from "./localStorageService"
+import storageService from "./storageService"
 
 const apiPath = 'https://api.hieud.me/api'
 
@@ -8,7 +8,7 @@ const apiService = {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorageService.get('accessToken')}`
+        'Authorization': `Bearer ${storageService.get('accessToken')}`
       }
     })
     return await response.json()
@@ -19,7 +19,7 @@ const apiService = {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorageService.get('accessToken')}`
+        'Authorization': `Bearer ${storageService.get('accessToken')}`
       },
       body: JSON.stringify(data)
     });
@@ -31,7 +31,7 @@ const apiService = {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorageService.get('accessToken')}`
+        'Authorization': `Bearer ${storageService.get('accessToken')}`
       },
       body: JSON.stringify(data)
     });
@@ -42,7 +42,7 @@ const apiService = {
       headers:{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorageService.get('accessToken')}`
+        'Authorization': `Bearer ${storageService.get('accessToken')}`
       },
       method: 'DELETE'
     });

@@ -6,7 +6,6 @@ import ConversationAvatar from "./ConversationAvatar"
 
 const ConversationItem = ({ navigation, type, user, conversation }: { navigation: any, type: 'direct' | 'group', user: any[], conversation: any }) => {
   const handleConversationSelect = () => {
-    console.log('hello')
     navigation.navigate('Conversation', {
       user,
       type,

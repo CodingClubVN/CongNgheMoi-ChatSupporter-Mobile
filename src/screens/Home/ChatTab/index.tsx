@@ -1,9 +1,13 @@
 import React from "react"
 import { View, Text, ScrollView } from 'react-native'
+import { useDispatch, useSelector } from "react-redux"
 import Chats from "./Chats"
 import Story from "./Story"
 
 const ChatTab = ({ navigation }: { navigation: any }) => {
+  const dispatch = useDispatch()
+  const conversations = useSelector((state: any) => state.conversations)
+  console.log(conversations)
   return (
     <View style={{
       justifyContent: 'flex-start',

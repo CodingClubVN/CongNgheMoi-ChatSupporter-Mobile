@@ -5,7 +5,7 @@ const storageService = {
     try {
       const value = await AsyncStorage.getItem(key)
       return value != null ? value : null;
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   },
@@ -13,7 +13,7 @@ const storageService = {
     try {
       const jsonValue = await AsyncStorage.getItem(key)
       return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   },
@@ -42,7 +42,7 @@ const storageService = {
   remove: async (key: string) => {
     try {
       await AsyncStorage.removeItem(key)
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   },
@@ -50,32 +50,32 @@ const storageService = {
     try {
       const keys = await AsyncStorage.getAllKeys()
       return await AsyncStorage.multiGet(keys)
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   },
   multiSet: async (keyValuePairs: any[]) => {
     try {
       await AsyncStorage.multiSet(keyValuePairs)
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   },
   multiRemove: async (keys: string[]) => {
     try {
       await AsyncStorage.multiRemove(keys)
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   },
   clear: async () => {
     try {
       await AsyncStorage.clear()
-    } catch(e) {
+    } catch (e) {
       console.log(e)
     }
   },
-  
+
 
 }
 

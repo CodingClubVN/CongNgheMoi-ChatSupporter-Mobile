@@ -4,6 +4,7 @@ import { login, register } from "../../services/authService";
 import storageService from "../../services/storageService";
 import { getMe } from "../../services/userService";
 import actions from "./actions";
+import conversationActions from "../conversations/actions";
 
 export function* LOGIN({ payload }: any): any {
   yield put({
@@ -13,7 +14,6 @@ export function* LOGIN({ payload }: any): any {
     }
   })
   const res = yield call(login, payload.account)
-  console.log(res)
   if (res?.token) {
     storageService.set('token', res.token)
     yield put({
@@ -39,7 +39,6 @@ export function* GET_CURRENT_USER({ payload }: any): any {
     }
   })
   const user = yield call(getMe)
-  console.log(user)
   if (user._id) {
     yield put({
       type: actions.SET_STATE,
@@ -47,6 +46,9 @@ export function* GET_CURRENT_USER({ payload }: any): any {
         data: user,
         loading: false
       }
+    })
+    yield put({
+      type: conversationActions.GET_CONVERSATIONS
     })
     if (payload?.callback) yield call(payload.callback)
   } else {
@@ -116,7 +118,6 @@ export function* AUTO_LOGIN({ payload }: any): any {
       }
     })
   }
-  console.log('auto login', token)
 }
 
 export default function* root() {

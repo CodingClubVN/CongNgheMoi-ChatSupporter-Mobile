@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, Image, Button, Alert } from 'react-native'
+import { View, Text, StyleSheet, Image, Button, Alert, Platform, KeyboardAvoidingView, Keyboard } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import StyleVariables from '../../../../StyleVariables'
 import CButton from '../../../components/CButton'
@@ -62,6 +62,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   }
 
   const handleRegister = () => {
+    Keyboard.dismiss()
     const userNo = Math.floor(Math.random() * 10000)
     if (account.password !== account.confirmPassword) {
       Alert.alert('Password doesn\'t match', 'Register failed!')
@@ -73,9 +74,15 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         payload: {
           user: {
             fullname: 'user' + userNo,
-            account,
+            account: {
+              username: account.username,
+              password: account.password
+            },
             email: 'user' + userNo + '@gmail.com',
             phone: '099999' + userNo
+          },
+          callback() {
+            navigation.navigate('Login')
           }
         }
       })
@@ -90,7 +97,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   return (
     <GradientView isLoading={loading}>
       <HideKeyboard>
-        <View style={styles.loginWrapper}>
+        <KeyboardAvoidingView keyboardVerticalOffset={20} behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.loginWrapper}>
           <View style={styles.imageContainer}>
             <Image source={logo} style={styles.logoImg} />
             <Text style={styles.logoText}>Coding Club</Text>
@@ -127,7 +134,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
               </View>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </HideKeyboard>
     </GradientView>
   )

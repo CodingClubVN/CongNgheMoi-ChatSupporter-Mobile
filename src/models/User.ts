@@ -7,15 +7,16 @@ export interface IUser {
 }
 
 export interface IUserA {
+  _id?: string
   userId?: string
   username?: string
   avatarUrl?: string
-  fullName?: string
+  fullname?: string
   email?: string
   phone?: string
   account?: IAccountResponse
   updatedAt?: string
-  createdAt?: string 
+  createdAt?: string
 }
 export interface IUserResponse {
   _id: string

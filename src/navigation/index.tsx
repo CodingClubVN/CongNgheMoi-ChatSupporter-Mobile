@@ -10,8 +10,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Text } from 'native-base';
 import * as React from 'react';
 import { ColorSchemeName, TouchableOpacity, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 import StyleVariables from '../../StyleVariables';
 import { RootStackParamList, AuthStackParamList, RootTabParamList, RootTabScreenProps } from '../../types';
+import actions from '../redux/user/actions';
 
 import LoginScreen from '../screens/Auth/Login/Login';
 import RegisterScreen from '../screens/Auth/Register/Register';
@@ -58,7 +60,16 @@ function RootNavigator() {
 // Auth pages
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 
-function AuthNavigator() {
+function AuthNavigator({ navigation }: any) {
+  const dispatch = useDispatch()
+  dispatch({
+    type: actions.AUTO_LOGIN,
+    payload: {
+      callback: () => {
+        navigation.navigate('Root')
+      }
+    }
+  })
   return (
     <AuthStack.Navigator>
       <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
@@ -76,7 +87,7 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
-      initialRouteName="SettingTab"
+      initialRouteName="ChatTab"
       screenOptions={{
         tabBarActiveTintColor: StyleVariables.colors.gradientStart,
         tabBarShowLabel: false,

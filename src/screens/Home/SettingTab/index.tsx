@@ -1,12 +1,12 @@
 import React from 'react';
 import { Image, View, Text, TouchableOpacity } from 'react-native';
-import { connect, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import StyleVariables from '../../../../StyleVariables';
 import { IUserA } from '../../../models/User';
-import storageService from '../../../services/storageService';
+import actions from '../../../redux/user/actions';
 
 const mapStateToProps = (state: any) => ({
-  user: state.user,
+  user: state.user.data,
 });
 
 const SettingTab = ({ user, navigation }: { user: IUserA, navigation: any }) => {
@@ -14,8 +14,14 @@ const SettingTab = ({ user, navigation }: { user: IUserA, navigation: any }) => 
   const defaultAvatar = require('../../../../assets/images/default_avatar.jpeg');
 
   const handleOnLogout = () => {
-    storageService.remove('user');
-    navigation.navigate('Login');
+    dispatch({
+      type: actions.LOGOUT,
+      payload: {
+        callback: () => {
+          navigation.navigate('Login')
+        }
+      }
+    })
   }
 
   const handleOnEditProfile = () => {
@@ -64,7 +70,7 @@ const SettingTab = ({ user, navigation }: { user: IUserA, navigation: any }) => 
               color: StyleVariables.colors.gray300
             }}
           >
-            {user?.username || 'Username'}
+            {user?.fullname || 'Username'}
           </Text>
           <Text style={{
             fontSize: 14,

@@ -8,10 +8,10 @@ export interface UserState {
 
 const initialState: UserState = {
   data: null,
-  loading: false
+  loading: false,
 }
 
-const reducer = (state = initialState, action: { type: string, payload: UserState}) => {
+const reducer = (state = initialState, action: { type: string, payload: UserState }) => {
   switch (action.type) {
     case actions.SET_STATE:
       return { ...state, ...action.payload }

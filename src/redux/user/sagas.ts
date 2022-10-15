@@ -5,33 +5,33 @@ import storageService from "../../services/storageService";
 import { getMe } from "../../services/userService";
 import actions from "./actions";
 
-export function* LOGIN(payload: any): any {
+export function* LOGIN({ payload }: any): any {
   yield put({
     type: actions.SET_STATE,
     payload: {
       loading: true
     }
   })
-  const token = yield call(login, payload.account)
-  if (token) {
-    storageService.set('token', token.token)
+  const res = yield call(login, payload.account)
+  console.log(res)
+  if (res?.token) {
+    storageService.set('token', res.token)
     yield put({
       type: actions.GET_CURRENT_USER
     })
-    Alert.alert('Success', 'Login successful!')
-    payload.callback && payload.callback()
-  } else {
+    if (payload.callback) yield call(payload.callback)
+  } else if (res?.error) {
     yield put({
       type: actions.SET_STATE,
       payload: {
         loading: false
       }
     })
-    Alert.alert('Fail', 'Login failed!')
+    Alert.alert('Login failed!', res?.message[0] || 'Something went wrong!')
   }
 }
 
-export function* GET_CURRENT_USER():any {
+export function* GET_CURRENT_USER({ payload }: any): any {
   yield put({
     type: actions.SET_STATE,
     payload: {
@@ -39,7 +39,8 @@ export function* GET_CURRENT_USER():any {
     }
   })
   const user = yield call(getMe)
-  if (user) {
+  console.log(user)
+  if (user._id) {
     yield put({
       type: actions.SET_STATE,
       payload: {
@@ -47,6 +48,7 @@ export function* GET_CURRENT_USER():any {
         loading: false
       }
     })
+    if (payload?.callback) yield call(payload.callback)
   } else {
     yield put({
       type: actions.SET_STATE,
@@ -58,7 +60,7 @@ export function* GET_CURRENT_USER():any {
   }
 }
 
-export function* REGISTER(payload: any): any {
+export function* REGISTER({ payload }: any): any {
   yield put({
     type: actions.SET_STATE,
     payload: {
@@ -66,7 +68,7 @@ export function* REGISTER(payload: any): any {
     }
   })
   const status = yield call(register, payload.user)
-  if (status) {
+  if (status?.userId) {
     yield put({
       type: actions.SET_STATE,
       payload: {
@@ -74,7 +76,7 @@ export function* REGISTER(payload: any): any {
       }
     })
     Alert.alert('Success', 'Register successful!')
-    payload.callback && payload.callback()
+    if (payload.callback) yield call(payload.callback)
   } else {
     yield put({
       type: actions.SET_STATE,
@@ -86,9 +88,43 @@ export function* REGISTER(payload: any): any {
   }
 }
 
+export function* LOGOUT({ payload }: any) {
+  yield put({
+    type: actions.SET_STATE,
+    payload: {
+      loading: true
+    }
+  })
+  yield call(storageService.remove, 'token')
+  yield put({
+    type: actions.SET_STATE,
+    payload: {
+      data: null,
+      loading: false
+    }
+  })
+  if (payload.callback) yield call(payload.callback)
+}
+
+export function* AUTO_LOGIN({ payload }: any): any {
+  const token = yield call(storageService.get, 'token')
+  if (token) {
+    yield put({
+      type: actions.GET_CURRENT_USER,
+      payload: {
+        callback: payload.callback || null
+      }
+    })
+  }
+  console.log('auto login', token)
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.LOGIN, LOGIN),
-    takeEvery(actions.GET_CURRENT_USER, GET_CURRENT_USER)
+    takeEvery(actions.GET_CURRENT_USER, GET_CURRENT_USER),
+    takeEvery(actions.REGISTER, REGISTER),
+    takeEvery(actions.LOGOUT, LOGOUT),
+    takeEvery(actions.AUTO_LOGIN, AUTO_LOGIN)
   ])
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, Image, Button, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Image, Button, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import StyleVariables from '../../../../StyleVariables'
 import CButton from '../../../components/CButton'
@@ -16,7 +16,8 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
   const dispatch = useDispatch()
   const loading = useSelector((state: any) => state.user.loading)
   const handleLogin = () => {
-    if (account.user && account.password) {
+    Keyboard.dismiss()
+    if (account.username && account.password) {
       dispatch({
         type: actions.LOGIN,
         payload: {
@@ -68,7 +69,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
   return (
     <GradientView isLoading={loading}>
       <HideKeyboard>
-        <View style={styles.loginWrapper}>
+        <KeyboardAvoidingView keyboardVerticalOffset={20} behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.loginWrapper}>
           <View style={styles.imageContainer}>
             <Image source={logo} style={styles.logoImg} />
             <Text style={styles.logoText}>Coding Club</Text>
@@ -83,18 +84,13 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
             </View>
             <View style={styles.inputContainer}>
               <CInput placeholder="Username" placeholderTextColor={StyleVariables.colors.gray200} value={account?.username} onChangeText={handleUsernameChange} />
-              <CInput secureTextEntry clearTextOnFocus placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} value={account?.password} onChangeText={handlePasswordChange} />
+              <CInput secureTextEntry placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} value={account?.password} onChangeText={handlePasswordChange} />
               <TouchableOpacity style={{ width: '100%', marginLeft: '15%' }}>
                 <Text style={styles.forgotPassword}>Forgot Password?</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
-              <CButton disabled={() => {
-                if (account?.username && account?.password) {
-                  return false
-                }
-                return true
-              }} title='Login' btnProps={{
+              <CButton disabled={!account?.username || !account?.password || account?.username === '' || account?.password === ''} title='Login' btnProps={{
                 onPress: handleLogin
               }} />
               <Button title='Register' onPress={handleRegister} color={StyleVariables.colors.black} />
@@ -112,7 +108,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
               </View>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </HideKeyboard>
     </GradientView>
   )

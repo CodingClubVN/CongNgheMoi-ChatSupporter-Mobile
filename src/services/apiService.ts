@@ -8,7 +8,7 @@ const apiService = {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${storageService.get('accessToken')}`
+        'Authorization': `Bearer ${await storageService.get('token')}`
       }
     })
     return await response.json()
@@ -19,7 +19,7 @@ const apiService = {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${storageService.get('accessToken')}`
+        'Authorization': `Bearer ${await storageService.get('token')}`
       },
       body: JSON.stringify(data)
     });
@@ -31,7 +31,7 @@ const apiService = {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${storageService.get('accessToken')}`
+        'Authorization': `Bearer ${await storageService.get('token')}`
       },
       body: JSON.stringify(data)
     });
@@ -39,10 +39,10 @@ const apiService = {
   },
   delete: async <T>(path: string): Promise<T> => {
     const response = await fetch(`${apiPath}${path}`, {
-      headers:{
+      headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${storageService.get('accessToken')}`
+        'Authorization': `Bearer ${await storageService.get('token')}`
       },
       method: 'DELETE'
     });

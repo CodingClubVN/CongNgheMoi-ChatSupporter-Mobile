@@ -1,10 +1,10 @@
 import { combineReducers } from "redux"
 import global from './global/reducers'
-import me from './me/reducers'
+import user from './user/reducers'
 
 const reducer = combineReducers({
   global,
-  me
+  user
 })
 
 export default reducer

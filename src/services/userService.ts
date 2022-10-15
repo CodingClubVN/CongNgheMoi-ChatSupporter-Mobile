@@ -2,13 +2,14 @@ import { IInternalServerError } from "../models/ResponseStatus";
 import { IListUserResponse, IUserResponse } from "../models/User";
 import apiService from "./apiService";
 
-const userService = {
-  getMe: (): Promise<IUserResponse | IInternalServerError> => {
-    return apiService.get<IUserResponse | IInternalServerError>("/users/me");
-  },
-  getUsers: (): Promise<IListUserResponse | IInternalServerError> => {
-    return apiService.get<IListUserResponse | IInternalServerError>("/users");
-  }
+export async function getMe() {
+  return apiService.get<IUserResponse | IInternalServerError>("/users/me")
+    .then(res => res)
+    .catch(err => console.log(err))
 }
 
-export default userService
+export async function getUsers() {
+  return apiService.get<IListUserResponse | IInternalServerError>("/users")
+    .then(res => res)
+    .catch(err => console.log(err))
+}

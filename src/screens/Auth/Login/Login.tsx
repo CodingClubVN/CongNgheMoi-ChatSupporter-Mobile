@@ -1,36 +1,33 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, Image, Button, Pressable, Alert, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Image, Button, TouchableOpacity } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
 import StyleVariables from '../../../../StyleVariables'
 import CButton from '../../../components/CButton'
 import CInput from '../../../components/CInput'
 import EButton from '../../../components/EButton'
 import GradientView from '../../../components/GradientView'
 import HideKeyboard from '../../../components/HideKeyboard'
-import { IAccount, IAccountA, IAuthResponse } from '../../../models/Account'
-import { IInternalServerError } from '../../../models/ResponseStatus'
-import authService from '../../../services/authService'
-import storageService from '../../../services/storageService'
+import { IAccount } from '../../../models/Account'
+import actions from '../../../redux/user/actions'
 
 const LoginScreen = ({ navigation }: { navigation: any }) => {
   const logo = require('../../../../assets/images/icon.png')
   const [account, setAccount] = useState<IAccount | any>()
-  const [isLoading, setIsLoading] = useState<boolean | any>(false)
+  const dispatch = useDispatch()
+  const loading = useSelector((state: any) => state.user.loading)
   const handleLogin = () => {
-    setIsLoading(true)
-    if (account) {
-      authService.login(account as IAccount).then((res: IAuthResponse | IInternalServerError) => {
-        if ((res as IInternalServerError).status) {
-          Alert.alert('Error', (res as IInternalServerError).message?.toString() || 'Something went wrong')
-          setIsLoading(false)
-        } else {
-          storageService.set('accessToken', (res as IAuthResponse).token)
-          // TODO: dispatch user to redux
-          Alert.alert('Success', 'Login success!')
-          navigation.navigate('Root')
-          setIsLoading(false)
+    if (account.user && account.password) {
+      dispatch({
+        type: actions.LOGIN,
+        payload: {
+          account,
+          callback: () => {
+            navigation.navigate('Root')
+          }
         }
       })
     }
+    return
   }
   const thirdParty = [
     {
@@ -69,7 +66,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
   }
 
   return (
-    <GradientView isLoading={isLoading}>
+    <GradientView isLoading={loading}>
       <HideKeyboard>
         <View style={styles.loginWrapper}>
           <View style={styles.imageContainer}>

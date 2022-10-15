@@ -1,21 +1,24 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, Image, Button, Pressable, Alert } from 'react-native'
+import { View, Text, StyleSheet, Image, Button, Alert } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
 import StyleVariables from '../../../../StyleVariables'
 import CButton from '../../../components/CButton'
 import CInput from '../../../components/CInput'
 import EButton from '../../../components/EButton'
 import GradientView from '../../../components/GradientView'
 import HideKeyboard from '../../../components/HideKeyboard'
-import { Account } from '../../../models/Account'
+import { IRegisterAccount } from '../../../models/Account'
+import actions from '../../../redux/user/actions'
 
 const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const logo = require('../../../../assets/images/icon.png')
-  const [account, setAccount] = useState<Account>({
+  const dispatch = useDispatch()
+  const loading = useSelector((state: any) => state.user.loading)
+  const [account, setAccount] = useState<any>({
     username: '',
     password: '',
     confirmPassword: ''
   })
-  const [isLoading, setIsLoading] = useState(false)
   const thirdParty = [
     {
       name: 'Google',
@@ -35,7 +38,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   ]
 
   const handleUsernameChange = (username: string) => {
-    setAccount((state: Account) => ({
+    setAccount((state: IRegisterAccount) => ({
       username,
       password: state.password,
       confirmPassword: state.confirmPassword
@@ -43,7 +46,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   }
 
   const handlePasswordChange = (password: string) => {
-    setAccount((state: Account) => ({
+    setAccount((state: IRegisterAccount) => ({
       username: state.username,
       password,
       confirmPassword: state.confirmPassword
@@ -51,7 +54,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   }
 
   const handleConfirmPasswordChange = (confirmPassword: string) => {
-    setAccount((state: Account) => ({
+    setAccount((state: IRegisterAccount) => ({
       username: state.username,
       password: state.password,
       confirmPassword
@@ -59,13 +62,25 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   }
 
   const handleRegister = () => {
-    setIsLoading(true)
-    console.log(account.username, account.password, account.confirmPassword)
-    setTimeout(() => {
-      setIsLoading(false)
-      navigation.navigate('Login')
-      Alert.alert('Success', 'Register success!')
-    }, 1000)
+    const userNo = Math.floor(Math.random() * 10000)
+    if (account.password !== account.confirmPassword) {
+      Alert.alert('Password doesn\'t match', 'Register failed!')
+      return
+    }
+    if (account.username && account.password) {
+      dispatch({
+        type: actions.REGISTER,
+        payload: {
+          user: {
+            fullname: 'user' + userNo,
+            account,
+            email: 'user' + userNo + '@gmail.com',
+            phone: '099999' + userNo
+          }
+        }
+      })
+    }
+    return
   }
 
   const handleLogin = () => {
@@ -73,7 +88,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   }
 
   return (
-    <GradientView isLoading={isLoading}>
+    <GradientView isLoading={loading}>
       <HideKeyboard>
         <View style={styles.loginWrapper}>
           <View style={styles.imageContainer}>

@@ -7,9 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Text } from 'native-base';
 import * as React from 'react';
-import { ColorSchemeName, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { ColorSchemeName, TouchableOpacity } from 'react-native';
 import { useDispatch } from 'react-redux';
 import StyleVariables from '../../StyleVariables';
 import { RootStackParamList, AuthStackParamList, RootTabParamList, RootTabScreenProps } from '../../types';
@@ -20,6 +20,7 @@ import RegisterScreen from '../screens/Auth/Register/Register';
 import CallTab from '../screens/Home/CallTab';
 import ChatTab from '../screens/Home/ChatTab';
 import Conversation from '../screens/Home/ChatTab/Conversation';
+import CreateChat from '../screens/Home/ChatTab/CreateChat';
 import SettingTab from '../screens/Home/SettingTab';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
@@ -85,6 +86,7 @@ function AuthNavigator({ navigation }: any) {
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
   return (
     <BottomTab.Navigator
       initialRouteName="ChatTab"
@@ -119,11 +121,15 @@ function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <TabBarIcon name="chatbubble-outline" color={color} />,
           headerTitle: 'Chats',
           headerRight: () => (
-            <TouchableOpacity
-              style={{ height: 80, paddingRight: 20 }}
-            >
-              <Ionicons name="person-add" size={30} color={StyleVariables.colors.gradientStart} />
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity
+                onPress={() => setModalVisible(!modalVisible)}
+                style={{ height: 80, paddingRight: 20 }}
+              >
+                <Ionicons name="person-add" size={30} color={StyleVariables.colors.gradientStart} />
+              </TouchableOpacity>
+              <CreateChat modalVisible={modalVisible} setModalVisible={setModalVisible} />
+            </>
           ),
         }}
       />

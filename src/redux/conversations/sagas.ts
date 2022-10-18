@@ -11,7 +11,6 @@ export function* GET_CONVERSATIONS(): any {
     }
   })
   const res = yield call(getConversations);
-  console.log(res)
   if (res?.error) {
     yield put({
       type: actions.SET_STATE,

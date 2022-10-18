@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   btnWrapper: {
     width: '100%',
     height: 50,
-    borderRadius: 10,
+    borderRadius: 50,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'

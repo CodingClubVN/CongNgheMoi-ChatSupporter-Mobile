@@ -7,7 +7,6 @@ import Story from "./Story"
 const ChatTab = ({ navigation }: { navigation: any }) => {
   const dispatch = useDispatch()
   const conversations = useSelector((state: any) => state.conversations)
-  console.log(conversations)
   return (
     <View style={{
       justifyContent: 'flex-start',

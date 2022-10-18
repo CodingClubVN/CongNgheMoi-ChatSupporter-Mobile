@@ -5,14 +5,14 @@ import StyleVariables from '../../StyleVariables'
 
 const CInput = (props: any) => {
   return (
-    <TextInput style={styles.textInput} {...props} />
+    <TextInput style={{ ...styles.textInput, ...props.styles }} {...props} />
   )
 }
 
 const styles = StyleSheet.create({
   textInput: {
     height: 50,
-    borderRadius: 10,
+    borderRadius: 50,
     backgroundColor: StyleVariables.colors.white,
     width: '85%',
     paddingLeft: 15,
@@ -21,8 +21,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'sf-pro-med',
     color: StyleVariables.colors.black,
-    borderColor: StyleVariables.colors.gray400,
-    borderWidth: 1
+    borderColor: StyleVariables.colors.gray300,
+    borderWidth: 0.3
   }
 })
 export default CInput

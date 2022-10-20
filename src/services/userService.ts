@@ -8,8 +8,8 @@ export async function getMe() {
     .catch(err => console.log(err))
 }
 
-export async function getUsers() {
-  return apiService.get<IListUserResponse | IInternalServerError>("/users")
+export async function getUsers(payload: any) {
+  return apiService.get<IListUserResponse | IInternalServerError>(`/users?search=${payload.search.toLowerCase()}`)
     .then(res => res)
     .catch(err => console.log(err))
 }

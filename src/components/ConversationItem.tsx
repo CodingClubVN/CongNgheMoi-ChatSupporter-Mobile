@@ -1,4 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient"
+import moment from "moment"
 import React from "react"
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import StyleVariables from "../../StyleVariables"
@@ -29,7 +30,7 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
         {
           type === 'direct' ? (
             <>
-              <ConversationAvatar type={type} urls={[user[0].avatar]} />
+              <ConversationAvatar type={type} urls={[user[0].avatarUrl]} />
               <View style={{
                 height: 60,
                 marginLeft: 20,
@@ -38,14 +39,15 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
                   fontSize: 16,
                   marginBottom: 15,
                   fontWeight: 'bold',
-                  fontFamily: 'sf-pro-bold'
-                }}>{user[0].name}</Text>
+                  fontFamily: 'sf-pro-bold',
+                  width: 150,
+                }}>{user[0].username}</Text>
                 <Text style={{
                   fontSize: 12,
                   color: StyleVariables.colors.gray200,
                   fontFamily: 'sf-pro-reg'
                 }}>
-                  {conversation.lastMessage || 'No message'}
+                  {conversation.lastMessage[0]?.content || 'No message'}
                 </Text>
               </View>
               <View style={{
@@ -59,10 +61,10 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
                   color: StyleVariables.colors.gray200,
                   fontFamily: 'sf-pro-reg'
                 }}>
-                  {conversation.lastMessageTime}
+                  {moment(conversation.createdAt).add(4.5, 'hours').fromNow()}
                 </Text>
                 {
-                  conversation.readStatus.find((item: any) => item.user === user[0].name && item.status === 'read') ? (<></>) : (
+                  conversation.readStatus.find((item: any) => item.user === user[0]._id && item.status === 'read') ? (<></>) : (
                     <LinearGradient
                       start={[1, -1]}
                       end={[-1, 1]}
@@ -82,7 +84,7 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
             </>
           ) : (
             <>
-              <ConversationAvatar type={type} urls={user.map(u => u.avatar)} />
+              <ConversationAvatar type={type} urls={user.map(u => u.avatarUrl)} />
               <View style={{
                 height: 60,
                 marginLeft: 20,
@@ -91,14 +93,15 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
                   fontSize: 16,
                   marginBottom: 15,
                   fontWeight: 'bold',
-                  fontFamily: 'sf-pro-bold'
-                }}>{user[0].name}</Text>
+                  fontFamily: 'sf-pro-bold',
+                  width: 150,
+                }}>{conversation.conversationName}</Text>
                 <Text style={{
                   fontSize: 12,
                   color: StyleVariables.colors.gray200,
                   fontFamily: 'sf-pro-reg'
                 }}>
-                  {conversation.lastMessageSender === user[0].name ? 'Me: ' : conversation.lastMessageSender + ': '}{conversation.lastMessage || 'No message'}
+                  {conversation.lastMessage[0]?.from === user[0]._id ? 'Me: ' : conversation.lastMessageSender + ': '}{conversation.lastMessage || 'No message'}
                 </Text>
               </View>
               <View style={{
@@ -112,7 +115,7 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
                   color: StyleVariables.colors.gray200,
                   fontFamily: 'sf-pro-reg'
                 }}>
-                  {conversation.lastMessageTime}
+                  {moment(conversation.createdAt).add(4.5, 'hours').fromNow()}
                 </Text>
                 {
                   conversation.readStatus.find((item: any) => item.user === user[0].name && item.status === 'read') ? (<></>) : (

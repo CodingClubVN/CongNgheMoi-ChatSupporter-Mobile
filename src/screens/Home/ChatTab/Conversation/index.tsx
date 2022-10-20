@@ -48,7 +48,7 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
             <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 5 }}>
               <Ionicons name="chevron-back" size={35} color={StyleVariables.colors.gradientStart} />
             </TouchableOpacity>
-            <ConversationAvatar type={type} urls={user.map((u: { avatar: any }) => u.avatar)} size={50} />
+            <ConversationAvatar type={type} urls={user.map((u: { avatarUrl: any }) => u.avatarUrl)} size={50} />
             <View style={{
               marginLeft: 10,
               height: 45,
@@ -58,7 +58,7 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
                 fontSize: 16,
                 marginBottom: 7
               }}>
-                {user.length === 1 ? user[0].name : (conversation.title || 'No name')}
+                {user.length === 1 ? user[0].name : (conversation.conversationName || 'No name')}
               </Text>
               <Text style={{
                 fontFamily: 'sf-pro-reg',

@@ -1,55 +1,24 @@
 import React from "react"
-import { StyleSheet, View, Text, ScrollView } from "react-native"
+import { StyleSheet, View } from "react-native"
+import { useSelector } from "react-redux"
 import ConversationItem from "../../../../components/ConversationItem"
 
 const Chats = ({ navigation }: { navigation: any }) => {
+  const conversations = useSelector((state: any) => state.conversations)
+  console.log(conversations)
   return (
     <View style={{ width: '100%' }}>
-      <ConversationItem
-        navigation={navigation}
-        type="direct"
-        user={[{
-          name: 'Jordan Moran',
-          avatar: 'https://toigingiuvedep.vn/wp-content/uploads/2022/01/anh-meo-cute.jpg'
-        }]}
-        conversation={{
-          lastMessage: 'Hello',
-          lastMessageTime: '12:00',
-          readStatus: [
-            {
-              user: 'Jordan Moran',
-              status: 'read'
-            },
-          ]
-        }}
-      />
-
-      <ConversationItem
-        navigation={navigation}
-        type="group" user={[{
-          name: 'Van A',
-          avatar: 'https://toigingiuvedep.vn/wp-content/uploads/2022/01/anh-meo-cute.jpg'
-        },
-        {
-          name: 'Van B',
-          avatar: 'https://toigingiuvedep.vn/wp-content/uploads/2022/01/anh-meo-cute.jpg'
-        }]}
-        conversation={{
-          lastMessage: 'Hello',
-          lastMessageTime: '12:00',
-          lastMessageSender: 'Van B',
-          readStatus: [
-            {
-              user: 'Van A',
-              status: 'unread'
-            },
-            {
-              user: 'Van B',
-              status: 'unread'
-            },
-          ]
-        }}
-      />
+      {
+        conversations.listData?.map((conversation: any) => (
+          <ConversationItem
+            key={conversation._id}
+            conversation={conversation} 
+            navigation={navigation} 
+            type={conversation.users.length > 2 ? 'group' : 'direct'} 
+            user={conversation.users}
+          />
+        ))
+      }
     </View>
   )
 }

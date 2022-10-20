@@ -6,7 +6,6 @@ import Story from "./Story"
 
 const ChatTab = ({ navigation }: { navigation: any }) => {
   const dispatch = useDispatch()
-  const conversations = useSelector((state: any) => state.conversations)
   return (
     <View style={{
       justifyContent: 'flex-start',
@@ -15,7 +14,7 @@ const ChatTab = ({ navigation }: { navigation: any }) => {
       <View>
         <Story />
       </View>
-      <ScrollView alwaysBounceVertical={false} style={{
+      <ScrollView alwaysBounceVertical={false} showsVerticalScrollIndicator={false} style={{
         flexGrow: 1,
       }}>
         <Chats navigation={navigation} />

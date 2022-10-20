@@ -1,36 +1,78 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, Alert, Modal, View, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  Alert,
+  Modal,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import StyleVariables from "../../../../../StyleVariables";
-import HideKeyboard from "../../../../components/HideKeyboard";
-import CSelect, { SelectItem } from "../../../../components/CSelect";
+import StyleVariables from '../../../../../StyleVariables';
+import HideKeyboard from '../../../../components/HideKeyboard';
+import CSelect, { SelectItem } from '../../../../components/CSelect';
+import { useDispatch, useSelector } from 'react-redux';
+import actions from '../../../../redux/users/actions';
+import conversationActions from '../../../../redux/conversations/actions';
 
-const CreateChat = ({ modalVisible, setModalVisible }: {
-  modalVisible: boolean,
-  setModalVisible: any
+const CreateChat = ({
+  modalVisible,
+  setModalVisible,
+}: {
+  modalVisible: boolean;
+  setModalVisible: any;
 }) => {
-  const [selected, setSelected] = useState<SelectItem[]>([])
-  const [searchInput, setSearchInput] = useState<string>('')
-  const [data, setData] = useState<SelectItem[]>(
-    [
-      { label: 'Item 1', value: '1', imgUrl: 'https://toigingiuvedep.vn/wp-content/uploads/2022/01/anh-meo-cute.jpg' },
-      { label: 'Item 2', value: '2' },
-      { label: 'Item 3', value: '3' },
-      { label: 'Item 4', value: '4' },
-      { label: 'Item 5', value: '5' },
-      { label: 'Item 6', value: '6' },
-      { label: 'Item 7', value: '7' },
-      { label: 'Item 8 sadlkfjasdlfj', value: '8' },
-      { label: 'Item 8', value: '8' },
-      { label: 'Item 8 dajfklasdfjksak', value: '8' },
-      { label: 'Item 8', value: '8' },
-      { label: 'Item 8dfsfsa', value: '8' },
-    ]
-  );
+  const dispatch = useDispatch();
+  const users = useSelector((state: any) => state.users.data);
+  const user = useSelector((state: any) => state.user.data);
+  const [selected, setSelected] = useState<SelectItem[]>([]);
+  const [searchInput, setSearchInput] = useState<string>('');
+  const [data, setData] = useState<SelectItem[]>([]);
+
+  const handleCreateChat = () => {
+    const users = selected.map((item) => item.value);
+    const groupName = selected.slice(0, selected.length >= 2 ? 2 : 1).map((item) => item.label).join(', ').concat(' group');
+    dispatch({
+      type: conversationActions.CREATE_CONVERSATION,
+      payload: {
+        conversation: {
+          conversationName: groupName,
+          arrayUserId: users,
+        },
+        callback: () => {
+          setModalVisible(false);
+          setSelected([]);
+          setSearchInput('');
+        }
+      }
+    })
+  }
+
+  const usersToSelection = (users: any) => {
+    if (users && users.length) {
+      return users.map((user: any) => ({
+        label: user.account.username,
+        value: user._id,
+        imgUrl: user.avatarUrl,
+      })).filter((u: any) => u.value !== user._id)
+    }
+    return []
+  }
 
   useEffect(() => {
-    console.log(searchInput)
+    if (searchInput.length > 0) {
+      dispatch({
+        type: actions.GET_USERS,
+        payload: {
+          search: searchInput,
+        }
+      })
+    }
   }, [searchInput])
+
+  useEffect(() => {
+    setData(usersToSelection(users))
+  }, [users])
 
   return (
     <Modal
@@ -38,7 +80,7 @@ const CreateChat = ({ modalVisible, setModalVisible }: {
       transparent={true}
       visible={modalVisible}
       onRequestClose={() => {
-        Alert.alert("Modal has been closed.");
+        Alert.alert('Modal has been closed.');
         setModalVisible(!modalVisible);
       }}
     >
@@ -49,13 +91,17 @@ const CreateChat = ({ modalVisible, setModalVisible }: {
               style={{
                 position: 'absolute',
                 top: 10,
-                right: 10
+                right: 10,
               }}
               onPress={() => {
-                setModalVisible(!modalVisible)
+                setModalVisible(!modalVisible);
               }}
             >
-              <Ionicons name="close-circle" size={34} color={StyleVariables.colors.gradientStart} />
+              <Ionicons
+                name="close-circle"
+                size={34}
+                color={StyleVariables.colors.gradientStart}
+              />
             </TouchableOpacity>
             <Text
               style={{
@@ -63,55 +109,73 @@ const CreateChat = ({ modalVisible, setModalVisible }: {
                 fontFamily: 'sf-pro-bold',
                 marginBottom: 20,
                 textAlign: 'left',
-                color: StyleVariables.colors.gray300
+                color: StyleVariables.colors.gray300,
               }}
             >
               Create new chat
             </Text>
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'flex-start',
-              justifyContent: 'space-between'
-            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+              }}
+            >
               {/* TODO: select */}
-              <View style={{
-                width: '85%'
-              }}>
-                <CSelect data={data} value={selected} onChange={setSelected} inputProps={{
-                  placeholder: 'Search users ...',
-                  value: searchInput,
-                  onChangeText: setSearchInput
-                }} />
+              <View
+                style={{
+                  width: '85%',
+                }}
+              >
+                <CSelect
+                  data={data}
+                  value={selected}
+                  onChange={setSelected}
+                  inputProps={{
+                    placeholder: 'Search users ...',
+                    value: searchInput,
+                    onChangeText: setSearchInput,
+                  }}
+                />
               </View>
-              <TouchableOpacity>
-                <Ionicons name="arrow-forward-circle" size={50} color={StyleVariables.colors.gradientStart} />
+              <TouchableOpacity
+                disabled={selected.length === 0}
+                onPress={() => {
+                  handleCreateChat();
+                }}
+              >
+                <Ionicons
+                  name="arrow-forward-circle"
+                  size={50}
+                  color={StyleVariables.colors.gradientStart}
+                />
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </HideKeyboard>
     </Modal>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   centeredView: {
-    justifyContent: "flex-end",
-    alignItems: "center",
+    justifyContent: 'flex-end',
+    alignItems: 'center',
     marginTop: 22,
     width: '100%',
     height: '100%',
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingTop: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowOpacity: 0.75,
     elevation: 5,
@@ -121,23 +185,23 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 20,
     padding: 10,
-    elevation: 2
+    elevation: 2,
   },
   buttonOpen: {
-    backgroundColor: "#F194FF",
+    backgroundColor: '#F194FF',
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    backgroundColor: '#2196F3',
   },
   textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center"
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center"
-  }
+    textAlign: 'center',
+  },
 });
 
-export default CreateChat
+export default CreateChat;

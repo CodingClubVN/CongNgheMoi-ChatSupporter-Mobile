@@ -5,13 +5,17 @@ import { View, Text, Image, TouchableOpacity } from 'react-native'
 import StyleVariables from "../../StyleVariables"
 import ConversationAvatar from "./ConversationAvatar"
 
-const ConversationItem = ({ navigation, type, user, conversation }: { navigation: any, type: 'direct' | 'group', user: any[], conversation: any }) => {
+const ConversationItem = ({ navigation, type, users, conversation, me }: { navigation: any, type: 'direct' | 'group', users: any[], conversation: any, me: any }) => {
   const handleConversationSelect = () => {
     navigation.navigate('Conversation', {
-      user,
+      users,
       type,
       conversation,
     })
+  }
+
+  const getLastMessageSender = (id: string) => {
+    return conversation.users.find((user: any) => user.userId === id)
   }
 
   return (
@@ -30,7 +34,7 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
         {
           type === 'direct' ? (
             <>
-              <ConversationAvatar type={type} urls={[user[0].avatarUrl]} />
+              <ConversationAvatar type={type} urls={[users[0].avatarUrl]} />
               <View style={{
                 height: 60,
                 marginLeft: 20,
@@ -41,13 +45,13 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
                   fontWeight: 'bold',
                   fontFamily: 'sf-pro-bold',
                   width: 150,
-                }}>{user[0].username}</Text>
+                }}>{users[0].username}</Text>
                 <Text style={{
                   fontSize: 12,
                   color: StyleVariables.colors.gray200,
                   fontFamily: 'sf-pro-reg'
                 }}>
-                  {conversation.lastMessage[0]?.content || 'No message'}
+                  {conversation.lastMessage?.content || 'No message'}
                 </Text>
               </View>
               <View style={{
@@ -61,10 +65,10 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
                   color: StyleVariables.colors.gray200,
                   fontFamily: 'sf-pro-reg'
                 }}>
-                  {moment(conversation.createdAt).add(4.5, 'hours').fromNow()}
+                  {moment(conversation.updatedAt).fromNow()}
                 </Text>
                 {
-                  conversation.readStatus.find((item: any) => item.user === user[0]._id && item.status === 'read') ? (<></>) : (
+                  conversation.readStatus.find((item: any) => item.user === users[0]._id && item.status === 'read') ? (<></>) : (
                     <LinearGradient
                       start={[1, -1]}
                       end={[-1, 1]}
@@ -84,7 +88,7 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
             </>
           ) : (
             <>
-              <ConversationAvatar type={type} urls={user.map(u => u.avatarUrl)} />
+              <ConversationAvatar type={type} urls={users.map(u => u.avatarUrl)} />
               <View style={{
                 height: 60,
                 marginLeft: 20,
@@ -101,7 +105,15 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
                   color: StyleVariables.colors.gray200,
                   fontFamily: 'sf-pro-reg'
                 }}>
-                  {conversation.lastMessage[0]?.from === user[0]._id ? 'Me: ' : conversation.lastMessageSender + ': '}{conversation.lastMessage || 'No message'}
+                  {
+                    getLastMessageSender(conversation.lastMessage?.fromUserId) ?
+                      `${getLastMessageSender(
+                        conversation.lastMessage?.fromUserId).username === me.account.username ?
+                        'Me'
+                        : getLastMessageSender(
+                          conversation.lastMessage?.fromUserId
+                        ).username}: ${conversation.lastMessage?.content}`
+                      : 'No message'}
                 </Text>
               </View>
               <View style={{
@@ -115,10 +127,10 @@ const ConversationItem = ({ navigation, type, user, conversation }: { navigation
                   color: StyleVariables.colors.gray200,
                   fontFamily: 'sf-pro-reg'
                 }}>
-                  {moment(conversation.createdAt).add(4.5, 'hours').fromNow()}
+                  {moment(conversation.updatedAt).fromNow()}
                 </Text>
                 {
-                  conversation.readStatus.find((item: any) => item.user === user[0].name && item.status === 'read') ? (<></>) : (
+                  conversation.readStatus.find((item: any) => item.user === users[0].name && item.status === 'read') ? (<></>) : (
                     <LinearGradient
                       start={[1, -1]}
                       end={[-1, 1]}

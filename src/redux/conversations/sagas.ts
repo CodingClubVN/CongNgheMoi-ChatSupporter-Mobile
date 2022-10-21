@@ -1,5 +1,5 @@
 import { Alert } from "react-native";
-import { all, call, put, takeEvery } from "redux-saga/effects";
+import { all, call, put, take, takeEvery } from "redux-saga/effects";
 import { addConversation, getConversations } from "../../services/conversationService";
 import actions from "./actions";
 
@@ -58,6 +58,6 @@ export function* CREATE_CONVERSATION({ payload }: any): any {
 export default function* root() {
   yield all([
     takeEvery(actions.GET_CONVERSATIONS, GET_CONVERSATIONS),
-    takeEvery(actions.CREATE_CONVERSATION, CREATE_CONVERSATION)
+    takeEvery(actions.CREATE_CONVERSATION, CREATE_CONVERSATION),
   ])
 }

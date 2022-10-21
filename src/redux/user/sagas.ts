@@ -39,7 +39,7 @@ export function* GET_CURRENT_USER({ payload }: any): any {
     }
   })
   const user = yield call(getMe)
-  if (user._id) {
+  if (user?._id) {
     yield put({
       type: actions.SET_STATE,
       payload: {
@@ -52,6 +52,7 @@ export function* GET_CURRENT_USER({ payload }: any): any {
     })
     if (payload?.callback) yield call(payload.callback)
   } else {
+    yield call(storageService.remove, 'token')
     yield put({
       type: actions.SET_STATE,
       payload: {

@@ -1,22 +1,104 @@
 import { Ionicons } from '@expo/vector-icons'
 import React, { useEffect } from 'react'
-import { SafeAreaView, TextInput, Image, Text, View, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform } from 'react-native'
-import Animated from 'react-native-reanimated'
+import { SafeAreaView, TextInput, Text, View, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform } from 'react-native'
+import Animated, { useAnimatedRef } from 'react-native-reanimated'
+import { useDispatch, useSelector } from 'react-redux'
+import { io } from 'socket.io-client'
 import StyleVariables from '../../../../../StyleVariables'
+import ChatWrapper from '../../../../components/ChatBubble'
 import ConversationAvatar from '../../../../components/ConversationAvatar'
+import actions from '../../../../redux/messages/actions'
 
 const Conversation = ({ route, navigation }: { route: any, navigation: any }) => {
-  const { type, conversation, user } = route.params
+  const { type, conversation, users } = route.params
+  const me = useSelector((state: any) => state.user.data)
+  const dispatch = useDispatch()
+  const messages = useSelector((state: any) => state.messages.messages)
+  const [newMessage, setNewMessage] = React.useState({
+    content: '',
+    type: 'text',
+    fromUserId: me._id,
+  })
+  const aref = useAnimatedRef<any>()
+  const url = 'https://api.hieud.me'
+  const socket = io(url, { transports: ['websocket', 'polling', 'flashsocket'], query: { userId: me._id } });
 
   const handleOutsideKeyboardTouch = () => {
     Keyboard.dismiss()
   }
 
+  const handleNewMessageChange = (text: string) => {
+    setNewMessage({
+      ...newMessage,
+      content: text
+    })
+  }
+
+  const handleSendMessage = () => {
+    dispatch({
+      type: actions.SEND_MESSAGE,
+      payload: {
+        conversationId: conversation._id,
+        message: newMessage,
+        callback: onSendSuccess
+      }
+    })
+  }
+
+  const onSendSuccess = () => {
+    setNewMessage({
+      ...newMessage,
+      content: ''
+    })
+    setTimeout(() => {
+      aref.current.scrollTo({
+        y: 10000,
+        animated: true
+      })
+    }, 50)
+  }
+
   useEffect(() => {
+    dispatch({
+      type: actions.SET_USERS,
+      payload: {
+        users
+      }
+    })
+    dispatch({
+      type: actions.GET_MESSAGES,
+      payload: {
+        conversationId: conversation._id,
+        callback: onSendSuccess
+      }
+    })
     navigation.setOptions({
 
     })
   }, [])
+
+  useEffect(() => {
+    socket.emit('join-room', conversation._id)
+    console.log('joined')
+    socket.on('new-message', (data: any) => {
+      dispatch({
+        type: actions.UPDATE_MESSAGES,
+        payload: {
+          message: data.message,
+          callback: () => {
+            setTimeout(() => {
+              aref.current.scrollTo({
+                y: 10000,
+                animated: true
+              })
+            }, 50)
+          }
+        }
+      })
+    })
+    return () => {
+    }
+  }, [socket])
 
   return (
     <TouchableWithoutFeedback onPress={handleOutsideKeyboardTouch}>
@@ -28,8 +110,6 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
         width: '100%',
         height: '100%'
       }}>
-
-
         <View style={{
           width: '100%',
           height: 80,
@@ -45,10 +125,21 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
             flexDirection: 'row',
             alignItems: 'center'
           }}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 5 }}>
+            <TouchableOpacity onPress={() => {
+              dispatch({
+                type: actions.SET_STATE,
+                payload: {
+                  messages: [],
+                  loading: false
+                }
+              })
+              navigation.goBack()
+              socket.emit('leave-room', conversation._id)
+              socket.disconnect()
+            }} style={{ marginRight: 5 }}>
               <Ionicons name="chevron-back" size={35} color={StyleVariables.colors.gradientStart} />
             </TouchableOpacity>
-            <ConversationAvatar type={type} urls={user.map((u: { avatarUrl: any }) => u.avatarUrl)} size={50} />
+            <ConversationAvatar type={type} urls={users.map((u: { avatarUrl: any }) => u.avatarUrl)} size={50} />
             <View style={{
               marginLeft: 10,
               height: 45,
@@ -56,9 +147,10 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
               <Text style={{
                 fontFamily: 'sf-pro-bold',
                 fontSize: 16,
-                marginBottom: 7
+                marginBottom: 7,
+                maxWidth: 150
               }}>
-                {user.length === 1 ? user[0].name : (conversation.conversationName || 'No name')}
+                {users.length === 1 ? users[0].name : (conversation.conversationName || 'No name')}
               </Text>
               <Text style={{
                 fontFamily: 'sf-pro-reg',
@@ -83,14 +175,31 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
             </TouchableOpacity>
           </View>
         </View>
-        <KeyboardAvoidingView keyboardVerticalOffset={20} behavior={Platform.OS === "ios" ? "padding" : "height"} style={{
-          flexGrow: 1
-        }}>
-          <Animated.View style={{
-            flexGrow: 1
+        <Animated.ScrollView
+          ref={aref}
+          style={{
+            flexGrow: 1,
           }}>
-            <Text>Chat messages</Text>
-          </Animated.View>
+          {
+            messages.map((message: any, index: number) => {
+              const isPreviousMessageFromSameUser = messages[index - 1]?.fromUserId === message.fromUserId
+              const isNextMessageFromSameUser = messages[index + 1]?.fromUserId === message.fromUserId
+              return (
+                <ChatWrapper
+                  key={message._id}
+                  message={message}
+                  sender={users.find((u: { userId: any }) => u.userId === message.fromUserId)}
+                  me={me}
+                  type={type}
+                  isPreviousMessageFromSameUser={isPreviousMessageFromSameUser}
+                  isNextMessageFromSameUser={isNextMessageFromSameUser}
+                />
+              )
+            })
+          }
+        </Animated.ScrollView>
+        <KeyboardAvoidingView keyboardVerticalOffset={20} behavior={Platform.OS === "ios" ? "padding" : "height"} style={{
+        }}>
           <View style={{
             maxWidth: '100%',
             height: 50,
@@ -137,7 +246,21 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
               paddingHorizontal: 15,
               marginRight: 10
             }}>
-              <TextInput style={{ width: '100%' }} placeholder="Type a message" />
+              <TextInput
+                onFocus={() => {
+                  setTimeout(() => {
+                    aref.current.scrollTo({
+                      y: 1000,
+                      animated: true
+                    })
+                  }, 50)
+                }}
+                style={{ width: '100%' }}
+                placeholder="Type a message"
+                placeholderTextColor={StyleVariables.colors.gray200}
+                value={newMessage.content}
+                onChangeText={handleNewMessageChange}
+              />
             </View>
             <TouchableOpacity style={{
               width: 40,
@@ -149,7 +272,10 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
               justifyContent: 'center',
               paddingLeft: 5,
               paddingTop: 2
-            }}>
+            }}
+              onPress={() => handleSendMessage()}
+              disabled={newMessage.content.length === 0}
+            >
               <Ionicons name="send-outline" size={24} color={StyleVariables.colors.gradientStart} />
             </TouchableOpacity>
           </View>

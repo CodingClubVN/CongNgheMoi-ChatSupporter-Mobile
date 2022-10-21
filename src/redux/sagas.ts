@@ -3,12 +3,14 @@ import global from './global/sagas'
 import user from './user/sagas'
 import conversations from './conversations/sagas'
 import users from './users/sagas'
+import messages from './messages/sagas'
 
 export default function* sagas() {
   yield all([
     global(),
     user(),
     conversations(),
-    users()
+    users(),
+    messages()
   ])
 }

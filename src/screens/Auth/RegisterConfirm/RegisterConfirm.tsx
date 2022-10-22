@@ -1,39 +1,24 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, Image, Button, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard } from 'react-native'
+import { useState } from 'react'
+import { View, Text, StyleSheet, Image, Button, Platform, KeyboardAvoidingView, Keyboard } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import StyleVariables from '../../../../StyleVariables'
-import CButton from '../../../components/CButton'
-import CInput from '../../../components/CInput'
-import EButton from '../../../components/EButton'
-import GradientView from '../../../components/GradientView'
 import HideKeyboard from '../../../components/HideKeyboard'
-import { IAccount } from '../../../models/Account'
 import actions from '../../../redux/user/actions'
+import GradientView from '../../../components/GradientView'
+import CInput from '../../../components/CInput'
+import CButton from '../../../components/CButton'
+import EButton from '../../../components/EButton'
 
-const LoginScreen = ({ navigation }: { navigation: any }) => {
+const RegisterConfirmScreen = ({ route, navigation }: { route: any, navigation: any }) => {
+  const { account } = route.params
   const logo = require('../../../../assets/images/icon.png')
-  const [account, setAccount] = useState<IAccount | any>()
   const dispatch = useDispatch()
   const loading = useSelector((state: any) => state.user.loading)
-  const handleLogin = () => {
-    Keyboard.dismiss()
-    if (account.username && account.password) {
-      dispatch({
-        type: actions.LOGIN,
-        payload: {
-          account,
-          callback: () => {
-            navigation.navigate('Root'),
-              setAccount({
-                username: '',
-                password: ''
-            })
-          }
-        }
-      })
-    }
-    return
-  }
+  const [additional, setAdditional] = useState<any>({
+    fullname: '',
+    email: '',
+    phone: ''
+  })
   const thirdParty = [
     {
       name: 'Google',
@@ -52,22 +37,62 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
     }
   ]
 
+  const handleFullnameChange = (fullname: string) => {
+    setAdditional((state: any) => ({
+      fullname,
+      email: state.email,
+      phone: state.phone
+    }))
+  }
+
+  const handleEmailChange = (email: string) => {
+    setAdditional((state: any) => ({
+      fullname: state.fullname,
+      email,
+      phone: state.phone
+    }))
+  }
+
+  const handlePhoneChange = (phone: string) => {
+    setAdditional((state: any) => ({
+      fullname: state.fullname,
+      email: state.email,
+      phone
+    }))
+  }
+
   const handleRegister = () => {
-    navigation.navigate('Register')
+    Keyboard.dismiss()
+    // TODO: Regex fullname, email, phone
+    if (additional.fullname && additional.email && additional.phone) {
+      dispatch({
+        type: actions.REGISTER,
+        payload: {
+          user: {
+            fullname: additional.fullname,
+            account: {
+              username: account.username,
+              password: account.password
+            },
+            email: additional.email,
+            phone: additional.phone
+          },
+          callback() {
+            navigation.navigate('Login')
+            setAdditional({
+              fullname: '',
+              email: '',
+              phone: ''
+            })
+          }
+        }
+      })
+    }
+    return
   }
 
-  const handleUsernameChange = (username: string) => {
-    setAccount((state: IAccount) => ({
-      username,
-      password: state?.password
-    }))
-  }
-
-  const handlePasswordChange = (password: string) => {
-    setAccount((state: IAccount) => ({
-      username: state.username,
-      password
-    }))
+  const handleLogin = () => {
+    navigation.navigate('Login')
   }
 
   return (
@@ -84,20 +109,21 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
                 fontFamily: 'sf-pro-bold',
                 fontSize: 30,
                 color: StyleVariables.colors.gradientStart
-              }}>Login</Text>
+              }}>Confirm your account</Text>
             </View>
             <View style={styles.inputContainer}>
-              <CInput placeholder="Username" placeholderTextColor={StyleVariables.colors.gray200} value={account?.username} onChangeText={handleUsernameChange} />
-              <CInput secureTextEntry placeholder="Password" placeholderTextColor={StyleVariables.colors.gray200} value={account?.password} onChangeText={handlePasswordChange} />
-              <TouchableOpacity style={{ width: '100%', marginLeft: '15%' }}>
-                <Text style={styles.forgotPassword}>Forgot Password?</Text>
-              </TouchableOpacity>
+              <CInput placeholder="Fullname" placeholderTextColor={StyleVariables.colors.gray200} value={additional.fullname} onChangeText={handleFullnameChange} />
+              <CInput placeholder="Email" placeholderTextColor={StyleVariables.colors.gray200} value={additional.email} onChangeText={handleEmailChange} />
+              <CInput placeholder="Phone" placeholderTextColor={StyleVariables.colors.gray200} value={additional.phone} onChangeText={handlePhoneChange} />
             </View>
             <View style={styles.buttonContainer}>
-              <CButton disabled={!account?.username || !account?.password || account?.username === '' || account?.password === ''} title='Login' btnProps={{
-                onPress: handleLogin
+              <CButton title='Register' btnProps={{
+                onPress: handleRegister
               }} />
-              <Button title='Register' onPress={handleRegister} color={StyleVariables.colors.black} />
+              <Button title='Back' onPress={() => {
+                navigation.goBack()
+              }} color={StyleVariables.colors.black} />
+              <Button title='Login' onPress={handleLogin} color={StyleVariables.colors.black} />
               <View style={styles.divider} />
               <View style={styles.thirdParty}>
                 {
@@ -147,7 +173,7 @@ const styles = StyleSheet.create({
     paddingVertical: 50
   },
   imageContainer: {
-    height: '40%'
+    height: '35%'
   },
   logoImg: {
     width: 175,
@@ -162,7 +188,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: '100%',
-    height: 170,
+    height: 210,
     display: 'flex',
     justifyContent: 'space-evenly',
     alignItems: 'center'
@@ -188,4 +214,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default LoginScreen
+export default RegisterConfirmScreen

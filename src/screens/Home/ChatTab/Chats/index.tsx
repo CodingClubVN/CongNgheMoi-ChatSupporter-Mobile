@@ -9,7 +9,7 @@ const Chats = ({ navigation }: { navigation: any }) => {
   const conversations = useSelector((state: any) => state.conversations)
   const user = useSelector((state: any) => state.user.data)
   const url = 'https://api.hieud.me'
-  const socket = io(url, { transports: ['websocket', 'polling', 'flashsocket'], query: { userId: user._id } });
+  const socket = io(url, { transports: ['websocket', 'polling', 'flashsocket'], query: { userId: user?._id } });
   const dispatch = useDispatch()
 
   useEffect(() => {

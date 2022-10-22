@@ -108,7 +108,7 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
                   {
                     getLastMessageSender(conversation.lastMessage?.fromUserId) ?
                       `${getLastMessageSender(
-                        conversation.lastMessage?.fromUserId).username === me.account.username ?
+                        conversation.lastMessage?.fromUserId).username === me?.account?.username ?
                         'Me'
                         : getLastMessageSender(
                           conversation.lastMessage?.fromUserId

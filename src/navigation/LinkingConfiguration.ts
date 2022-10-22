@@ -26,6 +26,7 @@ const linking: LinkingOptions<RootStackParamList> = {
         screens: {
           Login: 'login',
           Register: 'register',
+          RegisterConfirm: 'registerConfirm'
         }
       }
     },

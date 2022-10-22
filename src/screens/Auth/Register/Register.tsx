@@ -69,22 +69,8 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       return
     }
     if (account.username && account.password) {
-      dispatch({
-        type: actions.REGISTER,
-        payload: {
-          user: {
-            fullname: 'user' + userNo,
-            account: {
-              username: account.username,
-              password: account.password
-            },
-            email: 'user' + userNo + '@gmail.com',
-            phone: '099999' + userNo
-          },
-          callback() {
-            navigation.navigate('Login')
-          }
-        }
+      navigation.navigate('RegisterConfirm', {
+        account
       })
     }
     return
@@ -116,7 +102,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
               <CInput secureTextEntry clearTextOnFocus placeholder="Confirm Password" placeholderTextColor={StyleVariables.colors.gray200} value={account.confirmPassword} onChangeText={handleConfirmPasswordChange} />
             </View>
             <View style={styles.buttonContainer}>
-              <CButton title='Register' btnProps={{
+              <CButton title='Next' btnProps={{
                 onPress: handleRegister
               }} />
               <Button title='Login' onPress={handleLogin} color={StyleVariables.colors.black} />

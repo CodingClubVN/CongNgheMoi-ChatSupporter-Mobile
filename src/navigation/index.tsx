@@ -17,6 +17,7 @@ import actions from '../redux/user/actions';
 
 import LoginScreen from '../screens/Auth/Login/Login';
 import RegisterScreen from '../screens/Auth/Register/Register';
+import RegisterConfirmScreen from '../screens/Auth/RegisterConfirm/RegisterConfirm';
 import CallTab from '../screens/Home/CallTab';
 import ChatTab from '../screens/Home/ChatTab';
 import Conversation from '../screens/Home/ChatTab/Conversation';
@@ -75,6 +76,7 @@ function AuthNavigator({ navigation }: any) {
     <AuthStack.Navigator>
       <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <AuthStack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+      <AuthStack.Screen name="RegisterConfirm" component={RegisterConfirmScreen} options={{ headerShown: false }} />
     </AuthStack.Navigator>
   )
 }

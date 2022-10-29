@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 import { all, call, put, takeEvery } from "redux-saga/effects";
-import { getMessagesOfConversation, sendMessageToConversation } from "../../services/messageService";
+import { getMessagesOfConversation, sendMediaMessageToConversation, sendMessageToConversation } from "../../services/messageService";
 import actions from "./actions";
 
 export function* GET_MESSAGES({ payload }: any): any {
@@ -32,14 +32,23 @@ export function* GET_MESSAGES({ payload }: any): any {
 }
 
 export function* SEND_MESSAGE({ payload }: any): any {
+  console.log('payload', payload)
   yield put({
     type: actions.SET_STATE,
     payload: {
       loading: true
     }
   })
-  const res = yield call(sendMessageToConversation, payload.conversationId, payload.message)
-  if (res.error) {
+  let res: any = null
+  // const formData = new FormData()
+  if (payload.message.type !== 'text') {
+    // formData.append('file', payload.message.file)
+    // formData.append('type', payload.message.type)
+    res = yield call(sendMediaMessageToConversation, payload.conversationId, payload.message)
+  } else {
+    res = yield call(sendMessageToConversation, payload.conversationId, payload.message)
+  }
+  if (res?.error || res?.statusCode === 500) {
     yield put({
       type: actions.SET_STATE,
       payload: {
@@ -49,16 +58,16 @@ export function* SEND_MESSAGE({ payload }: any): any {
     Alert.alert('Error', 'Cannot send message')
     return
   }
-  yield put({
-    type: actions.UPDATE_MESSAGES,
-    payload: {
-      loading: false,
-      message: {
-        ...payload.message,
-        _id: res.messageId
-      }
-    }
-  })
+  // yield put({
+  //   type: actions.UPDATE_MESSAGES,
+  //   payload: {
+  //     loading: false,
+  //     message: {
+  //       ...payload.message,
+  //       _id: res.messageId
+  //     }
+  //   }
+  // })
   if (payload.callback) yield call(payload.callback)
 }
 

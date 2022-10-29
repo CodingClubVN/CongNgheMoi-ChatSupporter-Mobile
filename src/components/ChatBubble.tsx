@@ -20,7 +20,6 @@ const ChatBubble = forwardRef(({ type, message, sender, me, isPreviousMessageFro
   const fromMe = message.fromUserId === me._id
   const handleVideoRef = (component: any, message: IMessage) => {
     const playbackObject = component;
-    console.log(playbackObject)
     const source = { uri: message.content };
     const initialStatus = {
     };

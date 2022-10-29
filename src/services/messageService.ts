@@ -11,15 +11,22 @@ const getMessagesOfConversation = async (conversationId: string) => {
   }
 }
 
-const sendMessageToConversation = async (conversationId: string, message: IMessage) => {
+const sendMessageToConversation = async (conversationId: string, message: any) => {
   try {
-    const res = await apiService.post<IMessage, any | IInternalServerError>(`/messages/conversation/${conversationId}`, message, {
-      'Content-Type': 'multipart/form-data'
-    });
+    const res = await apiService.post<IMessage, any | IInternalServerError>(`/messages/conversation/${conversationId}`, message);
     return res;
   } catch (err) {
     return console.log(err);
   }
 }
 
-export { getMessagesOfConversation, sendMessageToConversation }
+const sendMediaMessageToConversation = async (conversationId: string, message: any) => {
+  try {
+    const res = await apiService.postFormData(`/messages/conversation/${conversationId}`, message);
+    return res;
+  } catch (err) {
+    return console.log(err);
+  }
+}
+
+export { getMessagesOfConversation, sendMessageToConversation, sendMediaMessageToConversation };

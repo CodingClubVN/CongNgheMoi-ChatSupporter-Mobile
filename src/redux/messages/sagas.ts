@@ -40,14 +40,15 @@ export function* SEND_MESSAGE({ payload }: any): any {
     }
   })
   let res: any = null
-  // const formData = new FormData()
+  const formData = new FormData()
   if (payload.message.type !== 'text') {
-    // formData.append('file', payload.message.file)
-    // formData.append('type', payload.message.type)
-    res = yield call(sendMediaMessageToConversation, payload.conversationId, payload.message)
+    formData.append('file', payload.message.file)
+    formData.append('type', payload.message.type)
+    res = yield call(sendMediaMessageToConversation, payload.conversationId, formData)
   } else {
     res = yield call(sendMessageToConversation, payload.conversationId, payload.message)
   }
+  console.log('res', res)
   if (res?.error || res?.statusCode === 500) {
     yield put({
       type: actions.SET_STATE,

@@ -21,7 +21,7 @@ import { IUserA } from '../../../../models/User';
 import actions from '../../../../redux/messages/actions';
 import * as ImagePicker from 'expo-image-picker';
 import { LogBox } from 'react-native';
-import getFileFromUri from '../../../../utils/getFileFromUri';
+import getFileFromUri, { createFileFromBlob, fetchImageFromUri } from '../../../../utils/getFileFromUri';
 import moment from 'moment';
 
 // ignore all warning
@@ -61,17 +61,16 @@ const Conversation = ({
     });
 
     if (!result.cancelled) {
-      const file = await getFileFromUri(result.uri);
+      // const file = await getFileFromUri(result.uri);
+      const blob = await fetchImageFromUri(result.uri);
+      const file = createFileFromBlob(blob);
+      console.log('file', file)
       setImage(result.uri);
-      const message = {
+
+      handleSendMessage({
         type: result.type,
-        file: {
-          uri: result.uri,
-          type: file.type,
-          name: moment.now() + '.' + file.type.split('/')[1],
-        },
-      }
-      handleSendMessage(message)
+        file,
+      })
     }
   };
 
@@ -127,12 +126,16 @@ const Conversation = ({
     console.log(messages)
     navigation.setOptions({});
     socket.emit('join-room', conversation._id);
+    return () => {
+      socket.emit('leave-room', conversation._id)
+    }
   }, []);
 
   useEffect(() => {
     socket.on('new-message', (data: any) => {
       console.log('socket new message', data);
       if (data && data.message) {
+        // if (messages.find((m: any) => m._id !== data.message._id)) {
         dispatch({
           type: actions.UPDATE_MESSAGES,
           payload: {
@@ -147,9 +150,10 @@ const Conversation = ({
             },
           },
         });
+        // }
       }
     });
-    return () => {};
+    return () => { };
   }, [socket]);
 
   return (
@@ -225,7 +229,7 @@ const Conversation = ({
               >
                 {users.length === 2
                   ? users.find((user: IUserA) => user._id !== me._id)?.account
-                      ?.username
+                    ?.username
                   : conversation.conversationName || 'No name'}
               </Text>
               <Text

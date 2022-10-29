@@ -7,6 +7,8 @@ import StyleVariables from "../../StyleVariables"
 import { LinearGradient } from "expo-linear-gradient"
 import { Ionicons } from '@expo/vector-icons';
 import { Video, AVPlaybackStatus, ResizeMode } from 'expo-av';
+import { downloadFile, downloadFileAsync } from "../utils/fs"
+import sharingWithExpoUri from '../utils/sharing'
 
 const ChatBubble = forwardRef(({ type, message, sender, me, isPreviousMessageFromSameUser, isNextMessageFromSameUser }:
   {
@@ -18,12 +20,10 @@ const ChatBubble = forwardRef(({ type, message, sender, me, isPreviousMessageFro
     isNextMessageFromSameUser: boolean,
   }, ref: any) => {
   const fromMe = message.fromUserId === me._id
-  const handleVideoRef = (component: any, message: IMessage) => {
-    const playbackObject = component;
-    const source = { uri: message.content };
-    const initialStatus = {
-    };
-    playbackObject?.loadAsync(source, initialStatus)
+  const handleDonwload = async (uri: string) => {
+    const download = await downloadFile(encodeURI(uri))
+    const res = await downloadFileAsync(download)
+    await sharingWithExpoUri(res)
   }
   return (<View style={{
     maxWidth: '60%',
@@ -100,28 +100,31 @@ const ChatBubble = forwardRef(({ type, message, sender, me, isPreviousMessageFro
                 useNativeControls
                 isLooping
                 source={{ uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }}
-                ref={(component) => handleVideoRef(component, message)}
               />
             }
           </View>
         ) : message.type === 'file' ? (
-          <TouchableOpacity style={{
-            height: 70,
-            width: 200,
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-            backgroundColor: StyleVariables.colors.gradientEnd,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderTopLeftRadius: 25,
-            borderTopRightRadius: 25,
-            borderBottomLeftRadius: 25,
-            borderBottomRightRadius: 10,
-            flexDirection: 'row',
-          }}>
+          <TouchableOpacity
+            onPress={() => handleDonwload(message.content)}
+            style={{
+              height: 70,
+              width: 200,
+              paddingHorizontal: 20,
+              paddingVertical: 10,
+              backgroundColor: StyleVariables.colors.gradientEnd,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderTopLeftRadius: 25,
+              borderTopRightRadius: 25,
+              borderBottomLeftRadius: 25,
+              borderBottomRightRadius: 10,
+              flexDirection: 'row',
+            }}>
             <Ionicons name="file-tray" size={24} color="white" />
             <Text style={{
               color: '#fff',
+              marginHorizontal: 10,
+              width: 120
             }}>{message.content.split('?')[0].split('/').pop()}</Text>
           </TouchableOpacity>
         ) : null
@@ -215,24 +218,28 @@ const ChatBubble = forwardRef(({ type, message, sender, me, isPreviousMessageFro
                 }
               </View>
             ) : message.type === 'file' ? (
-              <TouchableOpacity style={{
-                height: 70,
-                width: 200,
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-                backgroundColor: StyleVariables.colors.gray200,
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                borderTopLeftRadius: 25,
-                borderTopRightRadius: 25,
-                borderBottomLeftRadius: 10,
-                borderBottomRightRadius: 25,
-                marginLeft: isNextMessageFromSameUser && type === 'group' ? 40 : 0,
-                flexDirection: 'row',
-              }}>
+              <TouchableOpacity
+                onPress={() => handleDonwload(message.content)}
+                style={{
+                  height: 70,
+                  width: 200,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                  backgroundColor: StyleVariables.colors.gray200,
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderTopLeftRadius: 25,
+                  borderTopRightRadius: 25,
+                  borderBottomLeftRadius: 10,
+                  borderBottomRightRadius: 25,
+                  marginLeft: isNextMessageFromSameUser && type === 'group' ? 40 : 0,
+                  flexDirection: 'row',
+                }}>
                 <Ionicons name="file-tray" size={24} color="white" />
                 <Text style={{
                   color: '#fff',
+                  marginHorizontal: 10,
+                  width: 120
                 }}>{message.content.split('?')[0].split('/').pop()}</Text>
               </TouchableOpacity>
             ) : null

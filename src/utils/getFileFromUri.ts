@@ -22,3 +22,19 @@ export default async function getFileFromUri(uri: string) {
 
   return file
 }
+
+export async function fetchImageFromUri(uri: string) {
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  console.log('blob', blob)
+  return blob;
+};
+
+export function createFileFromBlob(blob: any) {
+  const fileType = blob.type.split("/").pop();
+  const file = new File([blob], `${moment.now()}.${fileType}`, {
+    type: blob.type,
+  });
+
+  return file
+}

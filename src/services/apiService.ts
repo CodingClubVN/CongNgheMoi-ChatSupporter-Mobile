@@ -13,13 +13,14 @@ const apiService = {
     })
     return await response.json()
   },
-  post: async <T, RT>(path: string, data: T): Promise<RT> => {
+  post: async <T, RT>(path: string, data: T, options: any): Promise<RT> => {
     const response = await fetch(`${apiPath}${path}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${await storageService.get('token')}`
+        'Authorization': `Bearer ${await storageService.get('token')}`,
+        ...options
       },
       body: JSON.stringify(data)
     });

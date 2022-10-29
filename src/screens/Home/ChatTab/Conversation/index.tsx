@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { SafeAreaView, TextInput, Text, View, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform } from 'react-native'
 import Animated, { useAnimatedRef } from 'react-native-reanimated'
 import { useDispatch, useSelector } from 'react-redux'
@@ -7,21 +7,50 @@ import { io } from 'socket.io-client'
 import StyleVariables from '../../../../../StyleVariables'
 import ChatWrapper from '../../../../components/ChatBubble'
 import ConversationAvatar from '../../../../components/ConversationAvatar'
+import { IUserA } from '../../../../models/User'
 import actions from '../../../../redux/messages/actions'
+import * as ImagePicker from 'expo-image-picker';
+import { LogBox } from 'react-native'
+import getFileFromUri from '../../../../utils/getFileFromUri'
+
+// ignore all warning
+LogBox.ignoreAllLogs()
+
 
 const Conversation = ({ route, navigation }: { route: any, navigation: any }) => {
   const { type, conversation, users } = route.params
   const me = useSelector((state: any) => state.user.data)
   const dispatch = useDispatch()
   const messages = useSelector((state: any) => state.messages.messages)
-  const [newMessage, setNewMessage] = React.useState({
+  const [image, setImage] = useState<any>(null);
+  const [newMessage, setNewMessage] = React.useState<any>({
     content: '',
     type: 'text',
     fromUserId: me._id,
   })
   const aref = useAnimatedRef<any>()
   const url = 'https://api.hieud.me'
-  const socket = io(url, { transports: ['websocket', 'polling', 'flashsocket'], query: { userId: me._id } });
+  const socket = useMemo(() => {
+    return io(url, { transports: ['websocket', 'polling', 'flashsocket'], query: { userId: me._id } })
+  }, []);
+
+  const handleAddMedia = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      setNewMessage({
+        type: result.type,
+        file: getFileFromUri(result.uri),
+      })
+      handleSendMessage()
+    }
+  };
 
   const handleOutsideKeyboardTouch = () => {
     Keyboard.dismiss()
@@ -75,26 +104,28 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
     navigation.setOptions({
 
     })
+    socket.emit('join-room', conversation._id)
   }, [])
 
   useEffect(() => {
-    socket.emit('join-room', conversation._id)
-    console.log('joined')
     socket.on('new-message', (data: any) => {
-      dispatch({
-        type: actions.UPDATE_MESSAGES,
-        payload: {
-          message: data.message,
-          callback: () => {
-            setTimeout(() => {
-              aref.current.scrollTo({
-                y: 10000,
-                animated: true
-              })
-            }, 50)
+      console.log(data)
+      if (data && data.message && data.message.fromUserId !== me._id) {
+        dispatch({
+          type: actions.UPDATE_MESSAGES,
+          payload: {
+            message: data.message,
+            callback: () => {
+              setTimeout(() => {
+                aref.current.scrollTo({
+                  y: 10000,
+                  animated: true
+                })
+              }, 50)
+            }
           }
-        }
-      })
+        })
+      }
     })
     return () => {
     }
@@ -150,7 +181,7 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
                 marginBottom: 7,
                 maxWidth: 150
               }}>
-                {users.length === 1 ? users[0].name : (conversation.conversationName || 'No name')}
+                {users.length === 2 ? users.find((user: IUserA) => user._id !== me._id)?.account?.username : (conversation.conversationName || 'No name')}
               </Text>
               <Text style={{
                 fontFamily: 'sf-pro-reg',
@@ -188,7 +219,7 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
                 <ChatWrapper
                   key={message._id}
                   message={message}
-                  sender={users.find((u: { userId: any }) => u.userId === message.fromUserId)}
+                  sender={users.find((u: { _id: string }) => u._id === message.fromUserId)}
                   me={me}
                   type={type}
                   isPreviousMessageFromSameUser={isPreviousMessageFromSameUser}
@@ -211,16 +242,18 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
             borderTopColor: '#c4c4c4',
             paddingTop: 20
           }}>
-            <TouchableOpacity style={{
-              width: 40,
-              height: 40,
-              borderRadius: 40,
-              borderWidth: 0.3,
-              borderColor: '#c4c4c4',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: 10
-            }}>
+            <TouchableOpacity
+              onPress={handleAddMedia}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 40,
+                borderWidth: 0.3,
+                borderColor: '#c4c4c4',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 10
+              }}>
               <Ionicons name="camera-outline" size={24} color={StyleVariables.colors.gradientStart} />
             </TouchableOpacity>
             <TouchableOpacity style={{
@@ -250,7 +283,7 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
                 onFocus={() => {
                   setTimeout(() => {
                     aref.current.scrollTo({
-                      y: 1000,
+                      y: 10000,
                       animated: true
                     })
                   }, 50)
@@ -274,7 +307,7 @@ const Conversation = ({ route, navigation }: { route: any, navigation: any }) =>
               paddingTop: 2
             }}
               onPress={() => handleSendMessage()}
-              disabled={newMessage.content.length === 0}
+              disabled={newMessage?.content?.length === 0}
             >
               <Ionicons name="send-outline" size={24} color={StyleVariables.colors.gradientStart} />
             </TouchableOpacity>

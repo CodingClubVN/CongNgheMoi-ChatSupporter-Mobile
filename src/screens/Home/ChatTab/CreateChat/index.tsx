@@ -31,12 +31,12 @@ const CreateChat = ({
 
   const handleCreateChat = () => {
     const users = selected.map((item) => item.value);
-    const groupName = selected.slice(0, selected.length >= 2 ? 2 : 1).map((item) => item.label).join(', ').concat(' group');
+    const groupName = selected.slice(0, selected.length >= 2 ? 2 : 1).map((item) => item.label).join(', ').concat(`, ${user.account.username} `).concat(' group');
     dispatch({
       type: conversationActions.CREATE_CONVERSATION,
       payload: {
         conversation: {
-          conversationName: groupName,
+          conversationName: selected.length >= 2 ? groupName : selected.find(item => item.value !== user._id)?.label,
           arrayUserId: users,
         },
         callback: () => {

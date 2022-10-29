@@ -1,8 +1,9 @@
 import { LinearGradient } from "expo-linear-gradient"
 import moment from "moment"
 import React from "react"
-import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import StyleVariables from "../../StyleVariables"
+import { IMessage } from "../models/Message"
 import ConversationAvatar from "./ConversationAvatar"
 
 const ConversationItem = ({ navigation, type, users, conversation, me }: { navigation: any, type: 'direct' | 'group', users: any[], conversation: any, me: any }) => {
@@ -15,7 +16,14 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
   }
 
   const getLastMessageSender = (id: string) => {
-    return conversation.users.find((user: any) => user.userId === id)
+    return conversation.users.find((user: any) => user._id === id)
+  }
+
+  const getLastMessageContent = (lastMessage: IMessage, type = 'group') => {
+    const notTextTypes = ['image', 'video', 'audio', 'file']
+    const from = conversation.lastMessage?.fromUserId === me._id ? 'Me: ' : `${getLastMessageSender(conversation.lastMessage?.fromUserId)?.account.username}: `
+    const content = notTextTypes.includes(lastMessage.type) ? `Sent ${['i', 'a', 'o', 'u'].includes(lastMessage.type.slice(0, 1)) ? 'an ' : 'a'} ${lastMessage.type}` : lastMessage.content.length > 30 ? `${lastMessage.content.slice(0, 30)}...` : lastMessage.content
+    return type === 'group' ? from + content : content
   }
 
   return (
@@ -45,13 +53,15 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
                   fontWeight: 'bold',
                   fontFamily: 'sf-pro-bold',
                   width: 150,
-                }}>{users[0].username}</Text>
+                }}>{users[0].account.username}</Text>
                 <Text style={{
                   fontSize: 12,
                   color: StyleVariables.colors.gray200,
                   fontFamily: 'sf-pro-reg'
                 }}>
-                  {conversation.lastMessage?.content || 'No message'}
+                  {
+                    conversation.lastMessage ? getLastMessageContent(conversation.lastMessage, type) : 'No messages yet'
+                  }
                 </Text>
               </View>
               <View style={{
@@ -106,14 +116,8 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
                   fontFamily: 'sf-pro-reg'
                 }}>
                   {
-                    getLastMessageSender(conversation.lastMessage?.fromUserId) ?
-                      `${getLastMessageSender(
-                        conversation.lastMessage?.fromUserId).username === me?.account?.username ?
-                        'Me'
-                        : getLastMessageSender(
-                          conversation.lastMessage?.fromUserId
-                        ).username}: ${conversation.lastMessage?.content}`
-                      : 'No message'}
+                    conversation.lastMessage ? getLastMessageContent(conversation.lastMessage) : 'No message'
+                  }
                 </Text>
               </View>
               <View style={{

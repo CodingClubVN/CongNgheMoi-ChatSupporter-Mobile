@@ -13,7 +13,9 @@ const getMessagesOfConversation = async (conversationId: string) => {
 
 const sendMessageToConversation = async (conversationId: string, message: IMessage) => {
   try {
-    const res = await apiService.post<IMessage, any | IInternalServerError>(`/messages/conversation/${conversationId}`, message);
+    const res = await apiService.post<IMessage, any | IInternalServerError>(`/messages/conversation/${conversationId}`, message, {
+      'Content-Type': 'multipart/form-data'
+    });
     return res;
   } catch (err) {
     return console.log(err);

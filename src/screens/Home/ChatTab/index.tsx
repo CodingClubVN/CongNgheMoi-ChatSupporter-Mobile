@@ -1,11 +1,9 @@
 import React from "react"
-import { View, Text, ScrollView } from 'react-native'
-import { useDispatch, useSelector } from "react-redux"
+import { View, ScrollView } from 'react-native'
 import Chats from "./Chats"
 import Story from "./Story"
 
 const ChatTab = ({ navigation }: { navigation: any }) => {
-  const dispatch = useDispatch()
   return (
     <View style={{
       justifyContent: 'flex-start',

@@ -5,5 +5,6 @@ export interface IMessage {
   createdAt: string
   content: string
   type: string
+  description?: string
   fromUserId: string
 }

@@ -44,3 +44,12 @@ export async function rejectFriendRequest(data: any) {
     return console.log(err)
   }
 }
+
+export async function cancelRequest(data: any) {
+  try {
+    const res = await apiService.post<any, any>(`/friends/request/user/${data.id}/remove`, {})
+    return res
+  } catch (err) {
+    return console.log(err)
+  }
+}

@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import actions from '../redux/friends/actions';
 
-const CUserResult = ({ user }: { user: any }) => {
+const CUserResult = ({ user, callback }: any) => {
   const dispatch = useDispatch()
   const handleSendRequest = () => {
     console.log('send request')
@@ -23,7 +23,9 @@ const CUserResult = ({ user }: { user: any }) => {
     dispatch({
       type: actions.ACCEPT_FRIEND_REQUEST,
       payload: {
-        data: user._id
+        data: {
+          fromUserId: user._id
+        }
       }
     })
   }
@@ -33,7 +35,9 @@ const CUserResult = ({ user }: { user: any }) => {
     dispatch({
       type: actions.REJECT_FRIEND_REQUEST,
       payload: {
-        data: user._id
+        data: {
+          fromUserId: user._id
+        }
       }
     })
   }
@@ -44,6 +48,15 @@ const CUserResult = ({ user }: { user: any }) => {
 
   const handleCancelRequest = () => {
     console.log('cancel request')
+    dispatch({
+      type: actions.CANCEL_REQUEST,
+      payload: {
+        data: {
+          id: user._id
+        },
+        callback
+      }
+    })
   }
 
   return (

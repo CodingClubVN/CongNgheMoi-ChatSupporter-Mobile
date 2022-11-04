@@ -43,7 +43,7 @@ const Conversation = ({
     content: '',
     type: 'text',
     fromUserId: me?._id,
-    file: null,
+    files: [],
   });
   const aref = useAnimatedRef<any>();
   const url = 'https://api.hieud.me';
@@ -57,19 +57,47 @@ const Conversation = ({
   const handleAddMedia = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true
     });
 
-    if (!result.cancelled) {
-      setImage(result.uri);
+    console.log(result);
 
+    if (!result.cancelled) {
+      console.log(result.selected);
       handleSendMessage({
-        type: result.type,
-        file: {
-          uri: result.uri,
-          type: result.type,
-          name: result.uri.split('/').pop(),
-        },
+        type: result.selected[0].type,
+        files: result.selected.map((item: any) => {
+          return {
+            uri: item.uri,
+            name: item.fileName,
+            type: `${item.type}/${item.uri.split('.').pop()}`,
+          };
+        }),
+      });
+    }
+  };
+
+  const handleAddVideoMedia = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      allowsMultipleSelection: true
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      console.log(result.selected);
+      handleSendMessage({
+        type: result.selected[0].type,
+        files: result.selected.map((item: any) => {
+          return {
+            uri: item.uri,
+            name: item.fileName,
+            type: `${item.type}/${item.uri.split('.').pop()}`,
+          };
+        }),
       });
     }
   };
@@ -82,6 +110,7 @@ const Conversation = ({
     setNewMessage({
       ...newMessage,
       content: text,
+      files: []
     });
   };
 
@@ -96,10 +125,17 @@ const Conversation = ({
     });
   };
 
+  const callback = () => {
+    setTimeout(() => {
+      aref.current.scrollToEnd({ animated: true });
+    }, 50);
+  }
+
   const onSendSuccess = () => {
     setNewMessage({
       ...newMessage,
       content: '',
+      files: []
     });
     setTimeout(() => {
       aref.current.scrollToEnd({ animated: true });
@@ -147,7 +183,7 @@ const Conversation = ({
         // }
       }
     });
-    return () => {};
+    return () => { };
   }, [socket]);
 
   return (
@@ -223,7 +259,7 @@ const Conversation = ({
               >
                 {users.length === 2
                   ? users.find((user: IUserA) => user._id !== me?._id)?.account
-                      ?.username
+                    ?.username
                   : conversation.conversationName || 'No name'}
               </Text>
               <Text
@@ -280,6 +316,7 @@ const Conversation = ({
               <ChatWrapper
                 key={message._id}
                 message={message}
+                callback={callback}
                 sender={users.find(
                   (u: { _id: string }) => u._id === message.fromUserId
                 )}
@@ -287,6 +324,7 @@ const Conversation = ({
                 type={type}
                 isPreviousMessageFromSameUser={isPreviousMessageFromSameUser}
                 isNextMessageFromSameUser={isNextMessageFromSameUser}
+                isLastMessage={index === messages.length - 1}
               />
             );
           })}
@@ -329,6 +367,7 @@ const Conversation = ({
               />
             </TouchableOpacity>
             <TouchableOpacity
+              onPress={handleAddVideoMedia}
               style={{
                 width: 40,
                 height: 40,
@@ -341,7 +380,7 @@ const Conversation = ({
               }}
             >
               <Ionicons
-                name="happy-outline"
+                name="film-outline"
                 size={24}
                 color={StyleVariables.colors.gradientStart}
               />

@@ -7,6 +7,7 @@ const actions = {
   UPDATE_REQUEST_SENT: 'friends/UPDATE_REQUEST_SENT',
   ACCEPT_FRIEND_REQUEST: 'friends/ACCEPT_FRIEND_REQUEST',
   REJECT_FRIEND_REQUEST: 'friends/REJECT_FRIEND_REQUEST',
+  CANCEL_REQUEST: 'friends/CANCEL_REQUEST',
 }
 
 export default actions

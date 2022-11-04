@@ -25,7 +25,7 @@ const sendMediaMessageToConversation = async (conversationId: string, message: a
     const res = await apiService.postFormData(`/messages/conversation/${conversationId}`, message);
     return res;
   } catch (err) {
-    return console.log(err);
+    return console.log('err', err);
   }
 }
 

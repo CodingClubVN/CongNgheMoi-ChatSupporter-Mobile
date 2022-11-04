@@ -1,5 +1,5 @@
 import { IMessage } from '../models/Message';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList } from 'react-native';
 import { IUserA } from '../models/User';
 import Animated, { BounceInLeft, BounceInRight } from 'react-native-reanimated';
 import { forwardRef, useEffect, useState } from 'react';
@@ -19,6 +19,8 @@ const ChatBubble = forwardRef(
       me,
       isPreviousMessageFromSameUser,
       isNextMessageFromSameUser,
+      callback,
+      isLastMessage
     }: {
       type: string;
       message: IMessage;
@@ -26,6 +28,8 @@ const ChatBubble = forwardRef(
       me: IUserA;
       isPreviousMessageFromSameUser: boolean;
       isNextMessageFromSameUser: boolean;
+      callback: Function,
+      isLastMessage: boolean
     },
     ref: any
   ) => {
@@ -50,16 +54,38 @@ const ChatBubble = forwardRef(
 
     useEffect(() => {
       if (message.type === 'image' || message.type === 'video') {
-        getImageSize(message.content).then((size) => {
+        getImageSize(message.content[0]).then((size) => {
           const newSize = {
             width: 200,
             height: (size.height * 200) / size.width,
           }
           setMediaSize(newSize);
+          if (isLastMessage) {
+            callback()
+          }
+        }).catch((error) => {
+          setTimeout(() => {
+            getImageSize(message.content[0]).then((size) => {
+              const newSize = {
+                width: 200,
+                height: (size.height * 200) / size.width,
+              }
+              setMediaSize(newSize);
+              if (isLastMessage) {
+                callback()
+              }
+            })
+          }, 1000)
         })
-      } 
+      }
     }, [message.content])
-    
+
+    useEffect(() => {
+      setTimeout(() => {
+        callback && callback();
+      }, 3000);
+    }, [])
+
 
     return (
       <View
@@ -100,26 +126,54 @@ const ChatBubble = forwardRef(
                   fontFamily: 'sf-pro-reg',
                 }}
               >
-                {message.content}
+                {message.content[0]}
               </Text>
             </LinearGradient>
           ) : message.type === 'image' ? (
-              <Image
-                resizeMode='contain'
-                key={message.createdAt}
-                source={{ uri: encodeURI(message.content) }}
-                style={{
-                  ...mediaSize,
-                  flexGrow: 1,
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                  // backgroundColor: StyleVariables.colors.gradientEnd,
-                  borderTopLeftRadius: 25,
-                  borderTopRightRadius: 25,
-                  borderBottomLeftRadius: 25,
-                  borderBottomRightRadius: 10,
-                }}
-              />
+            <TouchableOpacity style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              width: 200,
+              flexWrap: 'wrap',
+            }}>
+              {
+                message.content.length > 1 ? (
+                  (message.content as any[]).map((item: any) => (
+                    <Image
+                      key={item}
+                      source={{ uri: encodeURI(item) }}
+                      style={{
+                        width: 100,
+                        height: 100,
+                        flexGrow: 1,
+                        paddingHorizontal: 20,
+                        paddingVertical: 10,
+                        // backgroundColor: StyleVariables.colors.gradientEnd,
+                        borderTopLeftRadius: 25,
+                        borderTopRightRadius: 25,
+                        borderBottomLeftRadius: 25,
+                        borderBottomRightRadius: 10,
+                      }}
+                    />)
+                  )
+                ) : (
+                  <Image
+                    key={message.createdAt}
+                    source={{ uri: encodeURI(message.content[0]) }}
+                    style={{
+                      ...mediaSize,
+                      flexGrow: 1,
+                      paddingHorizontal: 20,
+                      paddingVertical: 10,
+                      // backgroundColor: StyleVariables.colors.gradientEnd,
+                      borderTopLeftRadius: 25,
+                      borderTopRightRadius: 25,
+                      borderBottomLeftRadius: 25,
+                      borderBottomRightRadius: 10,
+                    }}
+                  />
+                )}
+            </TouchableOpacity>
           ) : message.type === 'video' ? (
             <View
               style={{
@@ -149,14 +203,13 @@ const ChatBubble = forwardRef(
                   }}
                   resizeMode={ResizeMode.CONTAIN}
                   useNativeControls
-                  isLooping
-                  source={{ uri: encodeURI(message.content) }}
+                  source={{ uri: encodeURI(message.content[0]) }}
                 />
               }
             </View>
           ) : message.type === 'file' ? (
             <TouchableOpacity
-              onPress={() => handleDonwload(message.content)}
+              onPress={() => handleDonwload(message.content[0])}
               style={{
                 height: 70,
                 width: 200,
@@ -180,13 +233,28 @@ const ChatBubble = forwardRef(
                   width: 120,
                 }}
               >
-                {message.content.split('?')[0].split('/').pop()}
+                {message.content[0].split('?')[0].split('/').pop()}
               </Text>
             </TouchableOpacity>
+          ) : message.type === 'notification' ? (
+            <View style={{
+              width: 375,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: 30
+            }}>
+              <Text style={{
+                color: StyleVariables.colors.gray200,
+                fontFamily: 'sf-pro-reg',
+                fontSize: 12
+              }}>{message.content[0]}</Text>
+            </View>
+
           ) : null
         ) : (
           <>
-            {type === 'group' && !isNextMessageFromSameUser && (
+            {type === 'group' && !isNextMessageFromSameUser && message.type !== 'notification' && (
               <Image
                 key={message.createdAt}
                 source={{ uri: sender.avatarUrl }}
@@ -233,23 +301,51 @@ const ChatBubble = forwardRef(
                 </Text>
               </View>
             ) : message.type === 'image' ? (
-              <Image
-                source={{ uri: encodeURI(message.content) }}
-                style={{
-                  ...mediaSize,
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                  backgroundColor: StyleVariables.colors.gray200,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderTopLeftRadius: 25,
-                  borderTopRightRadius: 25,
-                  borderBottomLeftRadius: 10,
-                  borderBottomRightRadius: 25,
-                  marginLeft:
-                    isNextMessageFromSameUser && type === 'group' ? 40 : 0,
-                }}
-              />
+              <TouchableOpacity style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                flexWrap: 'wrap',
+                width: 200
+              }}>
+                {
+                  message.content.length > 1 ? (
+                    (message.content as any[]).map((item: any) => (
+                      <Image
+                        key={item}
+                        source={{ uri: encodeURI(item) }}
+                        style={{
+                          width: 100,
+                          height: 100,
+                          flexGrow: 1,
+                          paddingHorizontal: 20,
+                          paddingVertical: 10,
+                          // backgroundColor: StyleVariables.colors.gradientEnd,
+                          borderTopLeftRadius: 25,
+                          borderTopRightRadius: 25,
+                          borderBottomLeftRadius: 25,
+                          borderBottomRightRadius: 10,
+                        }}
+                      />)
+                    )
+                  ) : (
+                    <Image
+                      source={{ uri: encodeURI(message.content[0]) }}
+                      style={{
+                        ...mediaSize,
+                        paddingHorizontal: 20,
+                        paddingVertical: 10,
+                        backgroundColor: StyleVariables.colors.gray200,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderTopLeftRadius: 25,
+                        borderTopRightRadius: 25,
+                        borderBottomLeftRadius: 10,
+                        borderBottomRightRadius: 25,
+                        marginLeft:
+                          isNextMessageFromSameUser && type === 'group' ? 40 : 0,
+                      }}
+                    />)}
+              </TouchableOpacity>
             ) : message.type === 'video' ? (
               <View
                 style={{
@@ -282,13 +378,13 @@ const ChatBubble = forwardRef(
                     resizeMode={ResizeMode.CONTAIN}
                     useNativeControls
                     isLooping
-                    source={{ uri: encodeURI(message.content) }}
+                    source={{ uri: encodeURI(message.content[0]) }}
                   />
                 }
               </View>
             ) : message.type === 'file' ? (
               <TouchableOpacity
-                onPress={() => handleDonwload(message.content)}
+                onPress={() => handleDonwload(message.content[0])}
                 style={{
                   height: 70,
                   width: 200,
@@ -314,9 +410,24 @@ const ChatBubble = forwardRef(
                     width: 120,
                   }}
                 >
-                  {message.content.split('?')[0].split('/').pop()}
+                  {message.content[0].split('?')[0].split('/').pop()}
                 </Text>
               </TouchableOpacity>
+            ) : message.type === 'notification' ? (
+              <View style={{
+                width: 375,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: 30
+              }}>
+                <Text style={{
+                  color: StyleVariables.colors.gray200,
+                  fontFamily: 'sf-pro-reg',
+                  fontSize: 12
+                }}>{message.content[0]}</Text>
+              </View>
+
             ) : null}
           </>
         )}
@@ -334,6 +445,8 @@ const ChatWrapper = ({
   me,
   isPreviousMessageFromSameUser,
   isNextMessageFromSameUser,
+  callback,
+  isLastMessage
 }: {
   type: string;
   message: IMessage;
@@ -341,6 +454,8 @@ const ChatWrapper = ({
   me: IUserA;
   isPreviousMessageFromSameUser: boolean;
   isNextMessageFromSameUser: boolean;
+  callback: Function,
+  isLastMessage: boolean
 }) => {
   const fromMe = message.fromUserId === me._id;
   return (
@@ -356,12 +471,14 @@ const ChatWrapper = ({
     >
       <ChatBubbleAnimated
         entering={fromMe ? BounceInRight : BounceInLeft}
+        callback={callback}
         type={type}
         message={message}
         sender={sender}
         me={me}
         isPreviousMessageFromSameUser={isPreviousMessageFromSameUser}
         isNextMessageFromSameUser={isNextMessageFromSameUser}
+        isLastMessage={isLastMessage}
       />
     </View>
   );

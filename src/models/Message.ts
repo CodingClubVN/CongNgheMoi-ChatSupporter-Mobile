@@ -3,7 +3,7 @@ import { IUser } from "./User";
 export interface IMessage {
   conversationId: string
   createdAt: string
-  content: string
+  content: string | any[]
   type: string
   description?: string
   fromUserId: string

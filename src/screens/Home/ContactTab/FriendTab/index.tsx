@@ -21,7 +21,7 @@ const FriendTab = () => {
       {
         friend.map((item: any, index: number) => {
           return (
-            <CUser key={index} user={item} />
+            <CUser key={index} user={item.friend} />
           )
         })
       }

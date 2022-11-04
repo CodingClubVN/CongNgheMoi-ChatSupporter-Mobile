@@ -32,6 +32,7 @@ export function* GET_MESSAGES({ payload }) {
 }
 
 export function* SEND_MESSAGE({ payload }) {
+  console.log('payload', payload)
   yield put({
     type: actions.SET_STATE,
     payload: {
@@ -39,19 +40,20 @@ export function* SEND_MESSAGE({ payload }) {
     }
   })
   let res = null
-  if (payload.message.type !== 'text') {
-    console.log(payload.message.file)
-    const formData = new FormData()
-    formData.append('file', {
-      uri: payload.message.file.uri,
-      type: payload.message.file.type,
-      name: payload.message.file.name
-    })
-    formData.append('type', payload.message.type)
-    res = yield call(sendMediaMessageToConversation, payload.conversationId, formData)
-  } else {
-    res = yield call(sendMessageToConversation, payload.conversationId, payload.message)
+  // if (payload.message.type !== 'text') {
+  console.log(payload.message.files)
+  const formData = new FormData()
+  for (file of payload.message.files) {
+    formData.append('files', file)
   }
+  formData.append('type', payload.message.type)
+  formData.append('content', payload.message.content)
+  console.log('formData', formData.getAll('files'))
+  res = yield call(sendMediaMessageToConversation, payload.conversationId, formData)
+  // } else {
+  // res = yield call(sendMessageToConversation, payload.conversationId, payload.message)
+  // }
+  console.log(res)
   if (res?.error || res?.statusCode === 500) {
     yield put({
       type: actions.SET_STATE,

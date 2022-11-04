@@ -123,7 +123,14 @@ const SearchUserModal = ({
               {
                 users?.map((user: any, index: number) => {
                   return (
-                    <CUserResult key={index} user={user} />
+                    <CUserResult callback={() => {
+                      dispatch({
+                        type: actions.GET_USERS,
+                        payload: {
+                          search: searchInput,
+                        }
+                      })
+                    }} key={index} user={user} />
                   )
                 })
               }

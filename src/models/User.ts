@@ -27,6 +27,7 @@ export interface IUserResponse {
   account: IAccountResponse
   updatedAt: string
   createdAt: string
+  friendRequestStatus: string
 }
 
 export interface IUserCreate {

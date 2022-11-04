@@ -64,7 +64,6 @@ const Conversation = ({
       // const file = await getFileFromUri(result.uri);
       const blob = await fetchImageFromUri(result.uri);
       const file = createFileFromBlob(blob);
-      console.log('file', file)
       setImage(result.uri);
 
       handleSendMessage({
@@ -123,7 +122,6 @@ const Conversation = ({
         callback: onSendSuccess,
       },
     });
-    console.log(messages)
     navigation.setOptions({});
     socket.emit('join-room', conversation._id);
     return () => {
@@ -133,7 +131,6 @@ const Conversation = ({
 
   useEffect(() => {
     socket.on('new-message', (data: any) => {
-      console.log('socket new message', data);
       if (data && data.message) {
         // if (messages.find((m: any) => m._id !== data.message._id)) {
         dispatch({

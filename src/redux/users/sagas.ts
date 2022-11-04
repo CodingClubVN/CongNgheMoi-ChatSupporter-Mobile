@@ -10,10 +10,11 @@ export function* GET_USERS({ payload }: any): any {
     },
   })
   const users = yield call(getUsers, payload)
+  console.log(users)
   yield put({
     type: actions.SET_STATE,
     payload: {
-      data: users.data,
+      data: users,
       loading: false,
     },
   })

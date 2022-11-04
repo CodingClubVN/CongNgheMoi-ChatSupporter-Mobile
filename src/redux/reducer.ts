@@ -4,13 +4,15 @@ import user from './user/reducers'
 import conversations from './conversations/reducers'
 import users from './users/reducers'
 import messages from './messages/reducers'
+import friends from './friends/reducers'
 
 const reducer = combineReducers({
   global,
   user,
   conversations,
   users,
-  messages
+  messages,
+  friends,
 })
 
 export default reducer

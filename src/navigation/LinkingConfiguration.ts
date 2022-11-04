@@ -18,6 +18,13 @@ const linking: LinkingOptions<RootStackParamList> = {
           CallTab: 'call',
           ChatTab: 'chat',
           SettingTab: 'setting',
+          ContactTab: {
+            screens: {
+              ContactTabScreen: 'contact',
+              RequestSentScreen: 'friend-request',
+              RequestReceivedScreen: 'friend-request-received',
+            },
+          }
         },
       },
       Modal: 'modal',

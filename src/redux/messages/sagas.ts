@@ -32,7 +32,6 @@ export function* GET_MESSAGES({ payload }: any): any {
 }
 
 export function* SEND_MESSAGE({ payload }: any): any {
-  console.log('payload', payload)
   yield put({
     type: actions.SET_STATE,
     payload: {
@@ -48,7 +47,6 @@ export function* SEND_MESSAGE({ payload }: any): any {
   } else {
     res = yield call(sendMessageToConversation, payload.conversationId, payload.message)
   }
-  console.log('res', res)
   if (res?.error || res?.statusCode === 500) {
     yield put({
       type: actions.SET_STATE,

@@ -30,7 +30,14 @@ export type RootTabParamList = {
   CallTab: undefined,
   ChatTab: undefined,
   SettingTab: undefined,
+  ContactTab: NavigatorScreenParams<ContactTabParamList> | undefined,
 };
+
+export type ContactTabParamList = {
+  FriendTab: undefined,
+  RequestSent: undefined,
+  RequestReceived: undefined,
+}
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList, Screen>,

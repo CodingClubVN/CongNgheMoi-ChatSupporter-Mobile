@@ -9,7 +9,7 @@ export async function getMe() {
 }
 
 export async function getUsers(payload: any) {
-  return apiService.get<IListUserResponse | IInternalServerError>(`/users?search=${payload.search.toLowerCase()}`)
+  return apiService.get<IListUserResponse | IInternalServerError | any>(`/users?search=${payload.search.toLowerCase()}`)
     .then(res => res)
     .catch(err => console.log(err))
 }

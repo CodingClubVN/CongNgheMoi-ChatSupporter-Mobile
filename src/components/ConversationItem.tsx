@@ -4,6 +4,7 @@ import React from "react"
 import { View, Text, TouchableOpacity } from 'react-native'
 import StyleVariables from "../../StyleVariables"
 import { IMessage } from "../models/Message"
+import { IUserA } from "../models/User"
 import ConversationAvatar from "./ConversationAvatar"
 
 const ConversationItem = ({ navigation, type, users, conversation, me }: { navigation: any, type: 'direct' | 'group', users: any[], conversation: any, me: any }) => {
@@ -53,7 +54,9 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
                   fontWeight: 'bold',
                   fontFamily: 'sf-pro-bold',
                   width: 150,
-                }}>{users[0].account.username}</Text>
+                }}>{
+                    users.find((user: IUserA) => user._id !== me._id)?.account
+                      ?.username || 'No name'}</Text>
                 <Text style={{
                   fontSize: 12,
                   color: StyleVariables.colors.gray200,

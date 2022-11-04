@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,16 +6,17 @@ import {
   Modal,
   View,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import StyleVariables from '../../../../../StyleVariables';
 import HideKeyboard from '../../../../components/HideKeyboard';
-import CSelect, { SelectItem } from '../../../../components/CSelect';
 import { useDispatch, useSelector } from 'react-redux';
+import CInput from '../../../../components/CInput';
 import actions from '../../../../redux/users/actions';
-import conversationActions from '../../../../redux/conversations/actions';
+import CUserResult from '../../../../components/CUserResult';
 
-const CreateChat = ({
+const SearchUserModal = ({
   modalVisible,
   setModalVisible,
 }: {
@@ -24,39 +25,10 @@ const CreateChat = ({
 }) => {
   const dispatch = useDispatch();
   const users = useSelector((state: any) => state.users.data);
-  const user = useSelector((state: any) => state.user.data);
-  const [selected, setSelected] = useState<SelectItem[]>([]);
-  const [searchInput, setSearchInput] = useState<string>('');
-  const [data, setData] = useState<SelectItem[]>([]);
+  const [searchInput, setSearchInput] = React.useState('');
 
-  const handleCreateChat = () => {
-    const users = selected.map((item) => item.value);
-    const groupName = selected.slice(0, selected.length >= 2 ? 2 : 1).map((item) => item.label).join(', ').concat(`, ${user.account.username} `).concat(' group');
-    dispatch({
-      type: conversationActions.CREATE_CONVERSATION,
-      payload: {
-        conversation: {
-          conversationName: selected.length >= 2 ? groupName : selected.find(item => item.value !== user._id)?.label,
-          arrayUserId: users,
-        },
-        callback: () => {
-          setModalVisible(false);
-          setSelected([]);
-          setSearchInput('');
-        }
-      }
-    })
-  }
+  const handleSearch = () => {
 
-  const usersToSelection = (users: any) => {
-    if (users && users.length) {
-      return users.map((user: any) => ({
-        label: user.account.username,
-        value: user._id,
-        imgUrl: user.avatarUrl,
-      })).filter((u: any) => u.value !== user._id)
-    }
-    return []
   }
 
   useEffect(() => {
@@ -71,8 +43,7 @@ const CreateChat = ({
   }, [searchInput])
 
   useEffect(() => {
-    console.log('users', users)
-    setData(usersToSelection(users))
+    console.log(users)
   }, [users])
 
   return (
@@ -113,7 +84,7 @@ const CreateChat = ({
                 color: StyleVariables.colors.gray300,
               }}
             >
-              Create new chat
+              Search for users
             </Text>
             <View
               style={{
@@ -128,29 +99,34 @@ const CreateChat = ({
                   width: '85%',
                 }}
               >
-                <CSelect
-                  data={data}
-                  value={selected}
-                  onChange={setSelected}
-                  inputProps={{
-                    placeholder: 'Search users ...',
-                    value: searchInput,
-                    onChangeText: setSearchInput,
-                  }}
-                />
+                <CInput placeholder="Search..." placeholderTextColor={StyleVariables.colors.gray200} value={searchInput} onChangeText={setSearchInput} styles={{
+                  width: '100%',
+                  borderColor: StyleVariables.colors.gray200,
+                }} />
               </View>
               <TouchableOpacity
-                disabled={selected.length === 0}
+                disabled={searchInput === ''}
                 onPress={() => {
-                  handleCreateChat();
+                  handleSearch();
                 }}
               >
                 <Ionicons
                   name="arrow-forward-circle"
                   size={50}
-                  color={StyleVariables.colors.gradientStart}
+                  color={searchInput !== '' ? StyleVariables.colors.gradientStart : StyleVariables.colors.gray200}
                 />
               </TouchableOpacity>
+            </View>
+            <View style={{
+              marginTop: 10
+            }}>
+              {
+                users?.map((user: any, index: number) => {
+                  return (
+                    <CUserResult key={index} user={user} />
+                  )
+                })
+              }
             </View>
           </View>
         </View>
@@ -205,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateChat;
+export default SearchUserModal;

@@ -167,10 +167,10 @@ const ChatBubble = forwardRef(({ type, message, sender, me, isPreviousMessageFro
                   color: '#fff',
                   fontSize: 16,
                   fontFamily: 'sf-pro-reg'
-                }}>{message.content}</Text>
+                }}>{message.content[0]}</Text>
               </View>
             ) : message.type === 'image' ? (
-              <Image source={{ uri: message.content }} style={{
+              <Image source={{ uri: message.content[0] }} style={{
                 height: 200,
                 width: 120,
                 paddingHorizontal: 20,

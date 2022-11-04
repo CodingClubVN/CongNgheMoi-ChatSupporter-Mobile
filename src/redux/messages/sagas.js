@@ -3,7 +3,7 @@ import { all, call, put, takeEvery } from "redux-saga/effects";
 import { getMessagesOfConversation, sendMediaMessageToConversation, sendMessageToConversation } from "../../services/messageService";
 import actions from "./actions";
 
-export function* GET_MESSAGES({ payload }: any): any {
+export function* GET_MESSAGES({ payload }) {
   yield put({
     type: actions.SET_STATE,
     payload: {
@@ -31,17 +31,22 @@ export function* GET_MESSAGES({ payload }: any): any {
   if (payload.callback) yield call(payload.callback)
 }
 
-export function* SEND_MESSAGE({ payload }: any): any {
+export function* SEND_MESSAGE({ payload }) {
   yield put({
     type: actions.SET_STATE,
     payload: {
       loading: true
     }
   })
-  let res: any = null
-  const formData = new FormData()
+  let res = null
   if (payload.message.type !== 'text') {
-    formData.append('file', payload.message.file)
+    console.log(payload.message.file)
+    const formData = new FormData()
+    formData.append('file', {
+      uri: payload.message.file.uri,
+      type: payload.message.file.type,
+      name: payload.message.file.name
+    })
     formData.append('type', payload.message.type)
     res = yield call(sendMediaMessageToConversation, payload.conversationId, formData)
   } else {
@@ -70,7 +75,7 @@ export function* SEND_MESSAGE({ payload }: any): any {
   if (payload.callback) yield call(payload.callback)
 }
 
-export function* SET_USERS({ payload }: any): any {
+export function* SET_USERS({ payload }) {
   yield put({
     type: actions.SET_STATE,
     payload: {
@@ -79,7 +84,7 @@ export function* SET_USERS({ payload }: any): any {
   })
 }
 
-export function* UPDATE_MESSAGES({ payload }: any): any {
+export function* UPDATE_MESSAGES({ payload }) {
   yield put({
     type: actions.SET_STATE,
     payload: {

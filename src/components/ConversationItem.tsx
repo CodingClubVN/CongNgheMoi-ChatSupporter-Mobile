@@ -111,8 +111,8 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
                   marginBottom: 15,
                   fontWeight: 'bold',
                   fontFamily: 'sf-pro-bold',
-                  width: 150,
-                }}>{conversation.conversationName}</Text>
+                  width: 200,
+                }}>{conversation.conversationName.length > 25 ? `${conversation.conversationName.slice(0, 25)}...` : conversation.conversationName}</Text>
                 <Text style={{
                   fontSize: 12,
                   color: StyleVariables.colors.gray200,

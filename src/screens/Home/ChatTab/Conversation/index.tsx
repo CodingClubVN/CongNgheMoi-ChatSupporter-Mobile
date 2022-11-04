@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  ScrollView,
 } from 'react-native';
 import Animated, { useAnimatedRef } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,8 +22,7 @@ import { IUserA } from '../../../../models/User';
 import actions from '../../../../redux/messages/actions';
 import * as ImagePicker from 'expo-image-picker';
 import { LogBox } from 'react-native';
-import getFileFromUri, { createFileFromBlob, fetchImageFromUri } from '../../../../utils/getFileFromUri';
-import moment from 'moment';
+import { fetchImageFromUri } from '../../../../utils/getFileFromUri';
 
 // ignore all warning
 LogBox.ignoreAllLogs();
@@ -61,15 +61,16 @@ const Conversation = ({
     });
 
     if (!result.cancelled) {
-      // const file = await getFileFromUri(result.uri);
-      const blob = await fetchImageFromUri(result.uri);
-      const file = createFileFromBlob(blob);
       setImage(result.uri);
 
       handleSendMessage({
         type: result.type,
-        file,
-      })
+        file: {
+          uri: result.uri,
+          type: result.type,
+          name: result.uri.split('/').pop(),
+        },
+      });
     }
   };
 
@@ -101,10 +102,7 @@ const Conversation = ({
       content: '',
     });
     setTimeout(() => {
-      aref.current.scrollTo({
-        y: 10000,
-        animated: true,
-      });
+      aref.current.scrollToEnd({ animated: true });
     }, 50);
   };
 
@@ -125,8 +123,8 @@ const Conversation = ({
     navigation.setOptions({});
     socket.emit('join-room', conversation._id);
     return () => {
-      socket.emit('leave-room', conversation._id)
-    }
+      socket.emit('leave-room', conversation._id);
+    };
   }, []);
 
   useEffect(() => {
@@ -139,8 +137,7 @@ const Conversation = ({
             message: data.message,
             callback: () => {
               setTimeout(() => {
-                aref.current.scrollTo({
-                  y: 10000,
+                aref.current.scrollToEnd({
                   animated: true,
                 });
               }, 50);
@@ -150,7 +147,7 @@ const Conversation = ({
         // }
       }
     });
-    return () => { };
+    return () => {};
   }, [socket]);
 
   return (
@@ -225,8 +222,8 @@ const Conversation = ({
                 }}
               >
                 {users.length === 2
-                  ? users.find((user: IUserA) => user._id !== me._id)?.account
-                    ?.username
+                  ? users.find((user: IUserA) => user._id !== me?._id)?.account
+                      ?.username
                   : conversation.conversationName || 'No name'}
               </Text>
               <Text
@@ -268,6 +265,8 @@ const Conversation = ({
         </View>
         <Animated.ScrollView
           ref={aref}
+          showsHorizontalScrollIndicator
+          showsVerticalScrollIndicator
           style={{
             flexGrow: 1,
           }}
@@ -363,8 +362,7 @@ const Conversation = ({
               <TextInput
                 onFocus={() => {
                   setTimeout(() => {
-                    aref.current.scrollTo({
-                      y: 10000,
+                    aref.current.scrollToEnd({
                       animated: true,
                     });
                   }, 50);

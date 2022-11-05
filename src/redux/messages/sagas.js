@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 import { all, call, put, takeEvery } from "redux-saga/effects";
-import { getMessagesOfConversation, sendMediaMessageToConversation, sendMessageToConversation } from "../../services/messageService";
+import { forwardMessage, getMessagesOfConversation, recoverMessage, sendMediaMessageToConversation, sendMessageToConversation } from "../../services/messageService";
 import actions from "./actions";
 
 export function* GET_MESSAGES({ payload }) {
@@ -96,11 +96,29 @@ export function* UPDATE_MESSAGES({ payload }) {
   if (payload.callback) yield call(payload.callback)
 }
 
+export function* RECOVER_MESSAGE({ payload }) {
+  const res = yield call(recoverMessage, payload.messageId)
+  console.log(res)
+  if (res?.statusCode === 200) {
+    Alert.alert('Success', 'Message recovered')
+  }
+}
+
+export function* FORWARD_MESSAGE({ payload }) {
+  const res = yield call(forwardMessage, payload.messageId, payload.conversationId)
+  console.log(res)
+  if (res?.statusCode === 200) {
+    Alert.alert('Success', 'Message forwarded')
+  }
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.GET_MESSAGES, GET_MESSAGES),
     takeEvery(actions.SEND_MESSAGE, SEND_MESSAGE),
     takeEvery(actions.SET_USERS, SET_USERS),
-    takeEvery(actions.UPDATE_MESSAGES, UPDATE_MESSAGES)
+    takeEvery(actions.UPDATE_MESSAGES, UPDATE_MESSAGES),
+    takeEvery(actions.RECOVER_MESSAGE, RECOVER_MESSAGE),
+    takeEvery(actions.FORWARD_MESSAGE, FORWARD_MESSAGE)
   ])
 }

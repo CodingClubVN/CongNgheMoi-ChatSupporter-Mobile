@@ -5,6 +5,8 @@ const actions = {
   UPDATE_MESSAGES: 'messages/UPDATE_MESSAGES',
   SET_USERS: 'messages/GET_USERS',
   UPDATE_USERS: 'messages/UPDATE_USERS',
+  RECOVER_MESSAGE: 'messages/RECOVER_MESSAGE',
+  FORWARD_MESSAGE: 'messages/FORWARD_MESSAGE',
 }
 
 export default actions

@@ -29,4 +29,24 @@ const sendMediaMessageToConversation = async (conversationId: string, message: a
   }
 }
 
-export { getMessagesOfConversation, sendMessageToConversation, sendMediaMessageToConversation };
+const recoverMessage = async (messageId: string) => {
+  try {
+    const res = await apiService.put<any, any>(`/messages/${messageId}/recover`, {})
+    return res
+  } catch (err) {
+    return console.log(err)
+  }
+}
+
+const forwardMessage = async (messageId: string, conversationId: string) => {
+  try {
+    const res = await apiService.post<any, any>(`/messages/tranfer/conversation/${conversationId}`, {
+      messageId
+    })
+    return res
+  } catch (err) {
+    return console.log(err)
+  }
+}
+
+export { getMessagesOfConversation, sendMessageToConversation, sendMediaMessageToConversation, recoverMessage, forwardMessage };

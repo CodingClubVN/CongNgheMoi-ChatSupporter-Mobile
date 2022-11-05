@@ -1,6 +1,7 @@
 import { IUser } from "./User";
 
 export interface IMessage {
+  _id?: string;
   conversationId: string
   createdAt: string
   content: string | any[]

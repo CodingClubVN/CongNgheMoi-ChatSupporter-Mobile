@@ -5,6 +5,7 @@ const actions = {
   LOGOUT: 'user/LOGOUT',
   GET_CURRENT_USER: 'user/GET_CURRENT_USER',
   AUTO_LOGIN: 'user/AUTO_LOGIN',
+  UPDATE_PROFILE: 'user/UPDATE_PROFILE',
 }
 
 export default actions

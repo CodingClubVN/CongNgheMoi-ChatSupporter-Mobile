@@ -17,7 +17,13 @@ const linking: LinkingOptions<RootStackParamList> = {
         screens: {
           CallTab: 'call',
           ChatTab: 'chat',
-          SettingTab: 'setting',
+          SettingTabStack: {
+            screens: {
+              SettingTab: 'settings',
+              Profile: 'profile',
+              EditProfile: 'edit-profile',
+            }
+          },
           ContactTab: {
             screens: {
               ContactTabScreen: 'contact',

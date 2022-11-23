@@ -13,3 +13,9 @@ export async function getUsers(payload: any) {
     .then(res => res)
     .catch(err => console.log(err))
 }
+
+export async function updateUserProfile(id: string, payload: any) {
+  return apiService.putFormData(`/users/${id}`, payload)
+    .then(res => res)
+    .catch(err => console.log(err))
+}

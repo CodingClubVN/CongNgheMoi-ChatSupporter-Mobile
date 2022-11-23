@@ -17,6 +17,8 @@ export interface IUserA {
   account?: IAccountResponse
   updatedAt?: string
   createdAt?: string
+  about?: string
+  yearOrBirth? : number
 }
 export interface IUserResponse {
   _id: string

@@ -19,6 +19,7 @@ export type RootStackParamList = {
   NotFound: undefined;
   Auth: NavigatorScreenParams<AuthStackParamList> | undefined;
   Conversation: undefined;
+  Profile: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -29,7 +30,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 export type RootTabParamList = {
   CallTab: undefined,
   ChatTab: undefined,
-  SettingTab: undefined,
+  SettingTabStack: NavigatorScreenParams<SettingTabParamList> | undefined,
   ContactTab: NavigatorScreenParams<ContactTabParamList> | undefined,
 };
 
@@ -37,6 +38,12 @@ export type ContactTabParamList = {
   FriendTab: undefined,
   RequestSent: undefined,
   RequestReceived: undefined,
+}
+
+export type SettingTabParamList = {
+  SettingTab: undefined,
+  Profile: undefined,
+  EditProfile: undefined,
 }
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<

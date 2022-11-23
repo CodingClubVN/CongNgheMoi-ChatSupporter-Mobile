@@ -2,7 +2,7 @@ import { ActionSheetIOS, Alert } from "react-native";
 import { all, call, put, takeEvery } from "redux-saga/effects";
 import { login, register } from "../../services/authService";
 import storageService from "../../services/storageService";
-import { getMe } from "../../services/userService";
+import { getMe, updateUserProfile } from "../../services/userService";
 import actions from "./actions";
 import conversationActions from "../conversations/actions";
 
@@ -121,12 +121,48 @@ export function* AUTO_LOGIN({ payload }: any): any {
   }
 }
 
+export function* UPDATE_PROFILE({ payload }: any): any {
+  yield put({
+    type: actions.SET_STATE,
+    payload: {
+      loading: true
+    }
+  })
+  const formData = new FormData()
+  if (payload.data?.avatar) {
+    formData.append('avatar', payload.data.avatar)
+  }
+  formData.append('fullname', payload.data.fullname)
+  formData.append('yearOfBirth', payload.data.yearOfBirth)
+  formData.append('phone', payload.data.phone)
+  formData.append('about', payload.data.about)
+  console.log(formData.getAll('avatar'))
+
+  const res = yield call(updateUserProfile, payload.id, formData)
+  if (res?._id) {
+    res.avatarUrl += `&${new Date().getTime()}=0`
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        data: res,
+        loading: false
+      }
+    })
+    Alert.alert('Success', 'Update profile successful!')
+    if (payload.callback) yield call(payload.callback)
+  } else {
+    Alert.alert('Fail', 'Cannot update profile')
+    console.log(res)
+  }
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.LOGIN, LOGIN),
     takeEvery(actions.GET_CURRENT_USER, GET_CURRENT_USER),
     takeEvery(actions.REGISTER, REGISTER),
     takeEvery(actions.LOGOUT, LOGOUT),
-    takeEvery(actions.AUTO_LOGIN, AUTO_LOGIN)
+    takeEvery(actions.AUTO_LOGIN, AUTO_LOGIN),
+    takeEvery(actions.UPDATE_PROFILE, UPDATE_PROFILE)
   ])
 }

@@ -25,7 +25,7 @@ const SettingTab = ({ user, navigation }: { user: IUserA, navigation: any }) => 
   }
 
   const handleOnEditProfile = () => {
-    // TODO: navigate to edit profile screen
+    navigation.navigate('Profile')
   }
 
   return (
@@ -77,7 +77,7 @@ const SettingTab = ({ user, navigation }: { user: IUserA, navigation: any }) => 
             fontFamily: 'sf-pro-reg',
             color: StyleVariables.colors.gray200
           }}>
-            Edit profile
+            View profile
           </Text>
         </View>
       </TouchableOpacity>

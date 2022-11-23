@@ -32,6 +32,8 @@ import LinkingConfiguration from './LinkingConfiguration';
 import FriendTab from '../screens/Home/ContactTab/FriendTab';
 import RequestSent from '../screens/Home/ContactTab/RequestSent';
 import RequestReceived from '../screens/Home/ContactTab/RequestReceived';
+import Profile from '../screens/Home/SettingTab/Profile';
+import EditProfile from '../screens/Home/SettingTab/EditProfile';
 
 export default function Navigation({ colorScheme = 'light' }: { colorScheme: ColorSchemeName }) {
   return (
@@ -60,6 +62,9 @@ function RootNavigator() {
       </Stack.Group>
       <Stack.Screen name="Conversation" component={Conversation} options={{
         headerShown: false
+      }} />
+      <Stack.Screen name="Profile" component={Profile} options={{
+        headerBackTitle: 'Back',
       }} />
     </Stack.Navigator>
   );
@@ -226,15 +231,28 @@ function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="SettingTab"
-        component={SettingTab}
+        name="SettingTabStack"
+        component={SettingTabStackNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="ios-settings-outline" color={color} />,
-          headerTitle: 'Settings'
+          headerTitle: 'Settings',
         }}
       />
     </BottomTab.Navigator>
   );
+}
+
+const SettingTabStack = createNativeStackNavigator<any>();
+
+function SettingTabStackNavigator() {
+  return (
+    <SettingTabStack.Navigator initialRouteName='SettingTab'>
+      <SettingTabStack.Screen name="SettingTab" component={SettingTab} options={{ headerShown: false }} />
+      <SettingTabStack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+      <SettingTabStack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
+      {/* <SettingTabStack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} /> */}
+    </SettingTabStack.Navigator>
+  )
 }
 
 /**

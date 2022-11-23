@@ -3,17 +3,20 @@ import React from 'react'
 import { Text, StyleSheet, TouchableOpacity } from 'react-native'
 import StyleVariables from '../../StyleVariables'
 
-const CButton = ({ btnProps, title, disabled, textStyles = {} }: { btnProps: any, title: string, disabled?: boolean | any, textStyles?: any }) => {
+const CButton = ({ btnProps, title, disabled, textStyles = {}, children }: any) => {
   return (
-    <TouchableOpacity disabled={disabled} {...btnProps} style={styles.pressableWrapper}>
+    <TouchableOpacity disabled={disabled} {...btnProps} style={{...styles.pressableWrapper, ...btnProps.style}}>
       <LinearGradient
         colors={[!disabled ? StyleVariables.colors.gradientEnd : StyleVariables.colors.gray300, !disabled ? StyleVariables.colors.gradientStart : StyleVariables.colors.gray100]}
         start={[0, 0.1]}
         end={[1, 0.9]}
         style={styles.btnWrapper}>
-        <Text style={{ ...styles.btnText, ...textStyles }}>
-          {title}
-        </Text>
+        <>
+          {children}
+          <Text style={{ ...styles.btnText, ...textStyles }}>
+            {title}
+          </Text>
+        </>
       </LinearGradient>
     </TouchableOpacity>
   )
@@ -29,7 +32,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    flexDirection: 'row'
   },
   btnText: {
     fontSize: 20,

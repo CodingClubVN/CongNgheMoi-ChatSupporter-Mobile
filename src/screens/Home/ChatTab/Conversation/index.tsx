@@ -23,6 +23,7 @@ import actions from '../../../../redux/messages/actions';
 import * as ImagePicker from 'expo-image-picker';
 import { LogBox } from 'react-native';
 import { fetchImageFromUri } from '../../../../utils/getFileFromUri';
+import ConversationDetail from '../ConversationDetail';
 
 // ignore all warning
 LogBox.ignoreAllLogs();
@@ -39,6 +40,7 @@ const Conversation = ({
   const dispatch = useDispatch();
   const messages = useSelector((state: any) => state.messages.messages);
   const [image, setImage] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [newMessage, setNewMessage] = React.useState<any>({
     content: '',
     type: 'text',
@@ -249,19 +251,21 @@ const Conversation = ({
                 height: 45,
               }}
             >
-              <Text
-                style={{
-                  fontFamily: 'sf-pro-bold',
-                  fontSize: 16,
-                  marginBottom: 7,
-                  maxWidth: 150,
-                }}
-              >
-                {users.length === 2
-                  ? users.find((user: IUserA) => user._id !== me?._id)?.account
-                    ?.username
-                  : conversation.conversationName || 'No name'}
-              </Text>
+              <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <Text
+                  style={{
+                    fontFamily: 'sf-pro-bold',
+                    fontSize: 16,
+                    marginBottom: 7,
+                    maxWidth: 150,
+                  }}
+                >
+                  {users.length === 2
+                    ? users.find((user: IUserA) => user._id !== me?._id)?.account
+                      ?.username
+                    : conversation.conversationName || 'No name'}
+                </Text>
+              </TouchableOpacity>
               <Text
                 style={{
                   fontFamily: 'sf-pro-reg',
@@ -299,6 +303,7 @@ const Conversation = ({
             </TouchableOpacity>
           </View>
         </View>
+        <ConversationDetail conversation={conversation} modalVisible={modalVisible} setModalVisible={setModalVisible} />
         <Animated.ScrollView
           ref={aref}
           showsHorizontalScrollIndicator

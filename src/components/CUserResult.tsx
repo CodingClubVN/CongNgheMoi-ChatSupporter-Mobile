@@ -138,7 +138,7 @@ const CUserResult = ({ user, callback }: any) => {
               <Ionicons name="person-remove-outline" size={24} color={StyleVariables.colors.gradientStart} />
             </TouchableOpacity>
           ) : user.friendRequestStatus === 'request sent' ? (
-            <TouchableOpacity onPress={() => handleCancelRequest()} style={{
+                <TouchableOpacity onPress={() => callback ? callback() : handleCancelRequest()} style={{
               width: 50,
               height: 50,
               alignItems: 'center',

@@ -9,10 +9,13 @@ import ConversationAvatar from "./ConversationAvatar"
 
 const ConversationItem = ({ navigation, type, users, conversation, me }: { navigation: any, type: 'direct' | 'group', users: any[], conversation: any, me: any }) => {
   const handleConversationSelect = () => {
-    navigation.navigate('Conversation', {
-      users,
-      type,
-      conversation,
+    navigation.navigate('ConversationStack', {
+      screen: 'Conversation',
+      params: {
+        users,
+        type,
+        conversation,
+      }
     })
   }
 
@@ -63,7 +66,7 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
                   fontFamily: 'sf-pro-reg'
                 }}>
                   {
-                    conversation.lastMessage ? getLastMessageContent(conversation.lastMessage, type) : 'No messages yet'
+                    conversation.lastMessage ? getLastMessageContent(conversation.lastMessage, type).slice(0, 40) + '...' : 'No messages yet'
                   }
                 </Text>
               </View>
@@ -119,7 +122,7 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
                   fontFamily: 'sf-pro-reg'
                 }}>
                   {
-                    conversation.lastMessage ? getLastMessageContent(conversation.lastMessage) : 'No message'
+                    conversation.lastMessage ? getLastMessageContent(conversation.lastMessage).slice(0, 40) + '...' : 'No message'
                   }
                 </Text>
               </View>

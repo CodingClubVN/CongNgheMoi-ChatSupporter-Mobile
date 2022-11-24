@@ -24,17 +24,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { LogBox } from 'react-native';
 import { fetchImageFromUri } from '../../../../utils/getFileFromUri';
 import ConversationDetail from '../ConversationDetail';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 // ignore all warning
 LogBox.ignoreAllLogs();
 
-const Conversation = ({
-  route,
-  navigation,
-}: {
-  route: any;
-  navigation: any;
-}) => {
+const Conversation = () => {
+  const route = useRoute<any>();
+  const navigation = useNavigation<any>();
   const { type, conversation, users } = route.params;
   const me = useSelector((state: any) => state.user.data);
   const dispatch = useDispatch();
@@ -245,27 +242,35 @@ const Conversation = ({
               urls={users.map((u: { avatarUrl: any }) => u.avatarUrl)}
               size={50}
             />
-            <View
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('ConversationStack', {
+                  screen: 'ConversationDetail',
+                  params: {
+                    users,
+                    type,
+                    conversation,
+                  }
+                })
+              }}
               style={{
                 marginLeft: 10,
                 height: 45,
               }}
             >
-              <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Text
-                  style={{
-                    fontFamily: 'sf-pro-bold',
-                    fontSize: 16,
-                    marginBottom: 7,
-                    maxWidth: 150,
-                  }}
-                >
-                  {users.length === 2
-                    ? users.find((user: IUserA) => user._id !== me?._id)?.account
-                      ?.username
-                    : conversation.conversationName || 'No name'}
-                </Text>
-              </TouchableOpacity>
+              <Text
+                style={{
+                  fontFamily: 'sf-pro-bold',
+                  fontSize: 16,
+                  marginBottom: 7,
+                  maxWidth: 150,
+                }}
+              >
+                {users.length === 2
+                  ? users.find((user: IUserA) => user._id !== me?._id)?.account
+                    ?.username
+                  : conversation.conversationName || 'No name'}
+              </Text>
               <Text
                 style={{
                   fontFamily: 'sf-pro-reg',
@@ -277,7 +282,7 @@ const Conversation = ({
                   ? 'Online'
                   : `Online ${Math.floor(Math.random() * 60)} minutes ago`}
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
           <View
             style={{
@@ -303,7 +308,6 @@ const Conversation = ({
             </TouchableOpacity>
           </View>
         </View>
-        <ConversationDetail conversation={conversation} modalVisible={modalVisible} setModalVisible={setModalVisible} />
         <Animated.ScrollView
           ref={aref}
           showsHorizontalScrollIndicator
@@ -333,6 +337,22 @@ const Conversation = ({
               />
             );
           })}
+          <ChatWrapper
+            message={{
+              content: ['Message unsent!'],
+              type: 'recover',
+              fromUserId: me._id,
+              conversationId: conversation._id,
+              createdAt: new Date().getTime().toString(),
+            }}
+            callback={callback}
+            sender={me}
+            me={me}
+            type={type}
+            isPreviousMessageFromSameUser={true}
+            isNextMessageFromSameUser={true}
+            isLastMessage={true}
+          />
         </Animated.ScrollView>
         <KeyboardAvoidingView
           keyboardVerticalOffset={20}

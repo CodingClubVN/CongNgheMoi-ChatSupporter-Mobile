@@ -26,6 +26,7 @@ const linking: LinkingOptions<RootStackParamList> = {
           },
           ContactTab: {
             screens: {
+              Contact: 'contact-native',
               ContactTabScreen: 'contact',
               RequestSentScreen: 'friend-request',
               RequestReceivedScreen: 'friend-request-received',
@@ -42,7 +43,16 @@ const linking: LinkingOptions<RootStackParamList> = {
           RegisterConfirm: 'registerConfirm',
           OTPConfirm: 'otpConfirm',
         }
-      }
+      },
+      ConversationStack: {
+        screens: {
+          Conversation: 'conversation',
+          ConversationDetail: 'conversation-detail',
+          ManageMembers: 'manage-members',
+          MediaLibrary: 'media-library',
+        }
+      },
+      VideoCall: 'video-call',
     },
   },
 };

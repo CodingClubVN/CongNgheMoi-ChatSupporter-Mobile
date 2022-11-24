@@ -274,6 +274,80 @@ const ChatBubble = forwardRef(
                 {message.content[0]}
               </Text>
             </View>
+          ) : message.type === 'recover' ? (
+            <View style={{
+              position: 'relative'
+            }}>
+              <LinearGradient
+                start={[1, -1]}
+                end={[-1, 1]}
+                // locations={[0.6, 0.7]}
+                colors={[
+                  StyleVariables.colors.gray200,
+                  StyleVariables.colors.gray300,
+                ]}
+                style={{
+                  width: 80,
+                  height: 45,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                  backgroundColor: StyleVariables.colors.gradientEnd,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderTopLeftRadius: 25,
+                  borderTopRightRadius: 25,
+                  borderBottomLeftRadius: 25,
+                  borderBottomRightRadius: 10,
+                  alignSelf: 'flex-end'
+                }}
+              >
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 16,
+                    fontFamily: 'sf-pro-reg',
+                  }}
+                >
+                  Hello
+                </Text>
+              </LinearGradient>
+              <LinearGradient
+                start={[1, -1]}
+                end={[-1, 1]}
+                // locations={[0.6, 0.7]}
+                colors={[
+                  StyleVariables.colors.gradientEnd,
+                  StyleVariables.colors.gradientStart,
+                ]}
+                style={{
+                  height: 45,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                  backgroundColor: StyleVariables.colors.gradientEnd,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderTopLeftRadius: 25,
+                  borderTopRightRadius: 25,
+                  borderBottomLeftRadius: 25,
+                  borderBottomRightRadius: 10,
+                  zIndex: 100,
+                  position: 'absolute',
+                  top: 30,
+                  width: 150,
+                  right: 0
+                }}
+              >
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 16,
+                    fontFamily: 'sf-pro-reg',
+                  }}
+                >
+                  Okay ban oi
+                </Text>
+              </LinearGradient>
+            </View>
           ) : null
         ) : (
           <>

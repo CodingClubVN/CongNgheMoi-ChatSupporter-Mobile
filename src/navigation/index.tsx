@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { ColorSchemeName, TouchableOpacity, View, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import StyleVariables from '../../StyleVariables';
-import { RootStackParamList, AuthStackParamList, RootTabParamList, RootTabScreenProps, ContactTabParamList } from '../../types';
+import { RootStackParamList, AuthStackParamList, RootTabParamList, RootTabScreenProps, ContactTabParamList, ChatStackParamList } from '../../types';
 import actions from '../redux/user/actions';
 
 import LoginScreen from '../screens/Auth/Login/Login';
@@ -35,6 +35,11 @@ import RequestReceived from '../screens/Home/ContactTab/RequestReceived';
 import Profile from '../screens/Home/SettingTab/Profile';
 import EditProfile from '../screens/Home/SettingTab/EditProfile';
 import OTPConfirm from '../screens/Auth/OTPConfirm';
+import ConversationDetail from '../screens/Home/ChatTab/ConversationDetail';
+import ManageMembers from '../screens/Home/ChatTab/ConversationDetail/ManageMembers';
+import MediaLibrary from '../screens/Home/ChatTab/ConversationDetail/Media';
+import ContactNative from '../screens/Home/ContactTab/Contact';
+import VideoCall from '../screens/Home/VideoCall';
 
 export default function Navigation({ colorScheme = 'light' }: { colorScheme: ColorSchemeName }) {
   return (
@@ -55,13 +60,14 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator initialRouteName='Auth'>
+      <Stack.Screen name="VideoCall" component={VideoCall} options={{ headerShown: false }} />
       <Stack.Screen name="Auth" component={AuthNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>
-      <Stack.Screen name="Conversation" component={Conversation} options={{
+      <Stack.Screen name="ConversationStack" component={ChatTabStackNavigator} options={{
         headerShown: false
       }} />
       <Stack.Screen name="Profile" component={Profile} options={{
@@ -76,17 +82,16 @@ const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 
 function AuthNavigator({ navigation }: any) {
   const dispatch = useDispatch()
-  // TODO: remove
-  // dispatch({
-  //   type: actions.AUTO_LOGIN,
-  //   payload: {
-  //     callback: () => {
-  //       navigation.navigate('Root')
-  //     }
-  //   }
-  // })
+  dispatch({
+    type: actions.AUTO_LOGIN,
+    payload: {
+      callback: () => {
+        navigation.navigate('Root')
+      }
+    }
+  })
   return (
-    <AuthStack.Navigator initialRouteName='OTPConfirm'>
+    <AuthStack.Navigator initialRouteName='Login'>
       <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <AuthStack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
       <AuthStack.Screen name="RegisterConfirm" component={RegisterConfirmScreen} options={{ headerShown: false }} />
@@ -118,6 +123,13 @@ function ContactTopTabNavigator() {
       }}
     >
       <ContactTopTab.Screen
+        name="Contact"
+        component={ContactNative}
+        options={{
+          title: 'In Contact',
+        }}
+      />
+      <ContactTopTab.Screen
         name="FriendTab"
         component={FriendTab}
         options={{
@@ -128,7 +140,7 @@ function ContactTopTabNavigator() {
         name="RequestSent"
         component={RequestSent}
         options={{
-          title: 'Request sent'
+          title: 'Sent'
         }}
       />
       <ContactTopTab.Screen
@@ -255,6 +267,18 @@ function SettingTabStackNavigator() {
       <SettingTabStack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
       {/* <SettingTabStack.Screen name="ChangePassword" component={ChangePassword} options={{ headerShown: false }} /> */}
     </SettingTabStack.Navigator>
+  )
+}
+
+const ChatTabStack = createNativeStackNavigator<ChatStackParamList>();
+function ChatTabStackNavigator() {
+  return (
+    <ChatTabStack.Navigator initialRouteName='Conversation'>
+      <ChatTabStack.Screen name="Conversation" component={Conversation} options={{ headerShown: false }} />
+      <ChatTabStack.Screen name="ConversationDetail" component={ConversationDetail} options={{ headerShown: true, headerBackButtonMenuEnabled: true, headerBackTitleVisible: false, headerTitle: '' }} />
+      <ChatTabStack.Screen name="ManageMembers" component={ManageMembers} options={{ headerShown: true, headerBackButtonMenuEnabled: true, headerBackTitleVisible: false, headerTitle: '' }} />
+      <ChatTabStack.Screen name="MediaLibrary" component={MediaLibrary} options={{ headerShown: true, headerBackButtonMenuEnabled: true, headerBackTitleVisible: false, headerTitle: 'Media' }} />
+    </ChatTabStack.Navigator>
   )
 }
 

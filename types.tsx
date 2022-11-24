@@ -18,8 +18,9 @@ export type RootStackParamList = {
   Modal: undefined;
   NotFound: undefined;
   Auth: NavigatorScreenParams<AuthStackParamList> | undefined;
-  Conversation: undefined;
   Profile: undefined;
+  ConversationStack: NavigatorScreenParams<ChatStackParamList> | undefined;
+  VideoCall: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -34,10 +35,18 @@ export type RootTabParamList = {
   ContactTab: NavigatorScreenParams<ContactTabParamList> | undefined,
 };
 
+export type ChatStackParamList = {
+  Conversation: undefined,
+  ConversationDetail: undefined,
+  ManageMembers: undefined,
+  MediaLibrary: undefined,
+}
+
 export type ContactTabParamList = {
   FriendTab: undefined,
   RequestSent: undefined,
   RequestReceived: undefined,
+  Contact: undefined,
 }
 
 export type SettingTabParamList = {

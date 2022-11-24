@@ -34,6 +34,7 @@ import RequestSent from '../screens/Home/ContactTab/RequestSent';
 import RequestReceived from '../screens/Home/ContactTab/RequestReceived';
 import Profile from '../screens/Home/SettingTab/Profile';
 import EditProfile from '../screens/Home/SettingTab/EditProfile';
+import OTPConfirm from '../screens/Auth/OTPConfirm';
 
 export default function Navigation({ colorScheme = 'light' }: { colorScheme: ColorSchemeName }) {
   return (
@@ -53,7 +54,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName='Auth'>
       <Stack.Screen name="Auth" component={AuthNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
@@ -75,19 +76,21 @@ const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 
 function AuthNavigator({ navigation }: any) {
   const dispatch = useDispatch()
-  dispatch({
-    type: actions.AUTO_LOGIN,
-    payload: {
-      callback: () => {
-        navigation.navigate('Root')
-      }
-    }
-  })
+  // TODO: remove
+  // dispatch({
+  //   type: actions.AUTO_LOGIN,
+  //   payload: {
+  //     callback: () => {
+  //       navigation.navigate('Root')
+  //     }
+  //   }
+  // })
   return (
-    <AuthStack.Navigator>
+    <AuthStack.Navigator initialRouteName='OTPConfirm'>
       <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <AuthStack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
       <AuthStack.Screen name="RegisterConfirm" component={RegisterConfirmScreen} options={{ headerShown: false }} />
+      <AuthStack.Screen name="OTPConfirm" component={OTPConfirm} options={{ headerShown: false }} />
     </AuthStack.Navigator>
   )
 }

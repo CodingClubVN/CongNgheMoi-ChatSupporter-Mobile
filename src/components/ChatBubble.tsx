@@ -11,6 +11,12 @@ import { downloadFile, downloadFileAsync } from '../utils/fs';
 import sharingWithExpoUri from '../utils/sharing';
 import { useDispatch } from 'react-redux';
 import actions from '../redux/messages/actions';
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from 'react-native-popup-menu';
 
 const ChatBubble = forwardRef(
   (
@@ -61,25 +67,6 @@ const ChatBubble = forwardRef(
       });
     };
 
-    const recoverMessage = () => {
-      dispatch({
-        type: actions.RECOVER_MESSAGE,
-        payload: {
-          messageId: message._id,
-        },
-      });
-    };
-
-    const forwardMessage = () => {
-      dispatch({
-        type: actions.FORWARD_MESSAGE,
-        payload: {
-          messageId: message._id,
-          conversationId: message.conversationId,
-        },
-      });
-    };
-
     useEffect(() => {
       if (message.type === 'image' || message.type === 'video') {
         getImageSize(message.content[0])
@@ -119,7 +106,7 @@ const ChatBubble = forwardRef(
     return (
       <View
         style={{
-          maxWidth: '60%',
+          maxWidth: '100%',
           flexDirection: 'row',
           alignItems: 'center',
         }}
@@ -274,7 +261,7 @@ const ChatBubble = forwardRef(
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: 30,
-                marginLeft: '-70%',
+                zIndex: 1000
               }}
             >
               <Text
@@ -502,23 +489,26 @@ const ChatWrapper = ({
   callback: Function;
   isLastMessage: boolean;
 }) => {
+  const dispatch = useDispatch()
   const fromMe = message.fromUserId === me._id;
-  const MenuItems = [
-    { text: 'Recall', icon: 'home', isTitle: true, onPress: () => {} },
-    { text: 'Forward', icon: 'edit', onPress: () => {} },
-    {
-      text: 'Action 2',
-      icon: 'map-pin',
-      withSeparator: true,
-      onPress: () => {},
-    },
-    {
-      text: 'Action 3',
-      icon: 'trash',
-      isDestructive: true,
-      onPress: () => {},
-    },
-  ];
+  const recoverMessage = () => {
+    dispatch({
+      type: actions.RECOVER_MESSAGE,
+      payload: {
+        messageId: message._id,
+      },
+    });
+  };
+
+  const forwardMessage = () => {
+    dispatch({
+      type: actions.FORWARD_MESSAGE,
+      payload: {
+        messageId: message._id,
+        conversationId: message.conversationId,
+      },
+    });
+  };
   return (
     <View
       style={{
@@ -530,17 +520,28 @@ const ChatWrapper = ({
         flexDirection: 'column',
       }}
     >
-        <ChatBubbleAnimated
-          entering={fromMe ? BounceInRight : BounceInLeft}
-          callback={callback}
-          type={type}
-          message={message}
-          sender={sender}
-          me={me}
-          isPreviousMessageFromSameUser={isPreviousMessageFromSameUser}
-          isNextMessageFromSameUser={isNextMessageFromSameUser}
-          isLastMessage={isLastMessage}
-        />
+      <Menu>
+        <MenuTrigger>
+          <ChatBubbleAnimated
+            entering={fromMe ? BounceInRight : BounceInLeft}
+            callback={callback}
+            type={type}
+            message={message}
+            sender={sender}
+            me={me}
+            isPreviousMessageFromSameUser={isPreviousMessageFromSameUser}
+            isNextMessageFromSameUser={isNextMessageFromSameUser}
+            isLastMessage={isLastMessage}
+          />
+        </MenuTrigger>
+        <MenuOptions>
+          <MenuOption onSelect={
+            forwardMessage} text='Forward' />
+          <MenuOption onSelect={recoverMessage} >
+            <Text style={{ color: 'red' }}>Recall</Text>
+          </MenuOption>
+        </MenuOptions>
+      </Menu>
     </View>
   );
 };

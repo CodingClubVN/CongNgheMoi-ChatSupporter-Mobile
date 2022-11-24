@@ -8,6 +8,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import reducer from './src/redux/reducer';
 import sagas from './src/redux/sagas';
+import { MenuProvider } from 'react-native-popup-menu';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -25,12 +26,14 @@ export default function App() {
     return (
       <Provider store={store}>
         <NativeBaseProvider>
-          <SafeAreaProvider>
-            <Navigation colorScheme={colorScheme} />
-            <StatusBar />
-          </SafeAreaProvider>
+          <MenuProvider>
+            <SafeAreaProvider>
+              <Navigation colorScheme={colorScheme} />
+              <StatusBar />
+            </SafeAreaProvider>
+          </MenuProvider>
         </NativeBaseProvider>
-      </Provider>
+      </Provider >
     );
   }
 }

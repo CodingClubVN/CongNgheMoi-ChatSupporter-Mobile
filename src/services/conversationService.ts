@@ -18,14 +18,26 @@ export async function getConversations() {
     return console.log(err);
   }
 }
-export async function addUserToConversation(conversationId: string, users: IConversationAddUser) {
+export async function addUserToConversation(conversationId: string, users: string[]): Promise<any> {
   try {
-    const res = await apiService.put<IConversationAddUser, ISuccessful | IInternalServerError>(`/conversations/${conversationId}/users`, users);
+    const res = await apiService.put<any, any>(`/conversations/${conversationId}/add-user`, {
+      arrayUserId: users
+    });
     return res;
   } catch (err) {
     return console.log(err);
   }
 }
+
+export async function removeUserFromConversation(conversationId: string, userId: string): Promise<any> {
+  try {
+    const res = await apiService.put<any, any>(`/conversations/${conversationId}/users/${userId}/remove-user`, {})
+    return res
+  } catch (err) {
+    return console.log(err)
+  }
+}
+
 export async function getConversation(conversationId: string) {
   try {
     const res = await apiService.get<IConversationResponse | IInternalServerError>(`/conversations/${conversationId}`);

@@ -164,67 +164,51 @@ export function* SEND_OTP({ payload }: any): any {
       loading: true
     }
   })
-  yield put({
-    type: actions.SET_STATE,
-    payload: {
-      loading: false
-    }
-  })
-  if (payload.callback) yield call(payload.callback)
-  yield call(sendOTP, payload.data)
-  // console.log('send', res)
-  // if (res?.success) {
-  //   yield put({
-  //     type: actions.SET_STATE,
-  //     payload: {
-  //       loading: false
-  //     }
-  //   })
-  //   if (payload.callback) yield call(payload.callback)
-  // } else {
-  //   yield put({
-  //     type: actions.SET_STATE,
-  //     payload: {
-  //       loading: false
-  //     }
-  //   })
-  //   Alert.alert('Fail', 'Cannot send OTP')
-  // }
+  const res = yield call(sendOTP, payload.data)
+  if (res?.statusCode === 200) {
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        loading: false
+      }
+    })
+    if (payload.callback) yield call(payload.callback)
+  } else {
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        loading: false
+      }
+    })
+    Alert.alert('Fail', 'Cannot send OTP')
+  }
 }
 
-export function* VALIDATE_OTP({payload}:any):any {
+export function* VALIDATE_OTP({ payload }: any): any {
   yield put({
     type: actions.SET_STATE,
     payload: {
       loading: true
     }
-  }) 
+  })
   const res = yield call(validateOTP, payload.data)
-  yield put({
-    type: actions.SET_STATE,
-    payload: {
-      loading: false
-    }
-  }) 
-  if (payload.callback) yield call(payload.callback)
-  // console.log('validate', res)
-  // if (res?.success) {
-  //   yield put({
-  //     type: actions.SET_STATE,
-  //     payload: {
-  //       loading: false
-  //     }
-  //   })
-  //   if (payload.callback) yield call(payload.callback)
-  // } else {
-  //   yield put({
-  //     type: actions.SET_STATE,
-  //     payload: {
-  //       loading: false
-  //     }
-  //   })
-  //   Alert.alert('Fail', 'Cannot validate OTP')
-  // }
+  if (res?.statusCode === 200) {
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        loading: false
+      }
+    })
+    if (payload.callback) yield call(payload.callback)
+  } else {
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        loading: false
+      }
+    })
+    Alert.alert('Fail', 'Cannot validate OTP')
+  }
 }
 
 export default function* root() {

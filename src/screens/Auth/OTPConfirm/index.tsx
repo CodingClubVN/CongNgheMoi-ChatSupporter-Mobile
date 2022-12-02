@@ -155,6 +155,7 @@ const OTPConfirm = ({ navigation }: any) => {
                       justifyContent: 'center'
                     }}>
                       <TextInput
+                        keyboardType={'numeric'}
                         onChangeText={(text) => {
                           setOTP({ ...otp, otp1: text });
                           if (text.length > 0) {
@@ -177,6 +178,7 @@ const OTPConfirm = ({ navigation }: any) => {
                       justifyContent: 'center'
                     }}>
                       <TextInput
+                        keyboardType='numeric'
                         ref={otp2}
                         onChangeText={(text) => {
                           setOTP({ ...otp, otp2: text });
@@ -200,6 +202,7 @@ const OTPConfirm = ({ navigation }: any) => {
                       justifyContent: 'center'
                     }}>
                       <TextInput
+                        keyboardType='numeric'
                         onChangeText={(text) => {
                           setOTP({ ...otp, otp3: text });
                           if (text.length > 0) {
@@ -222,6 +225,7 @@ const OTPConfirm = ({ navigation }: any) => {
                       justifyContent: 'center'
                     }}>
                       <TextInput
+                        keyboardType='numeric'
                         onChangeText={(text) => {
                           setOTP({ ...otp, otp4: text });
                           if (text.length > 0) {
@@ -244,6 +248,7 @@ const OTPConfirm = ({ navigation }: any) => {
                       justifyContent: 'center'
                     }}>
                       <TextInput
+                        keyboardType='numeric'
                         onChangeText={(text) => {
                           setOTP({ ...otp, otp5: text });
                           if (text.length > 0) {
@@ -265,14 +270,16 @@ const OTPConfirm = ({ navigation }: any) => {
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      <TextInput onChangeText={(text) => {
+                      <TextInput
+                        keyboardType='numeric'
+                        onChangeText={(text) => {
                           setOTP({ ...otp, otp6: text });
                         }} ref={otp6} maxLength={1} placeholder='0' style={{
-                        fontFamily: 'sf-pro-reg',
-                        fontSize: 24,
-                        color: StyleVariables.colors.gray300,
-                        textAlign: 'center'
-                      }} />
+                          fontFamily: 'sf-pro-reg',
+                          fontSize: 24,
+                          color: StyleVariables.colors.gray300,
+                          textAlign: 'center'
+                        }} />
                     </View>
                   </View>
                 )

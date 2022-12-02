@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { ScrollView, View, Text } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import CUser from '../../../../components/CUser'
+import { io } from "socket.io-client"
 import CUserResult from '../../../../components/CUserResult'
 import actions from '../../../../redux/friends/actions'
 

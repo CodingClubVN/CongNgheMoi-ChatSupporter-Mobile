@@ -1,6 +1,5 @@
-import { useSelector } from "react-redux";
-import { all, call, put, takeEvery } from "redux-saga/effects";
-import { acceptFriendRequest, cancelRequest, getFriendRequest, getFriends, sendFriendRequest } from "../../services/friendsService";
+import { all, call, put, select, takeEvery } from "redux-saga/effects";
+import { acceptFriendRequest, cancelRequest, getFriendRequest, getFriends, rejectFriendRequest, sendFriendRequest } from "../../services/friendsService";
 import actions from "./actions";
 import userActions from '../users/actions'
 
@@ -67,7 +66,6 @@ export function* GET_FRIEND_REQUEST(): any {
     },
   })
   const res = yield call(getFriendRequest)
-  console.log(res)
 
   yield put({
     type: actions.SET_STATE,
@@ -98,23 +96,24 @@ export function* ACCEPT_FRIEND_REQUEST({ payload }: any): any {
 }
 
 export function* REJECT_FRIEND_REQUEST({ payload }: any): any {
-  const friendRequest = useSelector((state: any) => state.friends.friendRequest)
+  const friendRequest = yield select((state: any) => state.friends.friendRequest)
   yield put({
     type: actions.SET_STATE,
     payload: {
       loading: true,
     },
   })
-  const res = yield call(acceptFriendRequest, payload.data)
+  const res = yield call(rejectFriendRequest, payload.data)
   console.log(res)
-
-  yield put({
-    type: actions.SET_STATE,
-    payload: {
-      friendRequest: friendRequest.filter((item: any) => item._id !== payload.data._id),
-      loading: false,
-    },
-  })
+  if (res?.statusCode === 200) {
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        friendRequest: friendRequest.filter((item: any) => item?.fromUser?._id !== payload.data.fromUserId),
+        loading: false,
+      },
+    })
+  }
 }
 
 export function* CANCEL_REQUEST({ payload }: any): any {
@@ -133,6 +132,24 @@ export function* CANCEL_REQUEST({ payload }: any): any {
   if (payload.callback) yield call(payload.callback)
 }
 
+export function* UPDATE_FRIEND_REQUEST({ payload }: any): any {
+  yield put({
+    type: actions.GET_FRIEND_REQUEST,
+  })
+  // const friendRequest = yield select((state: any) => state.friends.friendRequest)
+  // if (!friendRequest.find((item: any) => item?._id === payload.request._id)) {
+  //   const newFriendRequest = [...friendRequest]
+  //   newFriendRequest.unshift(payload.request)
+  //   yield put({
+  //     type: actions.SET_STATE,
+  //     payload: {
+  //       friendRequest: newFriendRequest,
+  //       loading: false
+  //     }
+  //   })
+  // }
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.GET_FRIENDS, GET_FRIENDS),
@@ -141,5 +158,6 @@ export default function* root() {
     takeEvery(actions.ACCEPT_FRIEND_REQUEST, ACCEPT_FRIEND_REQUEST),
     takeEvery(actions.REJECT_FRIEND_REQUEST, REJECT_FRIEND_REQUEST),
     takeEvery(actions.CANCEL_REQUEST, CANCEL_REQUEST),
+    takeEvery(actions.UPDATE_FRIEND_REQUEST, UPDATE_FRIEND_REQUEST)
   ])
 }

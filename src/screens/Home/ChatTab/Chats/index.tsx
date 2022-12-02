@@ -14,10 +14,11 @@ const Chats = ({ navigation }: { navigation: any }) => {
 
   useEffect(() => {
     socket.on('update-conversation', (data: any) => {
+      console.log(data.conversation)
       dispatch({
-        type: actions.SET_STATE,
+        type: actions.UPDATE_CONVERSATION,
         payload: {
-          listData: [data.conversation, ...conversations]
+          conversation: data.conversation
         }
       })
     })

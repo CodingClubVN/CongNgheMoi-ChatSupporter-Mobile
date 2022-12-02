@@ -9,12 +9,13 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ColorSchemeName, TouchableOpacity, View, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import StyleVariables from '../../StyleVariables';
 import { RootStackParamList, AuthStackParamList, RootTabParamList, RootTabScreenProps, ContactTabParamList, ChatStackParamList } from '../../types';
 import actions from '../redux/user/actions';
+import contactActions from '../redux/friends/actions'
 
 import LoginScreen from '../screens/Auth/Login/Login';
 import RegisterScreen from '../screens/Auth/Register/Register';
@@ -40,6 +41,7 @@ import ManageMembers from '../screens/Home/ChatTab/ConversationDetail/ManageMemb
 import MediaLibrary from '../screens/Home/ChatTab/ConversationDetail/Media';
 import ContactNative from '../screens/Home/ContactTab/Contact';
 import VideoCall from '../screens/Home/VideoCall';
+import { io } from 'socket.io-client';
 
 export default function Navigation({ colorScheme = 'light' }: { colorScheme: ColorSchemeName }) {
   return (
@@ -103,7 +105,32 @@ function AuthNavigator({ navigation }: any) {
 const ContactTopTab = createMaterialTopTabNavigator<ContactTabParamList>();
 
 function ContactTopTabNavigator() {
+  const dispatch = useDispatch()
+  const user = useSelector((state: any) => state.user.data)
+  const url = 'https://api.hieud.me'
+  const socket = io(url, { transports: ['websocket', 'polling', 'flashsocket'], query: { userId: user?._id } });
   const requestReceived = useSelector((state: any) => state.friends.friendRequest)
+
+  useEffect(() => {
+    socket.on('update-friend-request', (data: any) => {
+      if (data) {
+        dispatch({
+          type: contactActions.UPDATE_FRIEND_REQUEST,
+          payload: {
+            request: data
+          }
+        })
+      }
+    })
+    socket.on('update-friend', (data: any) => {
+      if (data && data?._id) {
+        dispatch({
+          type: contactActions.GET_FRIENDS
+        })
+      }
+    })
+  }, [socket])
+
   return (
     <ContactTopTab.Navigator
       initialRouteName="FriendTab"
@@ -136,13 +163,13 @@ function ContactTopTabNavigator() {
           title: 'Friends',
         }}
       />
-      <ContactTopTab.Screen
+      {/* <ContactTopTab.Screen
         name="RequestSent"
         component={RequestSent}
         options={{
           title: 'Sent'
         }}
-      />
+      /> */}
       <ContactTopTab.Screen
         name="RequestReceived"
         component={RequestReceived}

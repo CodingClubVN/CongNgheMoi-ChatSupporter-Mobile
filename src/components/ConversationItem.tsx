@@ -26,7 +26,7 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
   const getLastMessageContent = (lastMessage: IMessage, type = 'group') => {
     const notTextTypes = ['image', 'video', 'audio', 'file']
     const from = conversation.lastMessage?.fromUserId === me?._id ? 'Me: ' : `${getLastMessageSender(conversation.lastMessage?.fromUserId)?.account.username}: `
-    const content = notTextTypes.includes(lastMessage.type) ? `Sent ${['i', 'a', 'o', 'u'].includes(lastMessage.type.slice(0, 1)) ? 'an ' : 'a'} ${lastMessage.type}` : lastMessage.content.length > 30 ? `${lastMessage.content.slice(0, 30)}...` : lastMessage.content
+    const content = notTextTypes.includes(lastMessage.type) ? `Sent ${['i', 'a', 'o', 'u'].includes(lastMessage.type.slice(0, 1)) ? 'an ' : 'a'} ${lastMessage.type}` : lastMessage.content[0].length > 30 ? `${lastMessage.content[0]?.slice(0, 30)}...` : lastMessage.content[0]
     return type === 'group' ? from + content : content
   }
 

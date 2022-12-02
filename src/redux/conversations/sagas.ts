@@ -1,5 +1,5 @@
 import { Alert } from "react-native";
-import { all, call, put, take, takeEvery } from "redux-saga/effects";
+import { all, call, put, select, take, takeEvery } from "redux-saga/effects";
 import { addConversation, addUserToConversation, getConversations, removeUserFromConversation } from "../../services/conversationService";
 import actions from "./actions";
 
@@ -23,7 +23,7 @@ export function* GET_CONVERSATIONS(): any {
     yield put({
       type: actions.SET_STATE,
       payload: {
-        listData: res?.data,
+        listData: res?.data.sort((a: any, b: any) => b.updatedAt - a.updatedAt),
         loading: false,
       }
     })
@@ -73,11 +73,38 @@ export function* REMOVE_USER_CONVERSATION({ payload }: any): any {
   })
 }
 
+export function* UPDATE_CONVERSATION({ payload }: any): any {
+  let conversations = yield select((state: any) => state.conversations.listData);
+  console.log(conversations)
+  if (conversations.find((item: any) => item._id === payload.conversation._id)) {
+    const index = conversations.findIndex((item: any) => item._id === payload.conversation._id);
+    console.log(index)
+    // remove old conversation
+    conversations.splice(index, 1);
+    conversations.unshift(payload.conversation);
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        listData: conversations,
+      }
+    })
+  } else {
+    conversations.unshift(payload.conversation);
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        listData: conversations,
+      }
+    })
+  }
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.GET_CONVERSATIONS, GET_CONVERSATIONS),
     takeEvery(actions.CREATE_CONVERSATION, CREATE_CONVERSATION),
     takeEvery(actions.ADD_USER_CONVERSATION, ADD_USER_CONVERSATION),
-    takeEvery(actions.REMOVE_USER_CONVERSATION, REMOVE_USER_CONVERSATION)
+    takeEvery(actions.REMOVE_USER_CONVERSATION, REMOVE_USER_CONVERSATION),
+    takeEvery(actions.UPDATE_CONVERSATION, UPDATE_CONVERSATION)
   ])
 }

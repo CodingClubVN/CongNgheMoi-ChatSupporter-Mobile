@@ -42,7 +42,7 @@ const ChatBubble = forwardRef(
     ref: any
   ) => {
     const dispatch = useDispatch();
-    const fromMe = message.fromUserId === me._id;
+    const fromMe = message.fromUserId === me?._id;
     const [mediaSize, setMediaSize] = useState({ width: 0, height: 0 });
 
     const handleDonwload = async (uri: string) => {
@@ -564,7 +564,7 @@ const ChatWrapper = ({
   isLastMessage: boolean;
 }) => {
   const dispatch = useDispatch()
-  const fromMe = message.fromUserId === me._id;
+  const fromMe = message.fromUserId === me?._id;
   const recoverMessage = () => {
     dispatch({
       type: actions.RECOVER_MESSAGE,

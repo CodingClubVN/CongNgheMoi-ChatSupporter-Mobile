@@ -64,25 +64,18 @@ const RegisterConfirmScreen = ({ route, navigation }: { route: any, navigation: 
   const handleRegister = () => {
     Keyboard.dismiss()
     // TODO: Regex fullname, email, phone
-    if (additional.fullname && additional.email && additional.phone) {
+    if (additional.fullname && (additional.email || additional.phone)) {
       dispatch({
-        type: actions.REGISTER,
+        type: actions.SEND_OTP,
         payload: {
-          user: {
+          data: {
             fullname: additional.fullname,
-            account: {
-              username: account.username,
-              password: account.password
-            },
             email: additional.email,
-            phone: additional.phone
           },
-          callback() {
-            navigation.navigate('Login')
-            setAdditional({
-              fullname: '',
-              email: '',
-              phone: ''
+          callback: () => {
+            navigation.navigate('OTPConfirm', {
+              account,
+              additional
             })
           }
         }
@@ -114,10 +107,10 @@ const RegisterConfirmScreen = ({ route, navigation }: { route: any, navigation: 
             <View style={styles.inputContainer}>
               <CInput placeholder="Fullname" placeholderTextColor={StyleVariables.colors.gray200} value={additional.fullname} onChangeText={handleFullnameChange} />
               <CInput placeholder="Email" placeholderTextColor={StyleVariables.colors.gray200} value={additional.email} onChangeText={handleEmailChange} />
-              <CInput placeholder="Phone" placeholderTextColor={StyleVariables.colors.gray200} value={additional.phone} onChangeText={handlePhoneChange} />
+              <CInput placeholder="Phone (Optional)" placeholderTextColor={StyleVariables.colors.gray200} value={additional.phone} onChangeText={handlePhoneChange} />
             </View>
             <View style={styles.buttonContainer}>
-              <CButton title='Register' btnProps={{
+              <CButton disabled={!additional.fullname && (!additional.email || !additional.phone)} title='Register' btnProps={{
                 onPress: handleRegister
               }} />
               <Button title='Back' onPress={() => {

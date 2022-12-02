@@ -49,7 +49,7 @@ const Conversation = () => {
   const socket = useMemo(() => {
     return io(url, {
       transports: ['websocket', 'polling', 'flashsocket'],
-      query: { userId: me._id },
+      query: { userId: me?._id },
     });
   }, []);
 
@@ -341,7 +341,7 @@ const Conversation = () => {
             message={{
               content: ['Message unsent!'],
               type: 'recover',
-              fromUserId: me._id,
+              fromUserId: me?._id,
               conversationId: conversation._id,
               createdAt: new Date().getTime().toString(),
             }}

@@ -102,7 +102,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
               <CInput secureTextEntry clearTextOnFocus placeholder="Confirm Password" placeholderTextColor={StyleVariables.colors.gray200} value={account.confirmPassword} onChangeText={handleConfirmPasswordChange} />
             </View>
             <View style={styles.buttonContainer}>
-              <CButton title='Next' btnProps={{
+              <CButton disabled={!account.username || !account.password || !account.confirmPassword} title='Next' btnProps={{
                 onPress: handleRegister
               }} />
               <Button title='Login' onPress={handleLogin} color={StyleVariables.colors.black} />

@@ -262,7 +262,7 @@ const EditProfile = () => {
                 type: actions.UPDATE_PROFILE,
                 payload: {
                   data: updatedUser,
-                  id: me._id,
+                  id: me?._id,
                   callback: () => {
                     navigation.goBack()
 

@@ -6,6 +6,8 @@ const actions = {
   GET_CURRENT_USER: 'user/GET_CURRENT_USER',
   AUTO_LOGIN: 'user/AUTO_LOGIN',
   UPDATE_PROFILE: 'user/UPDATE_PROFILE',
+  SEND_OTP: 'user/SEND_OTP',
+  VALIDATE_OTP: 'user/VALIDATE_OTP',
 }
 
 export default actions

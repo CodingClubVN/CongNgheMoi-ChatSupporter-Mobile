@@ -20,3 +20,21 @@ export async function register(user: IUserCreate) {
     return console.log(err);
   }
 }
+
+export async function sendOTP(otpRequest: any) {
+  try {
+    const res = await apiService.post<any, any>("/auth/send-otp", otpRequest);
+    return res
+  } catch (err) {
+    return console.log(err);
+  }
+}
+
+export async function validateOTP(otpRequest: any) {
+  try {
+    const res = await apiService.post<any, any>("/auth/validate-otp", otpRequest);
+    // return res
+  } catch (err) {
+    return console.log(err);
+  }
+}

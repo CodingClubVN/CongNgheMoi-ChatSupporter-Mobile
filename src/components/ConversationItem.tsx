@@ -25,7 +25,7 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
 
   const getLastMessageContent = (lastMessage: IMessage, type = 'group') => {
     const notTextTypes = ['image', 'video', 'audio', 'file']
-    const from = conversation.lastMessage?.fromUserId === me._id ? 'Me: ' : `${getLastMessageSender(conversation.lastMessage?.fromUserId)?.account.username}: `
+    const from = conversation.lastMessage?.fromUserId === me?._id ? 'Me: ' : `${getLastMessageSender(conversation.lastMessage?.fromUserId)?.account.username}: `
     const content = notTextTypes.includes(lastMessage.type) ? `Sent ${['i', 'a', 'o', 'u'].includes(lastMessage.type.slice(0, 1)) ? 'an ' : 'a'} ${lastMessage.type}` : lastMessage.content.length > 30 ? `${lastMessage.content.slice(0, 30)}...` : lastMessage.content
     return type === 'group' ? from + content : content
   }
@@ -58,7 +58,7 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
                   fontFamily: 'sf-pro-bold',
                   width: 150,
                 }}>{
-                    users.find((user: IUserA) => user._id !== me._id)?.account
+                    users.find((user: IUserA) => user._id !== me?._id)?.account
                       ?.username || 'No name'}</Text>
                 <Text style={{
                   fontSize: 12,

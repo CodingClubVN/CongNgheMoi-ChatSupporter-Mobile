@@ -1,6 +1,6 @@
 import { ActionSheetIOS, Alert } from "react-native";
-import { all, call, put, takeEvery } from "redux-saga/effects";
-import { login, register } from "../../services/authService";
+import { all, call, put, take, takeEvery } from "redux-saga/effects";
+import { login, register, sendOTP, validateOTP } from "../../services/authService";
 import storageService from "../../services/storageService";
 import { getMe, updateUserProfile } from "../../services/userService";
 import actions from "./actions";
@@ -40,6 +40,7 @@ export function* GET_CURRENT_USER({ payload }: any): any {
   })
   const user = yield call(getMe)
   if (user?._id) {
+    console.log(user)
     yield put({
       type: actions.SET_STATE,
       payload: {
@@ -156,6 +157,76 @@ export function* UPDATE_PROFILE({ payload }: any): any {
   }
 }
 
+export function* SEND_OTP({ payload }: any): any {
+  yield put({
+    type: actions.SET_STATE,
+    payload: {
+      loading: true
+    }
+  })
+  yield put({
+    type: actions.SET_STATE,
+    payload: {
+      loading: false
+    }
+  })
+  if (payload.callback) yield call(payload.callback)
+  yield call(sendOTP, payload.data)
+  // console.log('send', res)
+  // if (res?.success) {
+  //   yield put({
+  //     type: actions.SET_STATE,
+  //     payload: {
+  //       loading: false
+  //     }
+  //   })
+  //   if (payload.callback) yield call(payload.callback)
+  // } else {
+  //   yield put({
+  //     type: actions.SET_STATE,
+  //     payload: {
+  //       loading: false
+  //     }
+  //   })
+  //   Alert.alert('Fail', 'Cannot send OTP')
+  // }
+}
+
+export function* VALIDATE_OTP({payload}:any):any {
+  yield put({
+    type: actions.SET_STATE,
+    payload: {
+      loading: true
+    }
+  }) 
+  const res = yield call(validateOTP, payload.data)
+  yield put({
+    type: actions.SET_STATE,
+    payload: {
+      loading: false
+    }
+  }) 
+  if (payload.callback) yield call(payload.callback)
+  // console.log('validate', res)
+  // if (res?.success) {
+  //   yield put({
+  //     type: actions.SET_STATE,
+  //     payload: {
+  //       loading: false
+  //     }
+  //   })
+  //   if (payload.callback) yield call(payload.callback)
+  // } else {
+  //   yield put({
+  //     type: actions.SET_STATE,
+  //     payload: {
+  //       loading: false
+  //     }
+  //   })
+  //   Alert.alert('Fail', 'Cannot validate OTP')
+  // }
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.LOGIN, LOGIN),
@@ -163,6 +234,8 @@ export default function* root() {
     takeEvery(actions.REGISTER, REGISTER),
     takeEvery(actions.LOGOUT, LOGOUT),
     takeEvery(actions.AUTO_LOGIN, AUTO_LOGIN),
-    takeEvery(actions.UPDATE_PROFILE, UPDATE_PROFILE)
+    takeEvery(actions.UPDATE_PROFILE, UPDATE_PROFILE),
+    takeEvery(actions.SEND_OTP, SEND_OTP),
+    takeEvery(actions.VALIDATE_OTP, VALIDATE_OTP)
   ])
 }

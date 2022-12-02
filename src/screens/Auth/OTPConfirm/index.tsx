@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import { useRoute } from '@react-navigation/native'
+import React, { useRef, useState } from 'react'
 import { Image, View, Text, Alert, Keyboard, StyleSheet, Platform, Button, KeyboardAvoidingView, TextInput } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import StyleVariables from '../../../../StyleVariables'
@@ -8,20 +9,80 @@ import EButton from '../../../components/EButton'
 import GradientView from '../../../components/GradientView'
 import HideKeyboard from '../../../components/HideKeyboard'
 import { IRegisterAccount } from '../../../models/Account'
+import actions from '../../../redux/user/actions'
 
 const OTPConfirm = ({ navigation }: any) => {
   const logo = require('../../../../assets/images/icon.png')
   const dispatch = useDispatch()
+  const route = useRoute<any>()
   const celebImage = require('../../../../assets/images/celeb.png')
   const loading = useSelector((state: any) => state.user.loading)
   const [showCeleb, setShowCeleb] = useState(false)
+  const { account, additional } = route.params
+  const otp2 = useRef<any>(null)
+  const otp3 = useRef<any>(null)
+  const otp4 = useRef<any>(null)
+  const otp5 = useRef<any>(null)
+  const otp6 = useRef<any>(null)
+  const [otp, setOTP] = useState({
+    otp1: '0',
+    otp2: '0',
+    otp3: '0',
+    otp4: '0',
+    otp5: '0',
+    otp6: '0'
+  })
 
-  const handleLogin = () => {
-    navigation.navigate('Login')
+  const handleStart = () => {
+    navigation.navigate('Root')
   }
 
   const handleConfirm = () => {
+    console.log({
+      otp: otp.otp1 + otp.otp2 + otp.otp3 + otp.otp4 + otp.otp5 + otp.otp6,
+      email: additional.email
+    })
+    dispatch({
+      type: actions.VALIDATE_OTP,
+      payload: {
+        data: {
+          otp: otp.otp1 + otp.otp2 + otp.otp3 + otp.otp4 + otp.otp5 + otp.otp6,
+          email: additional.email
+        },
+        callback: () => {
+          dispatch({
+            type: actions.REGISTER,
+            payload: {
+              user: {
+                fullname: additional.fullname,
+                account: {
+                  username: account.username,
+                  password: account.password
+                },
+                email: additional.email,
+                phone: additional.phone
+              },
+              callback() {
+                dispatch({
+                  type: actions.LOGIN,
+                  payload: {
+                    account: {
+                      username: account.username,
+                      password: account.password
+                    }
+                  }
+                })
+              }
+            }
+          })
+        }
+      }
+    })
     setShowCeleb(!showCeleb)
+  }
+
+  const handleCancel = () => {
+    navigation.goBack()
   }
 
   return (
@@ -60,7 +121,7 @@ const OTPConfirm = ({ navigation }: any) => {
                       fontSize: 16,
                       color: StyleVariables.colors.gray300,
                       marginBottom: 5
-                    }}>to hieuduy1751@gmail.com</Text>
+                    }}>to {additional.email}</Text>
                   </>
                 )
               }
@@ -93,12 +154,19 @@ const OTPConfirm = ({ navigation }: any) => {
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      <TextInput maxLength={1} placeholder='0' style={{
-                        fontFamily: 'sf-pro-reg',
-                        fontSize: 24,
-                        color: StyleVariables.colors.gray300,
-                        textAlign: 'center'
-                      }} />
+                      <TextInput
+                        onChangeText={(text) => {
+                          setOTP({ ...otp, otp1: text });
+                          if (text.length > 0) {
+                            otp2.current.focus()
+                          }
+                        }}
+                        maxLength={1} placeholder='0' style={{
+                          fontFamily: 'sf-pro-reg',
+                          fontSize: 24,
+                          color: StyleVariables.colors.gray300,
+                          textAlign: 'center'
+                        }} />
                     </View>
                     <View style={{
                       width: 45,
@@ -108,12 +176,20 @@ const OTPConfirm = ({ navigation }: any) => {
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      <TextInput maxLength={1} placeholder='0' style={{
-                        fontFamily: 'sf-pro-reg',
-                        fontSize: 24,
-                        color: StyleVariables.colors.gray300,
-                        textAlign: 'center'
-                      }} />
+                      <TextInput
+                        ref={otp2}
+                        onChangeText={(text) => {
+                          setOTP({ ...otp, otp2: text });
+                          if (text.length > 0) {
+                            otp3.current.focus()
+                          }
+                        }}
+                        maxLength={1} placeholder='0' style={{
+                          fontFamily: 'sf-pro-reg',
+                          fontSize: 24,
+                          color: StyleVariables.colors.gray300,
+                          textAlign: 'center'
+                        }} />
                     </View>
                     <View style={{
                       width: 45,
@@ -123,12 +199,19 @@ const OTPConfirm = ({ navigation }: any) => {
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      <TextInput maxLength={1} placeholder='0' style={{
-                        fontFamily: 'sf-pro-reg',
-                        fontSize: 24,
-                        color: StyleVariables.colors.gray300,
-                        textAlign: 'center'
-                      }} />
+                      <TextInput
+                        onChangeText={(text) => {
+                          setOTP({ ...otp, otp3: text });
+                          if (text.length > 0) {
+                            otp4.current.focus()
+                          }
+                        }}
+                        ref={otp3} maxLength={1} placeholder='0' style={{
+                          fontFamily: 'sf-pro-reg',
+                          fontSize: 24,
+                          color: StyleVariables.colors.gray300,
+                          textAlign: 'center'
+                        }} />
                     </View>
                     <View style={{
                       width: 45,
@@ -138,12 +221,19 @@ const OTPConfirm = ({ navigation }: any) => {
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      <TextInput maxLength={1} placeholder='0' style={{
-                        fontFamily: 'sf-pro-reg',
-                        fontSize: 24,
-                        color: StyleVariables.colors.gray300,
-                        textAlign: 'center'
-                      }} />
+                      <TextInput
+                        onChangeText={(text) => {
+                          setOTP({ ...otp, otp4: text });
+                          if (text.length > 0) {
+                            otp5.current.focus()
+                          }
+                        }}
+                        ref={otp4} maxLength={1} placeholder='0' style={{
+                          fontFamily: 'sf-pro-reg',
+                          fontSize: 24,
+                          color: StyleVariables.colors.gray300,
+                          textAlign: 'center'
+                        }} />
                     </View>
                     <View style={{
                       width: 45,
@@ -153,12 +243,19 @@ const OTPConfirm = ({ navigation }: any) => {
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      <TextInput maxLength={1} placeholder='0' style={{
-                        fontFamily: 'sf-pro-reg',
-                        fontSize: 24,
-                        color: StyleVariables.colors.gray300,
-                        textAlign: 'center'
-                      }} />
+                      <TextInput
+                        onChangeText={(text) => {
+                          setOTP({ ...otp, otp5: text });
+                          if (text.length > 0) {
+                            otp6.current.focus()
+                          }
+                        }}
+                        ref={otp5} maxLength={1} placeholder='0' style={{
+                          fontFamily: 'sf-pro-reg',
+                          fontSize: 24,
+                          color: StyleVariables.colors.gray300,
+                          textAlign: 'center'
+                        }} />
                     </View>
                     <View style={{
                       width: 45,
@@ -168,7 +265,9 @@ const OTPConfirm = ({ navigation }: any) => {
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      <TextInput maxLength={1} placeholder='0' style={{
+                      <TextInput onChangeText={(text) => {
+                          setOTP({ ...otp, otp6: text });
+                        }} ref={otp6} maxLength={1} placeholder='0' style={{
                         fontFamily: 'sf-pro-reg',
                         fontSize: 24,
                         color: StyleVariables.colors.gray300,
@@ -180,12 +279,12 @@ const OTPConfirm = ({ navigation }: any) => {
               }
             </View>
             <View style={styles.buttonContainer}>
-              <CButton title={!showCeleb ? 'Confirm' : 'Login'} btnProps={{
-                onPress: !showCeleb ? handleConfirm : handleLogin,
+              <CButton title={!showCeleb ? 'Confirm' : 'Start'} btnProps={{
+                onPress: !showCeleb ? handleConfirm : handleStart,
               }} />
               {
                 !showCeleb && (
-                  <Button title='Cancel' onPress={handleLogin} color={StyleVariables.colors.black} />
+                  <Button title='Cancel' onPress={handleCancel} color={StyleVariables.colors.black} />
                 )
               }
             </View>

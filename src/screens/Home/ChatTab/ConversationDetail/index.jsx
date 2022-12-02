@@ -74,7 +74,7 @@ const ConversationDetail = () => {
               ? conversation.conversationName.length > 25
                 ? `${conversation.conversationName.slice(0, 25)}...`
                 : conversation.conversationName
-              : users.find((user) => user._id !== me._id)?.account?.username ||
+              : users.find((user) => user._id !== me?._id)?.account?.username ||
                 'No name'}
           </Text>
         </View>

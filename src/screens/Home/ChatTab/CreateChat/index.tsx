@@ -140,7 +140,7 @@ const CreateChat = ({
                 />
               </View>
               <TouchableOpacity
-                disabled={selected.length === 0}
+                disabled={selected.length < 2}
                 onPress={() => {
                   handleCreateChat();
                 }}
@@ -148,7 +148,7 @@ const CreateChat = ({
                 <Ionicons
                   name="arrow-forward-circle"
                   size={50}
-                  color={StyleVariables.colors.gradientStart}
+                  color={selected.length < 2 ? StyleVariables.colors.gray300 : StyleVariables.colors.gradientStart}
                 />
               </TouchableOpacity>
             </View>

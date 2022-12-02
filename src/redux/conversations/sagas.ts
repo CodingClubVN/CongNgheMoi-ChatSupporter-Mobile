@@ -1,4 +1,5 @@
 import { Alert } from "react-native";
+import { useDispatch } from "react-redux";
 import { all, call, put, select, take, takeEvery } from "redux-saga/effects";
 import { addConversation, addUserToConversation, getConversations, removeUserFromConversation } from "../../services/conversationService";
 import actions from "./actions";
@@ -20,6 +21,7 @@ export function* GET_CONVERSATIONS(): any {
     })
     Alert.alert('Error', res?.message[0]);
   } else {
+    console.log(res);
     yield put({
       type: actions.SET_STATE,
       payload: {
@@ -99,12 +101,49 @@ export function* UPDATE_CONVERSATION({ payload }: any): any {
   }
 }
 
+export function* CHECK_CONVERSATION_EXIST({ payload }: any): any {
+  yield put({
+    type: actions.SET_STATE,
+    payload: {
+      loading: true,
+    }
+  })
+  const conversations = yield select((state: any) => state.conversations.listData);
+  const listDirects = conversations.filter((item: any) => item.users.length === 2);
+  yield call(console.log, conversations, listDirects)
+  const conversation = listDirects.find((item: any) => {
+    const users = item.users.map((user: any) => user._id);
+    return users.includes(payload.userId) && users.includes(payload.currentUserId);
+  });
+  if (conversation) {
+    payload.callback(conversation.users, conversation.users.length > 2 ? 'group' : 'direct', conversation);
+  } else {
+    yield put({
+      type: actions.CREATE_CONVERSATION,
+      payload: {
+        conversation: {
+          conversationName: payload.conversationName,
+          arrayUserId: [payload.userId],
+        },
+        callback: payload.callback2
+      }
+    })
+  }
+  yield put({
+    type: actions.SET_STATE,
+    payload: {
+      loading: false,
+    }
+  })
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.GET_CONVERSATIONS, GET_CONVERSATIONS),
     takeEvery(actions.CREATE_CONVERSATION, CREATE_CONVERSATION),
     takeEvery(actions.ADD_USER_CONVERSATION, ADD_USER_CONVERSATION),
     takeEvery(actions.REMOVE_USER_CONVERSATION, REMOVE_USER_CONVERSATION),
-    takeEvery(actions.UPDATE_CONVERSATION, UPDATE_CONVERSATION)
+    takeEvery(actions.UPDATE_CONVERSATION, UPDATE_CONVERSATION),
+    takeEvery(actions.CHECK_CONVERSATION_EXIST, CHECK_CONVERSATION_EXIST)
   ])
 }

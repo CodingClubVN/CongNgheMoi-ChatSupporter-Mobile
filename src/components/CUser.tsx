@@ -51,7 +51,7 @@ const CUser = ({ user, onMessage, onCall, onVideo }: any) => {
       }}>
         <Ionicons name="videocam-outline" size={24} color={StyleVariables.colors.gradientStart} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => onMessage()} style={{
+      <TouchableOpacity onPress={() => onMessage(user._id, user.account.username)} style={{
         width: 50,
         height: 50,
         alignItems: 'center',

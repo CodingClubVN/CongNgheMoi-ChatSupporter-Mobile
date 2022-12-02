@@ -46,3 +46,41 @@ export async function getConversation(conversationId: string) {
     return console.log(err);
   }
 }
+
+export async function updateUserRole(conversationId: string) {
+  try {
+    const res = await apiService.put<any, any>(`/conversations/${conversationId}/role`, {})
+    return res
+  } catch (err) {
+    return console.log(err)
+  }
+}
+
+export async function leaveConversation(conversationId: string) {
+  try {
+    const res = await apiService.post<any, any>(`/conversations/${conversationId}/leave`, {})
+    return res
+  } catch (err) {
+    return console.log(err)
+  }
+}
+
+export async function deleteConversation(conversationId: string) {
+  try {
+    const res = await apiService.delete<any>(`/conversations/${conversationId}`)
+    return res
+  } catch (err) {
+    return console.log(err)
+  }
+}
+
+export async function updateConversation(conversationId: string, conversationName: string) {
+  try {
+    const res = await apiService.put<any, any>(`/conversations/${conversationId}`, {
+      conversationName
+    })
+    return res
+  } catch (err) {
+    return console.log(err)
+  }
+}

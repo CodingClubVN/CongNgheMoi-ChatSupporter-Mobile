@@ -49,4 +49,13 @@ const forwardMessage = async (messageId: string, conversationId: string) => {
   }
 }
 
-export { getMessagesOfConversation, sendMessageToConversation, sendMediaMessageToConversation, recoverMessage, forwardMessage };
+const getMediasOfConversation = async (conversationId: string) => {
+  try {
+    const res = await apiService.get<any>(`/messages/files/conversation/${conversationId}`)
+    return res
+  } catch (err) {
+    return console.log(err)
+  }
+}
+
+export { getMessagesOfConversation, sendMessageToConversation, sendMediaMessageToConversation, recoverMessage, forwardMessage, getMediasOfConversation };

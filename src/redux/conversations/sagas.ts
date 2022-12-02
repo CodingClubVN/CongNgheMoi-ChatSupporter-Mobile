@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
 import { useDispatch } from "react-redux";
 import { all, call, put, select, take, takeEvery } from "redux-saga/effects";
-import { addConversation, addUserToConversation, getConversations, removeUserFromConversation } from "../../services/conversationService";
+import { addConversation, addUserToConversation, getConversation, getConversations, removeUserFromConversation, updateConversation } from "../../services/conversationService";
 import actions from "./actions";
 
 export function* GET_CONVERSATIONS(): any {
@@ -12,6 +12,7 @@ export function* GET_CONVERSATIONS(): any {
     }
   })
   const res = yield call(getConversations);
+  console.log(res)
   if (res?.error) {
     yield put({
       type: actions.SET_STATE,
@@ -131,6 +132,39 @@ export function* CHECK_CONVERSATION_EXIST({ payload }: any): any {
   })
 }
 
+export function* UPDATE_CONVERSATION_NAME({ payload }: any): any {
+  const res = yield call(updateConversation, payload.conversationId, payload.conversationName);
+  if (res?._id) {
+    if (payload?.callback) yield call(payload.callback);
+    yield put({
+      type: actions.GET_CONVERSATIONS
+    })
+    yield put({
+      type: actions.GET_CONVERSATION_BY_ID,
+      payload: {
+        conversationId: payload.conversationId
+      }
+    })
+    Alert.alert('Success', 'Update conversation name success');
+  } else {
+    Alert.alert('Error', res?.error);
+  }
+}
+
+export function* GET_CONVERSATION_BY_ID({ payload }: any): any {
+  const conversation = yield call(getConversation, payload.conversationId);
+  console.log('conversation', conversation)
+  if (conversation?._id) {
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        selectedConversation: conversation,
+      }
+    })
+    if (payload?.callback) yield call(payload.callback);
+  }
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.GET_CONVERSATIONS, GET_CONVERSATIONS),
@@ -138,6 +172,8 @@ export default function* root() {
     takeEvery(actions.ADD_USER_CONVERSATION, ADD_USER_CONVERSATION),
     takeEvery(actions.REMOVE_USER_CONVERSATION, REMOVE_USER_CONVERSATION),
     takeEvery(actions.UPDATE_CONVERSATION, UPDATE_CONVERSATION),
-    takeEvery(actions.CHECK_CONVERSATION_EXIST, CHECK_CONVERSATION_EXIST)
+    takeEvery(actions.CHECK_CONVERSATION_EXIST, CHECK_CONVERSATION_EXIST),
+    takeEvery(actions.UPDATE_CONVERSATION_NAME, UPDATE_CONVERSATION_NAME),
+    takeEvery(actions.GET_CONVERSATION_BY_ID, GET_CONVERSATION_BY_ID),
   ])
 }

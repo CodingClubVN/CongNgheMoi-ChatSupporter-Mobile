@@ -6,19 +6,30 @@ import {
   View,
   Image,
   TextInput,
-} from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import StyleVariables from '../../../../../../StyleVariables';
-import { useRoute } from '@react-navigation/native';
-import { useRef, useState } from 'react';
-import { Modalize } from 'react-native-modalize';
+} from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import StyleVariables from "../../../../../../StyleVariables";
+import { useRoute } from "@react-navigation/native";
+import { useMemo, useEffect, useRef, useState } from "react";
+import { Modalize } from "react-native-modalize";
+import { useSelector } from "react-redux";
 const ManageMembers = () => {
   const route = useRoute();
   const addModalRef = useRef(null);
   const userModalRef = useRef(null);
-  const [search, setSearch] = useState('');
+  const friends = useSelector((state) => state.friends.friends);
+  const [searchResult, setSearchResult] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [data, setData] = useState([]);
+  const me = useSelector((state) => state.user.data);
+  const [search, setSearch] = useState("");
   const [user, setUser] = useState(null);
-  const { conversation, users, type } = route.params;
+  const [conversation, setConversation] = useState(route.params.conversation);
+  const { users, type } = route.params;
+  const role = useMemo(() => {
+    return conversation.users.find((u) => u._id === me._id).account.role;
+  }, [conversation.users]);
   const handleUserSelect = (user) => {
     setUser(user);
     userModalRef.current?.open();
@@ -26,24 +37,45 @@ const ManageMembers = () => {
   const handleAddUser = () => {
     addModalRef.current?.open();
   };
+  const usersToSelection = (usrs) => {
+    const listExisting = users.map((u) => u._id);
+    if (usrs && usrs.length) {
+      return usrs.filter((u) => !listExisting.includes(u.friend._id));
+    }
+    return [];
+  };
+  useEffect(() => {
+    if (searchInput.length > 0) {
+      console.log(friends);
+      const result = friends.filter((friend) =>
+        friend.friend.account.username
+          .toLowerCase()
+          .includes(searchInput.toLowerCase())
+      );
+      setSearchResult(result);
+    }
+  }, [searchInput]);
+  useEffect(() => {
+    setData(usersToSelection(searchResult));
+  }, [searchResult]);
   return (
     <SafeAreaView
       style={{
-        width: '100%',
+        width: "100%",
         flex: 1,
-        justifyContent: 'space-between',
+        justifyContent: "space-between",
       }}
     >
       <View
         style={{
-          width: '100%',
+          width: "100%",
           flexGrow: 1,
         }}
       >
         <Text
           style={{
             marginVertical: 10,
-            fontFamily: 'sf-pro-bold',
+            fontFamily: "sf-pro-bold",
             fontSize: 24,
             paddingHorizontal: 20,
           }}
@@ -53,8 +85,8 @@ const ManageMembers = () => {
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={{
-            width: '100%',
-            height: '80%',
+            width: "100%",
+            height: "80%",
             paddingHorizontal: 20,
           }}
         >
@@ -62,8 +94,8 @@ const ManageMembers = () => {
             <TouchableOpacity
               onPress={() => handleUserSelect(u)}
               style={{
-                flexDirection: 'row',
-                width: '100%',
+                flexDirection: "row",
+                width: "100%",
                 height: 70,
                 borderRadius: 10,
                 backgroundColor: StyleVariables.colors.white,
@@ -83,26 +115,26 @@ const ManageMembers = () => {
               <View
                 style={{
                   flexGrow: 1,
-                  justifyContent: 'space-evenly',
+                  justifyContent: "space-evenly",
                   height: 45,
                   marginLeft: 20,
                 }}
               >
                 <Text
                   style={{
-                    fontFamily: 'sf-pro-bold',
+                    fontFamily: "sf-pro-bold",
                     fontSize: 16,
                   }}
                 >
-                  {u.fullname}
+                  @{u?.account?.username}
                 </Text>
                 <Text
                   style={{
-                    fontFamily: 'sf-pro-reg',
+                    fontFamily: "sf-pro-reg",
                     color: StyleVariables.colors.gradientEnd,
                   }}
                 >
-                  @{u?.account?.username}
+                  {u?.account?.role}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -110,24 +142,28 @@ const ManageMembers = () => {
         </ScrollView>
       </View>
       <TouchableOpacity
+        disabled={role === "member"}
         onPress={handleAddUser}
         style={{
-          width: '95%',
-          alignSelf: 'center',
+          width: "95%",
+          alignSelf: "center",
           height: 50,
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'row',
-          backgroundColor: StyleVariables.colors.gradientEnd,
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "row",
+          backgroundColor:
+            role !== "member"
+              ? StyleVariables.colors.gradientEnd
+              : StyleVariables.colors.gray200,
           borderRadius: 10,
         }}
       >
         <MaterialIcons name="person-add" size={24} color="white" />
         <Text
           style={{
-            fontFamily: 'sf-pro-bold',
+            fontFamily: "sf-pro-bold",
             fontSize: 22,
-            color: '#fff',
+            color: "#fff",
             marginLeft: 10,
           }}
         >
@@ -141,14 +177,14 @@ const ManageMembers = () => {
       >
         <View
           style={{
-            width: '100%',
-            height: '100%',
+            width: "100%",
+            height: "100%",
             padding: 15,
           }}
         >
           <Text
             style={{
-              fontFamily: 'sf-pro-bold',
+              fontFamily: "sf-pro-bold",
               fontSize: 22,
               marginBottom: 10,
               paddingHorizontal: 20,
@@ -158,31 +194,36 @@ const ManageMembers = () => {
             {user?.account?.username}
           </Text>
           <TouchableOpacity
+            disabled={role === "member"}
             style={{
-              width: '90%',
+              width: "90%",
               borderRadius: 20,
               backgroundColor: StyleVariables.colors.gray100,
-              alignSelf: 'center',
+              alignSelf: "center",
               padding: 20,
               marginBottom: 10,
             }}
           >
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
               <MaterialIcons
                 name="admin-panel-settings"
                 size={24}
-                color="black"
+                color={
+                  role === "member" ? StyleVariables.colors.gray200 : "black"
+                }
               />
               <Text
                 style={{
-                  fontFamily: 'sf-pro-med',
+                  fontFamily: "sf-pro-med",
                   fontSize: 16,
                   marginLeft: 20,
+                  color:
+                    role === "member" ? StyleVariables.colors.gray200 : "black",
                 }}
               >
                 Promote to admin
@@ -191,24 +232,24 @@ const ManageMembers = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{
-              width: '90%',
+              width: "90%",
               borderRadius: 20,
               backgroundColor: StyleVariables.colors.gray100,
-              alignSelf: 'center',
+              alignSelf: "center",
               padding: 20,
               marginBottom: 10,
             }}
           >
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
               <MaterialIcons name="person" size={24} color="black" />
               <Text
                 style={{
-                  fontFamily: 'sf-pro-med',
+                  fontFamily: "sf-pro-med",
                   fontSize: 16,
                   marginLeft: 20,
                 }}
@@ -218,28 +259,36 @@ const ManageMembers = () => {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={role === "member"}
             style={{
-              width: '90%',
+              width: "90%",
               borderRadius: 20,
               backgroundColor: StyleVariables.colors.gray100,
-              alignSelf: 'center',
+              alignSelf: "center",
               padding: 20,
               marginBottom: 10,
             }}
           >
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
-              <MaterialIcons name="person-remove" size={24} color="red" />
+              <MaterialIcons
+                name="person-remove"
+                size={24}
+                color={
+                  role === "member" ? StyleVariables.colors.gray200 : "red"
+                }
+              />
               <Text
                 style={{
-                  fontFamily: 'sf-pro-med',
+                  fontFamily: "sf-pro-med",
                   fontSize: 16,
                   marginLeft: 20,
-                  color: 'red',
+                  color:
+                    role === "member" ? StyleVariables.colors.gray200 : "red",
                 }}
               >
                 Remove
@@ -255,14 +304,14 @@ const ManageMembers = () => {
       >
         <View
           style={{
-            width: '100%',
-            height: '100%',
+            width: "100%",
+            height: "100%",
             padding: 15,
           }}
         >
           <Text
             style={{
-              fontFamily: 'sf-pro-bold',
+              fontFamily: "sf-pro-bold",
               fontSize: 22,
               marginBottom: 10,
               paddingHorizontal: 20,
@@ -273,14 +322,14 @@ const ManageMembers = () => {
           </Text>
           <View
             style={{
-              width: '90%',
-              alignSelf: 'center',
+              width: "90%",
+              alignSelf: "center",
               height: 40,
               borderRadius: 10,
               backgroundColor: StyleVariables.colors.gray100,
               paddingHorizontal: 10,
-              flexDirection: 'row',
-              alignItems: 'center',
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
             <TextInput
@@ -294,73 +343,80 @@ const ManageMembers = () => {
             />
           </View>
           <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={{
-            width: '100%',
-            height: '80%',
-            paddingHorizontal: 20,
-          }}
-        >
-          <TouchableOpacity
-              onPress={() => handleUserSelect(users[2])}
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-                height: 70,
-                borderRadius: 10,
-                marginTop:10,
-                backgroundColor: StyleVariables.colors.gray100,
-                padding: 10,
-                marginBottom: 10,
-              }}
-            >
-              <Image
-                source={{ uri: users[2].avatarUrl }}
-                style={{
-                  width: 45,
-                  height: 45,
-                  borderRadius: 45,
-                }}
-              />
-              <View
-                style={{
-                  flexGrow: 1,
-                  justifyContent: 'space-evenly',
-                  height: 45,
-                  marginLeft: 20,
-                }}
-              >
-                <Text
+            showsVerticalScrollIndicator={false}
+            style={{
+              width: "100%",
+              height: "80%",
+              paddingHorizontal: 20,
+            }}
+          >
+            {data?.map((u) => {
+              console.log(u);
+              return (
+                <TouchableOpacity
+                  onPress={() => handleUserSelect(users[2])}
                   style={{
-                    fontFamily: 'sf-pro-bold',
-                    fontSize: 16,
+                    flexDirection: "row",
+                    width: "100%",
+                    height: 70,
+                    borderRadius: 10,
+                    marginTop: 10,
+                    backgroundColor: StyleVariables.colors.gray100,
+                    padding: 10,
+                    marginBottom: 10,
                   }}
                 >
-                  Duy Hieu
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: 'sf-pro-reg',
-                    color: StyleVariables.colors.gradientEnd,
-                  }}
-                >
-                  @{users[2]?.account?.username}
-                </Text>
-              </View>
-              <TouchableOpacity style={{
-                width: 40,
-                height: 40,
-                borderRadius: 40,
-                backgroundColor: StyleVariables.colors.gradientEnd,
-                justifyContent: 'center',
-                alignItems: 'center',
-                alignSelf: 'center',
-                justifySelf: 'center',
-              }}>
-              <MaterialIcons name="add" size={24} color="white" />
-              </TouchableOpacity>
-            </TouchableOpacity>
-        </ScrollView>
+                  <Image
+                    source={{ uri: users[2].avatarUrl }}
+                    style={{
+                      width: 45,
+                      height: 45,
+                      borderRadius: 45,
+                    }}
+                  />
+                  <View
+                    style={{
+                      flexGrow: 1,
+                      justifyContent: "space-evenly",
+                      height: 45,
+                      marginLeft: 20,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "sf-pro-bold",
+                        fontSize: 16,
+                      }}
+                    >
+                      Duy Hieu
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: "sf-pro-reg",
+                        color: StyleVariables.colors.gradientEnd,
+                      }}
+                    >
+                      @{users[2]?.account?.username}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 40,
+                      backgroundColor: StyleVariables.colors.gradientEnd,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      alignSelf: "center",
+                      justifySelf: "center",
+                    }}
+                  >
+                    <MaterialIcons name="add" size={24} color="white" />
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
       </Modalize>
     </SafeAreaView>

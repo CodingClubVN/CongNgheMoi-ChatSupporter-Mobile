@@ -32,7 +32,11 @@ LogBox.ignoreAllLogs();
 const Conversation = () => {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
-  const { type, conversation, users } = route.params;
+  const conversation = useSelector((state: any) => state.conversations.selectedConversation);
+  const { users } = conversation;
+  const type = useMemo(() => {
+    return conversation.users.length > 2 ? 'group' : 'direct'
+  }, [conversation.users]);
   const me = useSelector((state: any) => state.user.data);
   const dispatch = useDispatch();
   const messages = useSelector((state: any) => state.messages.messages);

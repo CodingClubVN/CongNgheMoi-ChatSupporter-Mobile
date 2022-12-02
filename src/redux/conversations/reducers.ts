@@ -2,11 +2,13 @@ import actions from "./actions"
 
 interface ConversationsState {
   listData: any[],
+  selectedConversation: any,
   loading: boolean,
 }
 
 const initialState = {
   listData: [],
+  selectedConversation: null,
   loading: false
 }
 

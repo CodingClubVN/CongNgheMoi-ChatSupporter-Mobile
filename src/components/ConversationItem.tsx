@@ -2,19 +2,26 @@ import { LinearGradient } from "expo-linear-gradient"
 import moment from "moment"
 import React from "react"
 import { View, Text, TouchableOpacity } from 'react-native'
+import { useDispatch } from "react-redux"
 import StyleVariables from "../../StyleVariables"
 import { IMessage } from "../models/Message"
 import { IUserA } from "../models/User"
+import actions from "../redux/conversations/actions"
 import ConversationAvatar from "./ConversationAvatar"
 
 const ConversationItem = ({ navigation, type, users, conversation, me }: { navigation: any, type: 'direct' | 'group', users: any[], conversation: any, me: any }) => {
+  const dispatch = useDispatch()
+
   const handleConversationSelect = () => {
-    navigation.navigate('ConversationStack', {
-      screen: 'Conversation',
-      params: {
-        users,
-        type,
-        conversation,
+    dispatch({
+      type: actions.GET_CONVERSATION_BY_ID,
+      payload: {
+        conversationId: conversation._id,
+        callback: () => {
+          navigation.navigate('ConversationStack', {
+            screen: 'Conversation'
+          })
+        }
       }
     })
   }

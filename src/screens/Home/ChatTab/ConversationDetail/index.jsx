@@ -1,59 +1,80 @@
-import { useRef, useState } from 'react';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRef, useState } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   ScrollView,
   View,
   Text,
   TouchableOpacity,
   TextInput,
-} from 'react-native';
-import ConversationAvatar from '../../../../components/ConversationAvatar';
-import { useSelector } from 'react-redux';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Modalize } from 'react-native-modalize';
-import StyleVariables from '../../../../../StyleVariables';
+} from "react-native";
+import ConversationAvatar from "../../../../components/ConversationAvatar";
+import { useDispatch, useSelector } from "react-redux";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Modalize } from "react-native-modalize";
+import StyleVariables from "../../../../../StyleVariables";
+import actions from "../../../../redux/conversations/actions";
 const ConversationDetail = () => {
   const editConversationNameRef = useRef(null);
+  const conversations = useSelector((state) => state.conversations.listData);
+  const dispatch = useDispatch();
   const me = useSelector((state) => state.user.data);
   const route = useRoute();
-  const navigation = useNavigation()
-  const { conversation, users, type } = route.params;
-  const [conversationName, setConversationName] = useState(conversation.name);
+  const navigation = useNavigation();
+  const [conversation, setConversation] = useState(route.params?.conversation);
+  const { users, type } = route.params;
+  const [conversationName, setConversationName] = useState(
+    conversation.conversationName
+  );
 
   const onEditConversation = () => {
     editConversationNameRef.current?.open();
   };
 
   const onManageMembers = () => {
-    navigation.navigate('ConversationStack', {
-      screen: 'ManageMembers',
+    navigation.navigate("ConversationStack", {
+      screen: "ManageMembers",
       params: {
         conversation,
         users,
-        type
+        type,
       },
-    })
-  }
+    });
+  };
 
-  const onEditConversationName = () => {};
+  const onEditConversationName = () => {
+    dispatch({
+      type: actions.UPDATE_CONVERSATION_NAME,
+      payload: {
+        conversationId: conversation._id,
+        conversationName,
+        callback: () => {
+          editConversationNameRef.current?.close();
+          setConversation(prev => ({
+            ...prev,
+            conversationName
+          }))
+        },
+      },
+    });
+  };
 
   return (
     <View
       style={{
-        width: '100%',
+        width: "100%",
         flex: 1,
       }}
     >
       <ScrollView
         style={{
-          width: '100%',
-          height: '100%',
+          width: "100%",
+          height: "100%",
         }}
       >
         <View
           style={{
-            width: '100%',
-            alignItems: 'center',
+            width: "100%",
+            alignItems: "center",
             marginVertical: 20,
             marginBottom: 50,
           }}
@@ -65,40 +86,40 @@ const ConversationDetail = () => {
           />
           <Text
             style={{
-              fontFamily: 'sf-pro-bold',
+              fontFamily: "sf-pro-bold",
               fontSize: 28,
               marginTop: 10,
             }}
           >
-            {type === 'group'
+            {type === "group"
               ? conversation.conversationName.length > 25
                 ? `${conversation.conversationName.slice(0, 25)}...`
                 : conversation.conversationName
               : users.find((user) => user._id !== me?._id)?.account?.username ||
-                'No name'}
+                "No name"}
           </Text>
         </View>
         <TouchableOpacity
           onPress={onEditConversation}
           style={{
-            width: '90%',
+            width: "90%",
             borderRadius: 20,
-            backgroundColor: '#fff',
-            alignSelf: 'center',
+            backgroundColor: "#fff",
+            alignSelf: "center",
             padding: 20,
             marginBottom: 10,
           }}
         >
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
             <MaterialIcons name="edit" size={24} color="black" />
             <Text
               style={{
-                fontFamily: 'sf-pro-med',
+                fontFamily: "sf-pro-med",
                 fontSize: 16,
                 marginLeft: 20,
               }}
@@ -114,14 +135,14 @@ const ConversationDetail = () => {
         >
           <View
             style={{
-              width: '100%',
-              height: '100%',
+              width: "100%",
+              height: "100%",
               padding: 15,
             }}
           >
             <Text
               style={{
-                fontFamily: 'sf-pro-bold',
+                fontFamily: "sf-pro-bold",
                 fontSize: 22,
                 marginBottom: 10,
               }}
@@ -130,13 +151,13 @@ const ConversationDetail = () => {
             </Text>
             <View
               style={{
-                width: '95%',
+                width: "95%",
                 height: 40,
                 borderRadius: 10,
                 backgroundColor: StyleVariables.colors.gray100,
                 paddingHorizontal: 10,
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
               <TextInput
@@ -151,23 +172,23 @@ const ConversationDetail = () => {
             </View>
             <TouchableOpacity
               style={{
-                width: '95%',
+                width: "95%",
                 height: 40,
                 borderRadius: 10,
                 backgroundColor: StyleVariables.colors.gradientEnd,
                 marginTop: 10,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
               }}
               onPress={onEditConversationName}
             >
               <MaterialIcons name="edit" size={24} color="white" />
               <Text
                 style={{
-                  fontFamily: 'sf-pro-bold',
+                  fontFamily: "sf-pro-bold",
                   fontSize: 18,
-                  color: '#fff',
+                  color: "#fff",
                   marginLeft: 5,
                 }}
               >
@@ -179,24 +200,24 @@ const ConversationDetail = () => {
         <TouchableOpacity
           onPress={onManageMembers}
           style={{
-            width: '90%',
+            width: "90%",
             borderRadius: 20,
-            backgroundColor: '#fff',
-            alignSelf: 'center',
+            backgroundColor: "#fff",
+            alignSelf: "center",
             padding: 20,
             marginBottom: 10,
           }}
         >
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
             <MaterialIcons name="people" size={24} color="black" />
             <Text
               style={{
-                fontFamily: 'sf-pro-med',
+                fontFamily: "sf-pro-med",
                 fontSize: 16,
                 marginLeft: 20,
               }}
@@ -206,33 +227,35 @@ const ConversationDetail = () => {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate('ConversationStack', {
-            screen: 'MediaLibrary',
-            params: {
-              conversation,
-              users,
-              type
-            }
-          })}
+          onPress={() =>
+            navigation.navigate("ConversationStack", {
+              screen: "MediaLibrary",
+              params: {
+                conversation,
+                users,
+                type,
+              },
+            })
+          }
           style={{
-            width: '90%',
+            width: "90%",
             borderRadius: 20,
-            backgroundColor: '#fff',
-            alignSelf: 'center',
+            backgroundColor: "#fff",
+            alignSelf: "center",
             padding: 20,
             marginBottom: 10,
           }}
         >
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
             <MaterialIcons name="perm-media" size={24} color="black" />
             <Text
               style={{
-                fontFamily: 'sf-pro-med',
+                fontFamily: "sf-pro-med",
                 fontSize: 16,
                 marginLeft: 20,
               }}
@@ -243,27 +266,27 @@ const ConversationDetail = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={{
-            width: '90%',
+            width: "90%",
             borderRadius: 20,
-            backgroundColor: '#fff',
-            alignSelf: 'center',
+            backgroundColor: "#fff",
+            alignSelf: "center",
             padding: 20,
             marginBottom: 10,
           }}
         >
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
             <MaterialIcons name="exit-to-app" size={24} color="red" />
             <Text
               style={{
-                fontFamily: 'sf-pro-med',
+                fontFamily: "sf-pro-med",
                 fontSize: 16,
                 marginLeft: 20,
-                color: 'red',
+                color: "red",
               }}
             >
               Leave

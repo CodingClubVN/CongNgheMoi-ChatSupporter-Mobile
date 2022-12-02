@@ -24,7 +24,6 @@ const EditProfile = () => {
   const me = useSelector((state: any) => state.user.data)
   const dispatch = useDispatch()
   const [image, setImage] = useState<any>(null)
-  console.log(me)
   const [updatedUser, setUpdatedUser] = useState<any>({
     fullname: me.fullname,
     avatar: null,

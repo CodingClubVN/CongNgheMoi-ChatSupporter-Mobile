@@ -21,7 +21,6 @@ export function* GET_CONVERSATIONS(): any {
     })
     Alert.alert('Error', res?.message[0]);
   } else {
-    console.log(res);
     yield put({
       type: actions.SET_STATE,
       payload: {
@@ -59,7 +58,6 @@ export function* CREATE_CONVERSATION({ payload }: any): any {
 
 export function* ADD_USER_CONVERSATION({ payload }: any): any {
   const res = yield call(addUserToConversation, payload.conversationId, payload.users)
-  console.log(res)
   Alert.alert('Success', 'Add user success')
   yield put({
     type: actions.GET_CONVERSATIONS,
@@ -68,7 +66,6 @@ export function* ADD_USER_CONVERSATION({ payload }: any): any {
 
 export function* REMOVE_USER_CONVERSATION({ payload }: any): any {
   const res = yield call(removeUserFromConversation, payload.conversationId, payload.userId)
-  console.log(res)
   Alert.alert('Success', 'Remove user success')
   yield put({
     type: actions.GET_CONVERSATIONS,
@@ -77,10 +74,8 @@ export function* REMOVE_USER_CONVERSATION({ payload }: any): any {
 
 export function* UPDATE_CONVERSATION({ payload }: any): any {
   let conversations = yield select((state: any) => state.conversations.listData);
-  console.log(conversations)
   if (conversations.find((item: any) => item._id === payload.conversation._id)) {
     const index = conversations.findIndex((item: any) => item._id === payload.conversation._id);
-    console.log(index)
     // remove old conversation
     conversations.splice(index, 1);
     conversations.unshift(payload.conversation);
@@ -110,7 +105,6 @@ export function* CHECK_CONVERSATION_EXIST({ payload }: any): any {
   })
   const conversations = yield select((state: any) => state.conversations.listData);
   const listDirects = conversations.filter((item: any) => item.users.length === 2);
-  yield call(console.log, conversations, listDirects)
   const conversation = listDirects.find((item: any) => {
     const users = item.users.map((user: any) => user._id);
     return users.includes(payload.userId) && users.includes(payload.currentUserId);

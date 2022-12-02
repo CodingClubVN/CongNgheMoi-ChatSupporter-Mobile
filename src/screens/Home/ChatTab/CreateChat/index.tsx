@@ -23,7 +23,8 @@ const CreateChat = ({
   setModalVisible: any;
 }) => {
   const dispatch = useDispatch();
-  const users = useSelector((state: any) => state.users.data);
+  const friends = useSelector((state: any) => state.friends.friends);
+  const [searchResult, setSearchResult] = useState<any[]>([]);
   const user = useSelector((state: any) => state.user.data);
   const [selected, setSelected] = useState<SelectItem[]>([]);
   const [searchInput, setSearchInput] = useState<string>('');
@@ -49,11 +50,12 @@ const CreateChat = ({
   }
 
   const usersToSelection = (users: any) => {
+    console.log(users)
     if (users && users.length) {
       return users.map((user: any) => ({
-        label: user.account.username,
-        value: user._id,
-        imgUrl: user.avatarUrl,
+        label: user.friend.account.username,
+        value: user.friend._id,
+        imgUrl: user.friend.avatarUrl,
       })).filter((u: any) => u.value !== user._id)
     }
     return []
@@ -61,19 +63,15 @@ const CreateChat = ({
 
   useEffect(() => {
     if (searchInput.length > 0) {
-      dispatch({
-        type: actions.GET_USERS,
-        payload: {
-          search: searchInput,
-        }
-      })
+      console.log(friends)
+      const result = friends.filter((friend: any) => friend.friend.account.username.toLowerCase().includes(searchInput.toLowerCase()));
+      setSearchResult(result);
     }
   }, [searchInput])
 
   useEffect(() => {
-    console.log('users', users)
-    setData(usersToSelection(users))
-  }, [users])
+    setData(usersToSelection(searchResult))
+  }, [searchResult])
 
   return (
     <Modal

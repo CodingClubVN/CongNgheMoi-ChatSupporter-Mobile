@@ -40,7 +40,6 @@ export function* GET_CURRENT_USER({ payload }: any): any {
   })
   const user = yield call(getMe)
   if (user?._id) {
-    console.log(user)
     yield put({
       type: actions.SET_STATE,
       payload: {
@@ -137,7 +136,6 @@ export function* UPDATE_PROFILE({ payload }: any): any {
   formData.append('yearOfBirth', payload.data.yearOfBirth)
   formData.append('phone', payload.data.phone)
   formData.append('about', payload.data.about)
-  console.log(formData.getAll('avatar'))
 
   const res = yield call(updateUserProfile, payload.id, formData)
   if (res?._id) {
@@ -153,7 +151,6 @@ export function* UPDATE_PROFILE({ payload }: any): any {
     if (payload.callback) yield call(payload.callback)
   } else {
     Alert.alert('Fail', 'Cannot update profile')
-    console.log(res)
   }
 }
 

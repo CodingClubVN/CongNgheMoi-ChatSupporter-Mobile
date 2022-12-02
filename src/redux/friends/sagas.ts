@@ -11,7 +11,6 @@ export function* GET_FRIENDS(): any {
     },
   })
   const res = yield call(getFriends)
-  console.log(res)
 
   yield put({
     type: actions.SET_STATE,
@@ -31,7 +30,6 @@ export function* SEND_FRIEND_REQUEST({ payload }: any): any {
     },
   })
   const res = yield call(sendFriendRequest, payload.data)
-  console.log(res)
 
   if (res.statusCode === 200) {
     yield put({
@@ -84,7 +82,6 @@ export function* ACCEPT_FRIEND_REQUEST({ payload }: any): any {
     },
   })
   const res = yield call(acceptFriendRequest, payload.data)
-  console.log(res)
 
   yield put({
     type: actions.GET_FRIEND_REQUEST,
@@ -104,7 +101,6 @@ export function* REJECT_FRIEND_REQUEST({ payload }: any): any {
     },
   })
   const res = yield call(rejectFriendRequest, payload.data)
-  console.log(res)
   if (res?.statusCode === 200) {
     yield put({
       type: actions.SET_STATE,
@@ -124,7 +120,6 @@ export function* CANCEL_REQUEST({ payload }: any): any {
     },
   })
   const res = yield call(cancelRequest, payload.data)
-  console.log(res)
 
   yield put({
     type: actions.GET_FRIENDS

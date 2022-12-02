@@ -13,7 +13,6 @@ const FriendTab = () => {
   const user = useSelector((state: any) => state.user.data)
 
   const onMessage = (friendId: string, friendUsername: string) => {
-    console.log('works')
     dispatch({
       type: conversationActions.CHECK_CONVERSATION_EXIST,
       payload: {

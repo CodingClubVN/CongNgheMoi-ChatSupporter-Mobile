@@ -42,10 +42,6 @@ const SearchUserModal = ({
     }
   }, [searchInput])
 
-  useEffect(() => {
-    console.log(users)
-  }, [users])
-
   return (
     <Modal
       animationType="slide"

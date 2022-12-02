@@ -38,10 +38,6 @@ const OTPConfirm = ({ navigation }: any) => {
   }
 
   const handleConfirm = () => {
-    console.log({
-      otp: otp.otp1 + otp.otp2 + otp.otp3 + otp.otp4 + otp.otp5 + otp.otp6,
-      email: additional.email
-    })
     dispatch({
       type: actions.VALIDATE_OTP,
       payload: {

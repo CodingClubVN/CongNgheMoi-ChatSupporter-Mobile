@@ -60,10 +60,7 @@ const Conversation = () => {
       allowsMultipleSelection: true
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
-      console.log(result.selected);
       handleSendMessage({
         type: result.selected[0].type,
         files: result.selected.map((item: any) => {
@@ -84,10 +81,7 @@ const Conversation = () => {
       allowsMultipleSelection: true
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
-      console.log(result.selected);
       handleSendMessage({
         type: result.selected[0].type,
         files: result.selected.map((item: any) => {

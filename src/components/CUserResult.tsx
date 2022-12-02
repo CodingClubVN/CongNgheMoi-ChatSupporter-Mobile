@@ -7,7 +7,6 @@ import actions from '../redux/friends/actions';
 const CUserResult = ({ user, callback }: any) => {
   const dispatch = useDispatch()
   const handleSendRequest = () => {
-    console.log('send request')
     dispatch({
       type: actions.SEND_FRIEND_REQUEST,
       payload: {
@@ -19,7 +18,6 @@ const CUserResult = ({ user, callback }: any) => {
   }
 
   const handleAcceptRequest = () => {
-    console.log('accept request')
     dispatch({
       type: actions.ACCEPT_FRIEND_REQUEST,
       payload: {
@@ -31,7 +29,6 @@ const CUserResult = ({ user, callback }: any) => {
   }
 
   const handleRejectRequest = () => {
-    console.log('reject request')
     dispatch({
       type: actions.REJECT_FRIEND_REQUEST,
       payload: {
@@ -47,7 +44,6 @@ const CUserResult = ({ user, callback }: any) => {
   }
 
   const handleCancelRequest = () => {
-    console.log('cancel request')
     dispatch({
       type: actions.CANCEL_REQUEST,
       payload: {
@@ -138,7 +134,7 @@ const CUserResult = ({ user, callback }: any) => {
               <Ionicons name="person-remove-outline" size={24} color={StyleVariables.colors.gradientStart} />
             </TouchableOpacity>
           ) : user.friendRequestStatus === 'request sent' ? (
-                <TouchableOpacity onPress={() => callback ? callback() : handleCancelRequest()} style={{
+            <TouchableOpacity onPress={() => callback ? callback() : handleCancelRequest()} style={{
               width: 50,
               height: 50,
               alignItems: 'center',

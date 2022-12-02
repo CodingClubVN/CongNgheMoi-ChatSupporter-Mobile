@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { io } from "socket.io-client"
 import ConversationItem from "../../../../components/ConversationItem"
 import actions from "../../../../redux/conversations/actions"
+import friendActions from '../../../../redux/friends/actions';
 
 const Chats = ({ navigation }: { navigation: any }) => {
   const conversations = useSelector((state: any) => state.conversations)
@@ -14,7 +15,6 @@ const Chats = ({ navigation }: { navigation: any }) => {
 
   useEffect(() => {
     socket.on('update-conversation', (data: any) => {
-      console.log(data.conversation)
       dispatch({
         type: actions.UPDATE_CONVERSATION,
         payload: {
@@ -23,6 +23,12 @@ const Chats = ({ navigation }: { navigation: any }) => {
       })
     })
   }, [socket])
+
+  useEffect(() => {
+    dispatch({
+      type: friendActions.GET_FRIENDS
+    })
+  }, [])
 
   return (
     <View style={{ width: '100%' }}>

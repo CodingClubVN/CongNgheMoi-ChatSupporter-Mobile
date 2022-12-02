@@ -13,7 +13,6 @@ const Profile = ({ mode = 'me' }: any) => {
   const userObj = { user: me }
   const { user }: any = route.params || userObj
   const userProfile = user || useSelector((state: any) => state.user.data)
-  console.log(userProfile)
   return (
     <View style={{
       flex: 1,

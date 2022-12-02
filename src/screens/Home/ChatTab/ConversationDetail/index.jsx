@@ -120,7 +120,10 @@ const ConversationDetail = () => {
             alignSelf: "center",
             padding: 20,
             marginBottom: 10,
-            display: conversation.users.length > 2 ? "flex" : "none",
+            display:
+              conversation.conversationName !== "one-to-one-codingclub"
+                ? "flex"
+                : "none",
           }}
         >
           <View
@@ -219,7 +222,10 @@ const ConversationDetail = () => {
             alignSelf: "center",
             padding: 20,
             marginBottom: 10,
-            display: conversation.users.length > 2 ? "flex" : "none",
+            display:
+              conversation.conversationName !== "one-to-one-codingclub"
+                ? "flex"
+                : "none",
           }}
         >
           <View
@@ -287,7 +293,10 @@ const ConversationDetail = () => {
             alignSelf: "center",
             padding: 20,
             marginBottom: 10,
-            display: conversation.users.length > 2 ? "flex" : "none",
+            display:
+              conversation.conversationName !== "one-to-one-codingclub"
+                ? "flex"
+                : "none",
           }}
         >
           <View

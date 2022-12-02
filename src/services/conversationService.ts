@@ -47,9 +47,9 @@ export async function getConversation(conversationId: string) {
   }
 }
 
-export async function updateUserRole(conversationId: string) {
+export async function updateUserRole(conversationId: string, data: any) {
   try {
-    const res = await apiService.put<any, any>(`/conversations/${conversationId}/role`, {})
+    const res = await apiService.put<any, any>(`/conversations/${conversationId}/role`, data)
     return res
   } catch (err) {
     return console.log(err)

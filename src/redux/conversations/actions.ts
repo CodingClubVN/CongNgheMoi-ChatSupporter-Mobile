@@ -10,6 +10,7 @@ const actions = {
   GET_CONVERSATION_BY_ID: 'conversations/GET_CONVERSATION_BY_ID',
   SET_SELECTED_STATE: 'conversations/SET_SELECTED_STATE',
   LEAVE_CONVERSATION: 'conversations/LEAVE_CONVERSATION',
+  UPDATE_USER_ROLE: 'conversations/UPDATE_USER_ROLE',
 }
 
 export default actions

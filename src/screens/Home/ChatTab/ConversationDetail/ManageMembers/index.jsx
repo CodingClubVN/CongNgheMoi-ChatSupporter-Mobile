@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import StyleVariables from "../../../../../../StyleVariables";
 import { useRoute } from "@react-navigation/native";
@@ -26,8 +27,10 @@ const ManageMembers = () => {
   const [data, setData] = useState([]);
   const me = useSelector((state) => state.user.data);
   const [user, setUser] = useState(null);
-  const [conversation, setConversation] = useState(route.params.conversation);
-  const { users, type } = route.params;
+  const conversation = useSelector(
+    (state) => state.conversations.selectedConversation
+  );
+  const { users, type } = conversation;
   const role = useMemo(() => {
     return conversation.users.find((u) => u._id === me._id).account.role;
   }, [conversation.users]);
@@ -45,12 +48,43 @@ const ManageMembers = () => {
     }
     return [];
   };
+  const handlePromote = () => {
+    dispatch({
+      type: actions.UPDATE_USER_ROLE,
+      payload: {
+        conversationId: conversation._id,
+        data: {
+          userId: user._id,
+          role: user?.account?.role === "admin" ? "member" : "admin",
+        },
+        callback: () => {
+          userModalRef.current?.close();
+        },
+      },
+    });
+  };
+  const handleRemoveUser = () => {
+    dispatch({
+      type: actions.REMOVE_USER_CONVERSATION,
+      payload: {
+        conversationId: conversation._id,
+        userId: user._id,
+        callback: () => {
+          userModalRef.current?.close();
+        },
+      },
+    });
+  };
   const handleUserAdd = (user) => {
+    console.log(user);
     dispatch({
       type: actions.ADD_USER_CONVERSATION,
       payload: {
         conversationId: conversation._id,
         users: [user._id],
+        callback: () => {
+          addModalRef.current?.close();
+        },
       },
     });
   };
@@ -204,6 +238,7 @@ const ManageMembers = () => {
             {user?.account?.username}
           </Text>
           <TouchableOpacity
+            onPress={handlePromote}
             disabled={role === "member"}
             style={{
               width: "90%",
@@ -220,13 +255,23 @@ const ManageMembers = () => {
                 alignItems: "center",
               }}
             >
-              <MaterialIcons
-                name="admin-panel-settings"
-                size={24}
-                color={
-                  role === "member" ? StyleVariables.colors.gray200 : "black"
-                }
-              />
+              {user?.account?.role === "member" ? (
+                <MaterialIcons
+                  name="admin-panel-settings"
+                  size={24}
+                  color={
+                    role === "member" ? StyleVariables.colors.gray200 : "black"
+                  }
+                />
+              ) : (
+                <Ionicons
+                  name="person-circle"
+                  size={24}
+                  color={
+                    role === "member" ? StyleVariables.colors.gray200 : "black"
+                  }
+                />
+              )}
               <Text
                 style={{
                   fontFamily: "sf-pro-med",
@@ -236,7 +281,9 @@ const ManageMembers = () => {
                     role === "member" ? StyleVariables.colors.gray200 : "black",
                 }}
               >
-                Promote to admin
+                {user?.account?.role === "member"
+                  ? "Promote to admin"
+                  : "Demote to member"}
               </Text>
             </View>
           </TouchableOpacity>
@@ -269,6 +316,7 @@ const ManageMembers = () => {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={handleRemoveUser}
             disabled={role === "member"}
             style={{
               width: "90%",

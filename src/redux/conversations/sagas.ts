@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
 import { useDispatch } from "react-redux";
 import { all, call, put, select, take, takeEvery, takeLeading } from "redux-saga/effects";
-import { addConversation, addUserToConversation, getConversation, getConversations, leaveConversation, removeUserFromConversation, updateConversation } from "../../services/conversationService";
+import { addConversation, addUserToConversation, getConversation, getConversations, leaveConversation, removeUserFromConversation, updateConversation, updateUserRole } from "../../services/conversationService";
 import actions from "./actions";
 
 export function* GET_CONVERSATIONS(): any {
@@ -59,16 +59,16 @@ export function* CREATE_CONVERSATION({ payload }: any): any {
 
 export function* ADD_USER_CONVERSATION({ payload }: any): any {
   const res = yield call(addUserToConversation, payload.conversationId, payload.users)
+  console.log(res)
   if (res?.statusCode === 200) {
     yield put({
       type: actions.GET_CONVERSATION_BY_ID,
       payload: {
-        id: payload.conversationId,
-        callback: () => {
-          Alert.alert('Success', 'Add user success')
-        }
+        conversationId: payload.conversationId,
+        callback: payload.callback
       }
     })
+    Alert.alert('Success', 'Add user success')
   } else {
     Alert.alert('Error', res?.error);
   }
@@ -76,10 +76,22 @@ export function* ADD_USER_CONVERSATION({ payload }: any): any {
 
 export function* REMOVE_USER_CONVERSATION({ payload }: any): any {
   const res = yield call(removeUserFromConversation, payload.conversationId, payload.userId)
-  Alert.alert('Success', 'Remove user success')
-  yield put({
-    type: actions.GET_CONVERSATIONS,
-  })
+  if (res?.statusCode === 200) {
+    Alert.alert('Success', 'Remove user success')
+    yield put({
+      type: actions.GET_CONVERSATION_BY_ID,
+      payload: {
+        conversationId: payload.conversationId,
+        callback: payload.callback
+      }
+    })
+    yield put({
+      type: actions.GET_CONVERSATIONS,
+    })
+    Alert.alert('Success', 'Remove user success')
+  } else {
+    Alert.alert('Error', res?.error);
+  }
 }
 
 export function* UPDATE_CONVERSATION({ payload }: any): any {
@@ -187,6 +199,22 @@ export function* LEAVE_CONVERSATION({ payload }: any): any {
   }
 }
 
+export function* UPDATE_USER_ROLE({ payload }: any): any {
+  const res = yield call(updateUserRole, payload.conversationId, payload.data);
+  if (res?.statusCode === 200) {
+    yield put({
+      type: actions.GET_CONVERSATION_BY_ID,
+      payload: {
+        conversationId: payload.conversationId,
+        callback: payload.callback
+      }
+    })
+    Alert.alert('Success', 'Update user role success');
+  } else {
+    Alert.alert('Error', res?.error);
+  }
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.GET_CONVERSATIONS, GET_CONVERSATIONS),
@@ -197,6 +225,7 @@ export default function* root() {
     takeEvery(actions.CHECK_CONVERSATION_EXIST, CHECK_CONVERSATION_EXIST),
     takeEvery(actions.UPDATE_CONVERSATION_NAME, UPDATE_CONVERSATION_NAME),
     takeEvery(actions.GET_CONVERSATION_BY_ID, GET_CONVERSATION_BY_ID),
-    takeEvery(actions.LEAVE_CONVERSATION, LEAVE_CONVERSATION)
+    takeEvery(actions.LEAVE_CONVERSATION, LEAVE_CONVERSATION),
+    takeEvery(actions.UPDATE_USER_ROLE, UPDATE_USER_ROLE),
   ])
 }

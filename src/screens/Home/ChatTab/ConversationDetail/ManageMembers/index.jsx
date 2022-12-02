@@ -12,9 +12,11 @@ import StyleVariables from "../../../../../../StyleVariables";
 import { useRoute } from "@react-navigation/native";
 import { useMemo, useEffect, useRef, useState } from "react";
 import { Modalize } from "react-native-modalize";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import actions from "../../../../../redux/conversations/actions";
 const ManageMembers = () => {
   const route = useRoute();
+  const dispatch = useDispatch();
   const addModalRef = useRef(null);
   const userModalRef = useRef(null);
   const friends = useSelector((state) => state.friends.friends);
@@ -23,7 +25,6 @@ const ManageMembers = () => {
   const [searchInput, setSearchInput] = useState("");
   const [data, setData] = useState([]);
   const me = useSelector((state) => state.user.data);
-  const [search, setSearch] = useState("");
   const [user, setUser] = useState(null);
   const [conversation, setConversation] = useState(route.params.conversation);
   const { users, type } = route.params;
@@ -43,6 +44,15 @@ const ManageMembers = () => {
       return usrs.filter((u) => !listExisting.includes(u.friend._id));
     }
     return [];
+  };
+  const handleUserAdd = (user) => {
+    dispatch({
+      type: actions.ADD_USER_CONVERSATION,
+      payload: {
+        conversationId: conversation._id,
+        users: [user._id],
+      },
+    });
   };
   useEffect(() => {
     if (searchInput.length > 0) {
@@ -338,8 +348,8 @@ const ManageMembers = () => {
                 fontSize: 18,
               }}
               placeholder="Search for users ..."
-              value={search}
-              onChangeText={setSearch}
+              value={searchInput}
+              onChangeText={setSearchInput}
             />
           </View>
           <ScrollView
@@ -350,11 +360,11 @@ const ManageMembers = () => {
               paddingHorizontal: 20,
             }}
           >
-            {data?.map((u) => {
-              console.log(u);
+            {data?.map((u, i) => {
               return (
                 <TouchableOpacity
-                  onPress={() => handleUserSelect(users[2])}
+                  key={i}
+                  onPress={() => handleUserSelect(u.friend)}
                   style={{
                     flexDirection: "row",
                     width: "100%",
@@ -367,7 +377,7 @@ const ManageMembers = () => {
                   }}
                 >
                   <Image
-                    source={{ uri: users[2].avatarUrl }}
+                    source={{ uri: u.friend.avatarUrl }}
                     style={{
                       width: 45,
                       height: 45,
@@ -388,7 +398,7 @@ const ManageMembers = () => {
                         fontSize: 16,
                       }}
                     >
-                      Duy Hieu
+                      {u.friend.fullname}
                     </Text>
                     <Text
                       style={{
@@ -396,10 +406,11 @@ const ManageMembers = () => {
                         color: StyleVariables.colors.gradientEnd,
                       }}
                     >
-                      @{users[2]?.account?.username}
+                      @{u.friend.account?.username}
                     </Text>
                   </View>
                   <TouchableOpacity
+                    onPress={() => handleUserAdd(u.friend)}
                     style={{
                       width: 40,
                       height: 40,

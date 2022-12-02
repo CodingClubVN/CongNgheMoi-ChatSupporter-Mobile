@@ -30,6 +30,18 @@ const ConversationDetail = () => {
     editConversationNameRef.current?.open();
   };
 
+  const handleLeaveConversation = () => {
+    dispatch({
+      type: actions.LEAVE_CONVERSATION,
+      payload: {
+        conversationId: conversation._id,
+        callback: () => {
+          navigation.navigate("Root");
+        },
+      },
+    });
+  };
+
   const onManageMembers = () => {
     navigation.navigate("ConversationStack", {
       screen: "ManageMembers",
@@ -49,10 +61,10 @@ const ConversationDetail = () => {
         conversationName,
         callback: () => {
           editConversationNameRef.current?.close();
-          setConversation(prev => ({
+          setConversation((prev) => ({
             ...prev,
-            conversationName
-          }))
+            conversationName,
+          }));
         },
       },
     });
@@ -108,6 +120,7 @@ const ConversationDetail = () => {
             alignSelf: "center",
             padding: 20,
             marginBottom: 10,
+            display: conversation.users.length > 2 ? "flex" : "none",
           }}
         >
           <View
@@ -206,6 +219,7 @@ const ConversationDetail = () => {
             alignSelf: "center",
             padding: 20,
             marginBottom: 10,
+            display: conversation.users.length > 2 ? "flex" : "none",
           }}
         >
           <View
@@ -265,6 +279,7 @@ const ConversationDetail = () => {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={handleLeaveConversation}
           style={{
             width: "90%",
             borderRadius: 20,
@@ -272,6 +287,7 @@ const ConversationDetail = () => {
             alignSelf: "center",
             padding: 20,
             marginBottom: 10,
+            display: conversation.users.length > 2 ? "flex" : "none",
           }}
         >
           <View

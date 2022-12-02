@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
 import { useDispatch } from "react-redux";
-import { all, call, put, select, take, takeEvery } from "redux-saga/effects";
-import { addConversation, addUserToConversation, getConversation, getConversations, removeUserFromConversation, updateConversation } from "../../services/conversationService";
+import { all, call, put, select, take, takeEvery, takeLeading } from "redux-saga/effects";
+import { addConversation, addUserToConversation, getConversation, getConversations, leaveConversation, removeUserFromConversation, updateConversation } from "../../services/conversationService";
 import actions from "./actions";
 
 export function* GET_CONVERSATIONS(): any {
@@ -59,10 +59,19 @@ export function* CREATE_CONVERSATION({ payload }: any): any {
 
 export function* ADD_USER_CONVERSATION({ payload }: any): any {
   const res = yield call(addUserToConversation, payload.conversationId, payload.users)
-  Alert.alert('Success', 'Add user success')
-  yield put({
-    type: actions.GET_CONVERSATIONS,
-  })
+  if (res?.statusCode === 200) {
+    yield put({
+      type: actions.GET_CONVERSATION_BY_ID,
+      payload: {
+        id: payload.conversationId,
+        callback: () => {
+          Alert.alert('Success', 'Add user success')
+        }
+      }
+    })
+  } else {
+    Alert.alert('Error', res?.error);
+  }
 }
 
 export function* REMOVE_USER_CONVERSATION({ payload }: any): any {
@@ -165,6 +174,19 @@ export function* GET_CONVERSATION_BY_ID({ payload }: any): any {
   }
 }
 
+export function* LEAVE_CONVERSATION({ payload }: any): any {
+  const res = yield call(leaveConversation, payload.conversationId);
+  if (res?.statusCode === 200) {
+    yield put({
+      type: actions.GET_CONVERSATIONS,
+    })
+    Alert.alert('Success', 'Leave conversation success');
+    if (payload?.callback) yield call(payload.callback);
+  } else {
+    Alert.alert('Error', res?.error);
+  }
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.GET_CONVERSATIONS, GET_CONVERSATIONS),
@@ -175,5 +197,6 @@ export default function* root() {
     takeEvery(actions.CHECK_CONVERSATION_EXIST, CHECK_CONVERSATION_EXIST),
     takeEvery(actions.UPDATE_CONVERSATION_NAME, UPDATE_CONVERSATION_NAME),
     takeEvery(actions.GET_CONVERSATION_BY_ID, GET_CONVERSATION_BY_ID),
+    takeEvery(actions.LEAVE_CONVERSATION, LEAVE_CONVERSATION)
   ])
 }

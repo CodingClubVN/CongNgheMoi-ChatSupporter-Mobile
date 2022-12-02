@@ -9,6 +9,7 @@ const actions = {
   UPDATE_CONVERSATION_NAME: 'conversations/UPDATE_CONVERSATION_NAME',
   GET_CONVERSATION_BY_ID: 'conversations/GET_CONVERSATION_BY_ID',
   SET_SELECTED_STATE: 'conversations/SET_SELECTED_STATE',
+  LEAVE_CONVERSATION: 'conversations/LEAVE_CONVERSATION',
 }
 
 export default actions

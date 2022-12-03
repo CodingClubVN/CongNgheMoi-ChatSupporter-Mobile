@@ -132,7 +132,13 @@ export function* CHECK_CONVERSATION_EXIST({ payload }: any): any {
     return users.includes(payload.userId) && users.includes(payload.currentUserId);
   });
   if (conversation) {
-    payload.callback(conversation.users, conversation.users.length > 2 ? 'group' : 'direct', conversation);
+    yield put({
+      type: actions.GET_CONVERSATION_BY_ID,
+      payload: {
+        conversationId: conversation._id,
+        callback: payload.callback
+      }
+    })
   } else {
     yield put({
       type: actions.CREATE_CONVERSATION,

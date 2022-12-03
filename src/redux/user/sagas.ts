@@ -1,6 +1,6 @@
 import { ActionSheetIOS, Alert } from "react-native";
 import { all, call, put, take, takeEvery } from "redux-saga/effects";
-import { login, register, sendOTP, validateOTP } from "../../services/authService";
+import { login, register, sendOTP, validateEmail, validateOTP } from "../../services/authService";
 import storageService from "../../services/storageService";
 import { getMe, updateUserProfile } from "../../services/userService";
 import actions from "./actions";
@@ -208,6 +208,34 @@ export function* VALIDATE_OTP({ payload }: any): any {
   }
 }
 
+export function* VALIDATE_EMAIL({payload}: any): any {
+  yield put({
+    type: actions.SET_STATE,
+    payload: {
+      loading: true
+    }
+  })
+  const res = yield call(validateEmail, payload.data)
+  console.log(res)
+  if (res?.statusCode === 200) {
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        loading: false
+      }
+    })
+    if (payload.callback) yield call(payload.callback)
+  } else {
+    yield put({
+      type: actions.SET_STATE,
+      payload: {
+        loading: false
+      }
+    })
+    Alert.alert('Fail', res?.message|| 'Cannot validate email')
+  }
+}
+
 export default function* root() {
   yield all([
     takeEvery(actions.LOGIN, LOGIN),
@@ -217,6 +245,7 @@ export default function* root() {
     takeEvery(actions.AUTO_LOGIN, AUTO_LOGIN),
     takeEvery(actions.UPDATE_PROFILE, UPDATE_PROFILE),
     takeEvery(actions.SEND_OTP, SEND_OTP),
-    takeEvery(actions.VALIDATE_OTP, VALIDATE_OTP)
+    takeEvery(actions.VALIDATE_OTP, VALIDATE_OTP),
+    takeEvery(actions.VALIDATE_EMAIL, VALIDATE_EMAIL)
   ])
 }

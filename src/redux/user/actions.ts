@@ -8,6 +8,7 @@ const actions = {
   UPDATE_PROFILE: 'user/UPDATE_PROFILE',
   SEND_OTP: 'user/SEND_OTP',
   VALIDATE_OTP: 'user/VALIDATE_OTP',
+  VALIDATE_EMAIL: 'user/VALIDATE_EMAIL',
 }
 
 export default actions

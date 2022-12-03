@@ -1,15 +1,30 @@
-import { View, Text, Image, ImageBackground, ScrollView } from 'react-native'
-import { useSelector } from 'react-redux'
+import { View, Text, Image, ImageBackground, ScrollView, RefreshControl } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
 import { Ionicons } from '@expo/vector-icons';
 import StyleVariables from '../../../../../StyleVariables';
 import moment from 'moment';
 import CButton from '../../../../components/CButton';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
+import actions from '../../../../redux/user/actions';
 
 const Profile = ({ mode = 'me' }: any) => {
   const route = useRoute()
   const navigation = useNavigation()
+  const dispatch = useDispatch()
   const me = useSelector((state: any) => state.user.data)
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    dispatch({
+      type: actions.GET_CURRENT_USER,
+      payload: {
+        callback: () => {
+          setRefreshing(false)
+        }
+      }
+    })
+  }, []);
   const userObj = { user: me }
   const { user }: any = route.params || userObj
   const userProfile = user || useSelector((state: any) => state.user.data)
@@ -18,7 +33,14 @@ const Profile = ({ mode = 'me' }: any) => {
       flex: 1,
       padding: 15,
     }}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} 
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      >
         <ImageBackground source={{
           uri: 'https://images.template.net/wp-content/uploads/2014/11/Natural-Facebook-Cover-Photo.jpg'
         }}

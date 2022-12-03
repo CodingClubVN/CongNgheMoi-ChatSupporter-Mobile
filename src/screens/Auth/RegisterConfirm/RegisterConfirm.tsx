@@ -66,16 +66,28 @@ const RegisterConfirmScreen = ({ route, navigation }: { route: any, navigation: 
     // TODO: Regex fullname, email, phone
     if (additional.fullname && (additional.email || additional.phone)) {
       dispatch({
-        type: actions.SEND_OTP,
+        type: actions.VALIDATE_EMAIL,
         payload: {
           data: {
-            fullname: additional.fullname,
             email: additional.email,
+            phone: additional.phone || '',
+            username: account.username
           },
           callback: () => {
-            navigation.navigate('OTPConfirm', {
-              account,
-              additional
+            dispatch({
+              type: actions.SEND_OTP,
+              payload: {
+                data: {
+                  fullname: additional.fullname,
+                  email: additional.email,
+                },
+                callback: () => {
+                  navigation.navigate('OTPConfirm', {
+                    account,
+                    additional
+                  })
+                }
+              }
             })
           }
         }

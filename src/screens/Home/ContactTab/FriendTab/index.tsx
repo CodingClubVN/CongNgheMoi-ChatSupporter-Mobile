@@ -19,14 +19,9 @@ const FriendTab = () => {
         userId: friendId,
         currentUserId: user._id,
         conversationName: friendUsername,
-        callback: (users: any, type: any, conversation: any) => {
+        callback: () => {
           navigation.navigate('ConversationStack', {
             screen: 'Conversation',
-            params: {
-              users,
-              type,
-              conversation,
-            }
           })
         },
         callback2: () => {
@@ -36,14 +31,9 @@ const FriendTab = () => {
               userId: user._id,
               currentUserId: friendId,
               conversationName: user.username,
-              callback: (users: any, type: any, conversation: any) => {
+              callback: () => {
                 navigation.navigate('ConversationStack', {
                   screen: 'Conversation',
-                  params: {
-                    users,
-                    type,
-                    conversation,
-                  }
                 })
               },
             }

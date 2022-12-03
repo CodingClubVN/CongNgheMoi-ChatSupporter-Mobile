@@ -33,8 +33,17 @@ export async function sendOTP(otpRequest: any) {
 export async function validateOTP(otpRequest: any) {
   try {
     const res = await apiService.post<any, any>("/auth/validate-otp", otpRequest);
-    // return res
+    return res
   } catch (err) {
     return console.log(err);
+  }
+}
+
+export async function validateEmail(data: any) {
+  try {
+    const res = await apiService.post<any, any>("/auth/validate-email", data); 
+    return res
+  } catch (err) {
+    return console.log(err)
   }
 }

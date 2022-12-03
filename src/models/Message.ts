@@ -8,4 +8,5 @@ export interface IMessage {
   type: string
   description?: string
   fromUserId: string
+  status? : string
 }

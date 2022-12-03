@@ -4,7 +4,7 @@ import { all, call, put, select, take, takeEvery, takeLeading } from "redux-saga
 import { addConversation, addUserToConversation, getConversation, getConversations, leaveConversation, removeUserFromConversation, updateConversation, updateUserRole } from "../../services/conversationService";
 import actions from "./actions";
 
-export function* GET_CONVERSATIONS(): any {
+export function* GET_CONVERSATIONS({payload}: any): any {
   yield put({
     type: actions.SET_STATE,
     payload: {
@@ -29,6 +29,7 @@ export function* GET_CONVERSATIONS(): any {
         loading: false,
       }
     })
+    if (payload?.callback) yield call(payload.callback);
   }
 }
 

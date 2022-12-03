@@ -21,6 +21,7 @@ export function* GET_MESSAGES({ payload }) {
     Alert.alert('Error', 'Cannot fetch messages')
     return
   }
+  yield call(console.log, messages)
   yield put({
     type: actions.SET_STATE,
     payload: {
@@ -48,6 +49,9 @@ export function* SEND_MESSAGE({ payload }) {
   }
   formData.append('type', payload.message.type)
   formData.append('content', payload.message.content)
+  if (payload.message.messageAnswarId) {
+    formData.append('messageAnswarId', payload.message.messageAnswarId)
+  }
   console.log('formData', formData.getAll('files'))
   res = yield call(sendMediaMessageToConversation, payload.conversationId, formData)
   // } else {
@@ -98,9 +102,17 @@ export function* UPDATE_MESSAGES({ payload }) {
 
 export function* RECOVER_MESSAGE({ payload }) {
   const res = yield call(recoverMessage, payload.messageId)
-  console.log(res)
   if (res?.statusCode === 200) {
     Alert.alert('Success', 'Message recovered')
+    yield put({
+      type: actions.GET_MESSAGES,
+      payload: {
+        conversationId: payload.conversationId,
+        callback: payload.callback
+      }
+    })
+  } else {
+    Alert.alert('Error', 'Cannot recover message')
   }
 }
 
@@ -109,6 +121,9 @@ export function* FORWARD_MESSAGE({ payload }) {
   console.log(res)
   if (res?.statusCode === 200) {
     Alert.alert('Success', 'Message forwarded')
+    if (payload.callback) yield call(payload.callback)
+  } else {
+    Alert.alert('Error', 'Cannot forward message')
   }
 }
 

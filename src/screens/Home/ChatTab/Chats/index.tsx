@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { View } from "react-native"
+import { ScrollView, View } from "react-native"
 import { useDispatch, useSelector } from "react-redux"
 import { io } from "socket.io-client"
 import ConversationItem from "../../../../components/ConversationItem"

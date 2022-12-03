@@ -9,7 +9,7 @@ import { IUserA } from "../models/User"
 import actions from "../redux/conversations/actions"
 import ConversationAvatar from "./ConversationAvatar"
 
-const ConversationItem = ({ navigation, type, users, conversation, me }: { navigation: any, type: 'direct' | 'group', users: any[], conversation: any, me: any }) => {
+const ConversationItem = ({ navigation, type, users, conversation, me, onSelect }: { onSelect?: any, navigation: any, type: 'direct' | 'group', users: any[], conversation: any, me: any }) => {
   const dispatch = useDispatch()
 
   const handleConversationSelect = () => {
@@ -38,7 +38,7 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
   }
 
   return (
-    <TouchableOpacity onPress={handleConversationSelect}>
+    <TouchableOpacity onPress={onSelect ? onSelect : handleConversationSelect}>
 
       <View style={{
         display: 'flex',
@@ -53,7 +53,7 @@ const ConversationItem = ({ navigation, type, users, conversation, me }: { navig
         {
           type === 'direct' ? (
             <>
-              <ConversationAvatar type={type} urls={[users[0].avatarUrl]} />
+              <ConversationAvatar type={type} urls={[users.find(item => item._id !== me._id).avatarUrl]} />
               <View style={{
                 height: 60,
                 marginLeft: 20,

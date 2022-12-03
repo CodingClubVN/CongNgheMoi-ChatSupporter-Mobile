@@ -113,7 +113,7 @@ const ChatBubble = forwardRef(
         ref={ref}
       >
         {fromMe ? (
-          message.type === 'text' ? (
+          message.type === 'text' && message.status !== "recovered" && message.status !== "answer" ? (
             <LinearGradient
               start={[1, -1]}
               end={[-1, 1]}
@@ -145,8 +145,8 @@ const ChatBubble = forwardRef(
                 {message.content[0]}
               </Text>
             </LinearGradient>
-          ) : message.type === 'image' ? (
-            <TouchableOpacity
+          ) : message.type === 'image' && message.status !== "recovered" && message.status !== "answer" ? (
+            <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'flex-end',
@@ -190,8 +190,8 @@ const ChatBubble = forwardRef(
                   }}
                 />
               )}
-            </TouchableOpacity>
-          ) : message.type === 'video' ? (
+            </View>
+          ) : message.type === 'video' && message.status !== "recovered" && message.status !== "answer" ? (
             <View
               style={{
                 height: 120,
@@ -224,7 +224,7 @@ const ChatBubble = forwardRef(
                 />
               }
             </View>
-          ) : message.type === 'file' ? (
+          ) : message.type === 'file' && message.status !== "recovered" && message.status !== "answer" ? (
             <TouchableOpacity
               onPress={() => handleDonwload(message.content[0])}
               style={{
@@ -274,9 +274,10 @@ const ChatBubble = forwardRef(
                 {message.content[0]}
               </Text>
             </View>
-          ) : message.type === 'recover' ? (
+          ) : message.status === "answer" ? (
             <View style={{
-              position: 'relative'
+              position: 'relative',
+              height: 80
             }}>
               <LinearGradient
                 start={[1, -1]}
@@ -344,10 +345,42 @@ const ChatBubble = forwardRef(
                     fontFamily: 'sf-pro-reg',
                   }}
                 >
-                  Okay ban oi
+                  {message.content[0]}
                 </Text>
               </LinearGradient>
             </View>
+          ) : message.status === "recovered" ? (
+            <LinearGradient
+              start={[1, -1]}
+              end={[-1, 1]}
+              // locations={[0.6, 0.7]}
+              colors={[
+                StyleVariables.colors.gray100,
+                StyleVariables.colors.gray200,
+              ]}
+              style={{
+                height: 45,
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+                backgroundColor: StyleVariables.colors.gradientEnd,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderTopLeftRadius: 25,
+                borderTopRightRadius: 25,
+                borderBottomLeftRadius: 25,
+                borderBottomRightRadius: 10,
+              }}
+            >
+              <Text
+                style={{
+                  color: StyleVariables.colors.gray300,
+                  fontSize: 16,
+                  fontFamily: 'sf-pro-reg',
+                }}
+              >
+                Unsent message
+              </Text>
+            </LinearGradient>
           ) : null
         ) : (
           <>
@@ -372,7 +405,7 @@ const ChatBubble = forwardRef(
                   }}
                 />
               )}
-            {message.type === 'text' ? (
+            {message.type === 'text' && message.status !== "recovered" ? (
               <View
                 style={{
                   height: 45,
@@ -399,13 +432,15 @@ const ChatBubble = forwardRef(
                   {message.content}
                 </Text>
               </View>
-            ) : message.type === 'image' ? (
-              <TouchableOpacity
+            ) : message.type === 'image' && message.status !== "recovered" ? (
+              <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
                   flexWrap: 'wrap',
                   width: 200,
+                  marginLeft:
+                    isNextMessageFromSameUser && type === 'group' ? 40 : 0,
                 }}
               >
                 {message.content.length > 1 ? (
@@ -441,13 +476,13 @@ const ChatBubble = forwardRef(
                       borderTopRightRadius: 25,
                       borderBottomLeftRadius: 10,
                       borderBottomRightRadius: 25,
-                      marginLeft:
-                        isNextMessageFromSameUser && type === 'group' ? 40 : 0,
+                      // marginLeft:
+                      // isNextMessageFromSameUser && type === 'group' ? 40 : 0,
                     }}
                   />
                 )}
-              </TouchableOpacity>
-            ) : message.type === 'video' ? (
+              </View>
+            ) : message.type === 'video' && message.status !== "recovered" ? (
               <View
                 style={{
                   height: 120,
@@ -483,7 +518,7 @@ const ChatBubble = forwardRef(
                   />
                 }
               </View>
-            ) : message.type === 'file' ? (
+            ) : message.type === 'file' && message.status === 'normal' ? (
               <TouchableOpacity
                 onPress={() => handleDonwload(message.content[0])}
                 style={{
@@ -534,6 +569,113 @@ const ChatBubble = forwardRef(
                   {message.content[0]}
                 </Text>
               </View>
+            ) : message.status === "answer" ? (
+              <View style={{
+                position: 'relative',
+                height: 80
+              }}>
+                <LinearGradient
+                  start={[1, -1]}
+                  end={[-1, 1]}
+                  // locations={[0.6, 0.7]}
+                  colors={[
+                    StyleVariables.colors.gray200,
+                    StyleVariables.colors.gray300,
+                  ]}
+                  style={{
+                    width: 80,
+                    height: 45,
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                    backgroundColor: StyleVariables.colors.gradientEnd,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderTopLeftRadius: 25,
+                    borderTopRightRadius: 25,
+                    borderBottomLeftRadius: 25,
+                    borderBottomRightRadius: 10,
+                    alignSelf: 'flex-end'
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: '#fff',
+                      fontSize: 16,
+                      fontFamily: 'sf-pro-reg',
+                    }}
+                  >
+                    Hello
+                  </Text>
+                </LinearGradient>
+                <LinearGradient
+                  start={[1, -1]}
+                  end={[-1, 1]}
+                  // locations={[0.6, 0.7]}
+                  colors={[
+                    StyleVariables.colors.gradientEnd,
+                    StyleVariables.colors.gradientStart,
+                  ]}
+                  style={{
+                    height: 45,
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                    backgroundColor: StyleVariables.colors.gradientEnd,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderTopLeftRadius: 25,
+                    borderTopRightRadius: 25,
+                    borderBottomLeftRadius: 25,
+                    borderBottomRightRadius: 10,
+                    zIndex: 100,
+                    position: 'absolute',
+                    top: 30,
+                    width: 150,
+                    right: 0
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: '#fff',
+                      fontSize: 16,
+                      fontFamily: 'sf-pro-reg',
+                    }}
+                  >
+                    {message.content[0]}
+                  </Text>
+                </LinearGradient>
+              </View>
+            ) : message.status === "recovered" ? (
+              <LinearGradient
+                start={[1, -1]}
+                end={[-1, 1]}
+                // locations={[0.6, 0.7]}
+                colors={[
+                  StyleVariables.colors.gray100,
+                  StyleVariables.colors.gray200,
+                ]}
+                style={{
+                  height: 45,
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                  backgroundColor: StyleVariables.colors.gradientEnd,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderTopLeftRadius: 25,
+                  borderTopRightRadius: 25,
+                  borderBottomLeftRadius: 25,
+                  borderBottomRightRadius: 10,
+                }}
+              >
+                <Text
+                  style={{
+                    color: StyleVariables.colors.gray300,
+                    fontSize: 16,
+                    fontFamily: 'sf-pro-reg',
+                  }}
+                >
+                  Unsent message
+                </Text>
+              </LinearGradient>
             ) : null}
           </>
         )}
@@ -594,28 +736,17 @@ const ChatWrapper = ({
         flexDirection: 'column',
       }}
     >
-      <Menu>
-        <MenuTrigger>
-          <ChatBubbleAnimated
-            entering={fromMe ? BounceInRight : BounceInLeft}
-            callback={callback}
-            type={type}
-            message={message}
-            sender={sender}
-            me={me}
-            isPreviousMessageFromSameUser={isPreviousMessageFromSameUser}
-            isNextMessageFromSameUser={isNextMessageFromSameUser}
-            isLastMessage={isLastMessage}
-          />
-        </MenuTrigger>
-        <MenuOptions>
-          <MenuOption onSelect={
-            forwardMessage} text='Forward' />
-          <MenuOption onSelect={recoverMessage} >
-            <Text style={{ color: 'red' }}>Recall</Text>
-          </MenuOption>
-        </MenuOptions>
-      </Menu>
+      <ChatBubbleAnimated
+        entering={fromMe ? BounceInRight : BounceInLeft}
+        callback={callback}
+        type={type}
+        message={message}
+        sender={sender}
+        me={me}
+        isPreviousMessageFromSameUser={isPreviousMessageFromSameUser}
+        isNextMessageFromSameUser={isNextMessageFromSameUser}
+        isLastMessage={isLastMessage}
+      />
     </View>
   );
 };

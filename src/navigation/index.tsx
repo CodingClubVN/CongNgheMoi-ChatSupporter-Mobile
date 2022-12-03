@@ -226,14 +226,14 @@ function BottomTabNavigator() {
           height: 80
         },
       }}>
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="CallTab"
         component={CallTab}
         options={({ navigation }: RootTabScreenProps<'CallTab'>) => ({
           tabBarIcon: ({ color }) => <TabBarIcon name="call-outline" color={color} />,
           headerTitle: 'Calls',
         })}
-      />
+      /> */}
       <BottomTab.Screen
         name="ContactTab"
         component={ContactTopTabNavigator}
